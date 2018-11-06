@@ -143,7 +143,7 @@ public enum CspSample {
 
     public boolean isVarMap() {
         String n1 = name().toLowerCase();
-        String n2 = "vSpace".toLowerCase();
+        String n2 = "varSpace".toLowerCase();
         return n1.contains(n2);
     }
 

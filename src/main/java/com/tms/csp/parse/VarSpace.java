@@ -234,7 +234,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
 
     /**
-     * vSpace(var1 var2 var2)
+     * varSpace(var1 var2 var2)
      */
     public static void parseVarMap(String varMap, ImmutableList.Builder<VarCode> b) {
         String token = "_vars";

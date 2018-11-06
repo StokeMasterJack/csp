@@ -53,7 +53,7 @@ public class Space extends SpaceUtil implements PLConstants {
     public final Random random = new Random();
 
 
-    public VarSpace vSpace;
+    public VarSpace varSpace;
 
 
     private final True constantTrue;
@@ -73,7 +73,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
     final public ExpFactory expFactory;
     final public Parser parser;
-
+    final public PosComplexSpace posComplexSpace;
 
     /**
      * For use by Counting Graph
@@ -91,8 +91,9 @@ public class Space extends SpaceUtil implements PLConstants {
 
         emptyCube = new EmptyCube(this);
 
+        varSpace = new VarSpace(this);
+        posComplexSpace = new PosComplexSpace(this);
 
-        vSpace = new VarSpace(this);
         expFactory = new ExpFactory(this);
         parser = new Parser(this);
 
@@ -101,17 +102,17 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public Space(@Nonnull Iterable<String> varCodes) {
         this();
-        vSpace.mkVars(varCodes);
+        varSpace.mkVars(varCodes);
     }
 
     public Space(@Nonnull VarSet vars) {
         this();
-        vSpace.mkVars(vars);
+        varSpace.mkVars(vars);
     }
 
 
     public SortedSet<String> getVarCodesSorted() {
-        return vSpace.getVarCodesSorted();
+        return varSpace.getVarCodesSorted();
     }
 
     public Exp parseExp(String expText) {
@@ -250,23 +251,22 @@ public class Space extends SpaceUtil implements PLConstants {
         return Vars.isInvVarsLine(line);
     }
 
-    public final PosComplexSpace posComplexSpace = new PosComplexSpace(this);
 
     public int getVarCount() {
         return getVarSpace().getVarCount();
     }
 
     public int getMaxVarId() {
-        return vSpace.getMaxVarId();
+        return varSpace.getMaxVarId();
     }
 
 
     public VarSetBuilder newMutableVarSet() {
-        return vSpace.varSetBuilder();
+        return varSpace.varSetBuilder();
     }
 
     public VarSetBuilder varSetBuilder() {
-        return vSpace.varSetBuilder();
+        return varSpace.varSetBuilder();
     }
 
 
@@ -307,7 +307,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public Var getVar(String varCode) throws BadVarCodeException {
         VarSpace varMap1 = getVarSpace();
-        assert vSpace != null;
+        assert varSpace != null;
 //        return varMap1.getVar(varCode);
         return varMap1.mkVar(varCode);
     }
@@ -324,7 +324,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public VarSpace getVarSpace() {
-        return vSpace;
+        return varSpace;
     }
 
 
@@ -342,19 +342,19 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Lit getLit(int varId, boolean sign) {
-        return vSpace.getLit(varId, sign);
+        return varSpace.getLit(varId, sign);
     }
 
     public Lit mkLit(int lit) {
-        return vSpace.mkLit(lit);
+        return varSpace.mkLit(lit);
     }
 
     public Lit mkLit(Lit lit) {
-        return vSpace.mkLit(lit);
+        return varSpace.mkLit(lit);
     }
 
     public Lit mkLit(String signedVarCode) {
-        return vSpace.mkLit(signedVarCode);
+        return varSpace.mkLit(signedVarCode);
     }
 
 
@@ -737,11 +737,11 @@ public class Space extends SpaceUtil implements PLConstants {
      */
 
     public VarSet createVars(Set<Var> vars) {
-        return vSpace.createVars(vars);
+        return varSpace.createVars(vars);
     }
 
     public VarSet createVarsFromVarIdSet(Set<Integer> varIds) {
-        return vSpace.createVarsFromVarIdSet(varIds);
+        return varSpace.createVarsFromVarIdSet(varIds);
     }
 
     public VarSet createVars(String sVars) {
@@ -753,7 +753,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public void initAllLits() {
-        for (Var var : vSpace) {
+        for (Var var : varSpace) {
             var.mkPosLit();
             var.mkNegLit();
         }
@@ -891,7 +891,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public boolean hasPrefixes() {
-        for (Var var : vSpace) {
+        for (Var var : varSpace) {
             if (var.getVarCode().startsWith(Prefix.SER.getName())) return true;
         }
         return false;
@@ -912,7 +912,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
     @NotNull
     public Var mkVar(String varCode) {
-        return vSpace.mkVar(varCode);
+        return varSpace.mkVar(varCode);
     }
 
     @NotNull
@@ -922,7 +922,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public void mkVars(Iterable<String> varCodes) {
-        vSpace.mkVars(varCodes);
+        varSpace.mkVars(varCodes);
     }
 
     public Csp getCsp() {
@@ -1084,7 +1084,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public int getVarId(String varCode) {
-        return vSpace.getVar(varCode).getVarId();
+        return varSpace.getVar(varCode).getVarId();
     }
 
     public Set<String> toLitCodes(Iterator<? extends Exp> litIterator) {
@@ -1182,7 +1182,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public int getLitNodeCount() {
-        return vSpace.getLitNodeCount();
+        return varSpace.getLitNodeCount();
     }
 
     public Space toDnnfSpace() {
@@ -1223,7 +1223,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public VarSet mkEmptyVarSet() {
-        return vSpace.mkEmptyVarSet();
+        return varSpace.mkEmptyVarSet();
     }
 
     public boolean addNode(Exp exp) {
@@ -1583,7 +1583,7 @@ public class Space extends SpaceUtil implements PLConstants {
 //    public VarSet computeFormulaVars2(Iterable<Exp> complex) {
 //        VarSetBuilder b = newMutableVarSet();
 //        if (complex.isEmpty()) {
-//            return vSpace.mkEmptyVarSet();
+//            return varSpace.mkEmptyVarSet();
 //        }
 //
 //        for (Exp constraint : complex) {
@@ -1816,7 +1816,7 @@ public class Space extends SpaceUtil implements PLConstants {
     public ImmutableSet<Var> getFioVars() {
         varMeta.checkVarInfo();
         ImmutableSet.Builder<Var> b = ImmutableSet.builder();
-        for (Var var : vSpace) {
+        for (Var var : varSpace) {
             if (varMeta.isFio(var)) {
                 assert var.isAcy();
                 b.add(var);
@@ -2007,7 +2007,7 @@ public class Space extends SpaceUtil implements PLConstants {
 //    }
 
     public VarSet mkVarPair(Var var1, Var var2) {
-        return vSpace.mkVarPair(var1, var2);
+        return varSpace.mkVarPair(var1, var2);
     }
 
 
@@ -2287,8 +2287,8 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public void print() {
-        System.err.println("VarSpace: " + (vSpace == null ? "null" : vSpace.size()));
-        if (vSpace != null) vSpace.print();
+        System.err.println("VarSpace: " + (varSpace == null ? "null" : varSpace.size()));
+        if (varSpace != null) varSpace.print();
 
         if (csp != null) csp.print();
         System.err.println("nodeCount: " + _nodes.size());

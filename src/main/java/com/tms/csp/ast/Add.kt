@@ -6,6 +6,10 @@ import com.tms.csp.util.DynComplex
 import com.tms.csp.util.XorCube
 import com.tms.csp.util.asSeq
 
+/*
+
+ */
+
 data class Add(
         val space: Space,
         val constraints: Constraints = Constraints.noAction,
@@ -15,6 +19,7 @@ data class Add(
     //simple var split
     constructor(c: Exp, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
 
+    //simple var split
     constructor(c: Or, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
 
     //xor split

@@ -616,7 +616,7 @@ public class VarSetBuilder extends VarSet {
 //            long[] words = copyAndCompressWords();
 //            int ss = computeVarCount(words);
 //            assert size == ss;
-//            return vSpace.mkVarNSetFixed(words, size);
+//            return varSpace.mkVarNSetFixed(words, size);
 
             return this;
         }
@@ -672,7 +672,7 @@ public class VarSetBuilder extends VarSet {
 //    @Override
 //    public boolean anyIntersection(VarSetBuilder that) {
 //        if (that == null || that.isEmpty()) return false;
-//        assert this.words.length == vSpace.getMaxWordCount();
+//        assert this.words.length == varSpace.getMaxWordCount();
 //        for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
 //            if ((words[wordIndex] & that.words[wordIndex]) != 0) {
 //                return true;

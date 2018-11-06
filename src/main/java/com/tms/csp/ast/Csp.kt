@@ -75,7 +75,7 @@ class Csp @JvmOverloads constructor(
 
     //initial:
 
-//    constructor(space: Space) : this(space = space)
+//    constructor(constraints: String, tiny: Boolean) : this(space = space)
 
     //    constructor(parent = null, space, mixed) : this(mixed.space, add = Action(c = mixed.complex, cc = mixed.simple))
 //
@@ -1848,21 +1848,6 @@ class Csp @JvmOverloads constructor(
         @JvmStatic
         fun asSeq2(complex: Iterable<String?>): Sequence<String?> = complex.asSequence()
 
-        @JvmStatic
-        fun resolveComplex(): DynComplex {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        @JvmStatic
-        @JvmOverloads
-        fun parse(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp(clob, tiny);
-
-        @JvmStatic
-        @JvmOverloads
-        fun parse(cspSample: CspSample, tiny: Boolean = false): Csp {
-            return parse(cspSample.loadText(), tiny);
-        }
-
 
         @JvmStatic
         fun getXorConstraints(args: Iterable<Exp>): List<Exp> {
@@ -1902,6 +1887,18 @@ class Csp @JvmOverloads constructor(
             return Dnnf(d);
         }
 
+
+        //create
+
+        @JvmStatic
+        @JvmOverloads
+        fun parse(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp(clob, tiny);
+
+        @JvmStatic
+        @JvmOverloads
+        fun parse(cspSample: CspSample, tiny: Boolean = false): Csp {
+            return parse(cspSample.loadText(), tiny);
+        }
 
     }//end companion
 

@@ -40,10 +40,10 @@ import static com.tms.csp.ssutil.Strings.indent;
 exp
     constants
     lits
-    pos compex
+    pos complex
             T/F
         and
-           all-simple -cubes
+           all-simple - cubes
 
            all-complex
                 disjoint-?
