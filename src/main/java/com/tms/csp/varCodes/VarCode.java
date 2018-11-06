@@ -15,7 +15,7 @@ import static com.tms.csp.ssutil.Strings.isEmpty;
 public class VarCode extends Mods implements Comparable<VarCode>, IVar {
 
     @Nonnull
-    public final String prefix;    //no prefix vars use empty string
+    public final String prefix;    //no prefix _vars use empty string
 
     @Nonnull
     public final String localName;
@@ -31,7 +31,6 @@ public class VarCode extends Mods implements Comparable<VarCode>, IVar {
             this.localName = raw.substring(split + 1);
         }
 
-        assert prefix != null;
 
     }
 
@@ -58,6 +57,12 @@ public class VarCode extends Mods implements Comparable<VarCode>, IVar {
         String p = Prefix.expandTiny(shortPrefix);
         if (p == null) return "";
         return p.trim();
+    }
+
+    public static String tiny(String largePrefix) {
+        Prefix p = Prefix.largeToTiny(largePrefix);
+        if (p == null) return "";
+        return p.getTiny();
     }
 
     public static Boolean initXor(String prefix) {
@@ -235,6 +240,19 @@ public class VarCode extends Mods implements Comparable<VarCode>, IVar {
         }
         String retVal = prefix + "_" + getLocalName();
         if (retVal.startsWith("_")) {
+            throw new IllegalStateException();
+        }
+        return retVal;
+    }
+
+    public String getVarCodeTiny() {
+        if (Prefix.isEmpty(prefix)) {
+            return getLocalName();
+        }
+
+        String tinyPrefix = tiny(prefix);
+        String retVal = tinyPrefix + ":" + getLocalName();
+        if (retVal.startsWith(":")) {
             throw new IllegalStateException();
         }
         return retVal;

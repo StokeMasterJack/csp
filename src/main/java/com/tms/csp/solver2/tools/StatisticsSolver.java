@@ -35,7 +35,7 @@ public class StatisticsSolver implements ISolver {
     private int expectedNumberOfConstraints;
 
     /**
-     * Number of declared vars (max vr id)
+     * Number of declared _vars (max vr id)
      */
     private int nbvars;
 

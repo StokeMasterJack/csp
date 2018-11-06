@@ -306,24 +306,15 @@ class ExpFactory(val sp: Space) {
 
     fun mkCubeExp(c: DynCube?, f: DynComplex?): Exp {
 
-        return if (c == null && f == null) {
-            sp.mkTrue()
-        } else if ((c == null || c.isConstantTrue)) {
-            checkNotNull(f)
-            f.mkExp()
-        } else if (f == null || f.isConstantTrue) {
-            checkNotNull(c)
-            c.mkExp()
-        } else if (c.isConstantFalse) {
-            sp.mkFalse()
-        } else if (f.isConstantFalse) {
-            sp.mkFalse()
-        } else {
+        return if (c.isNullOrEmpty && f.isNullOrEmpty) sp.mkTrue()
+        else if (c.isNullOrEmpty) f!!.mk()
+        else if (f.isNullOrEmpty) c!!.mk()
+        else {
 
             //both c and f are now both "open"
 
-            val cc = c.mkCubeExp()
-            val ff = f.mkFormula()
+            val cc = c!!.mk()
+            val ff = f!!.mkFormula()
 
             mCube(cc, ff)
         }
@@ -384,7 +375,7 @@ class ExpFactory(val sp: Space) {
 
 
     fun intersection(vars1: VarSet, vars2: VarSet): VarSet {
-        return vars1.intersection(vars2)
+        return vars1.overlap(vars2)
     }
 
 
@@ -431,10 +422,10 @@ class ExpFactory(val sp: Space) {
 //    }
 
 //    fun mkDnnf(raw: Raw,extractVars: Boolean): Dnnf {
-//        val vars = raw.buildVarSet(extractVars)
+//        val _vars = raw.buildVarSet(extractVars)
 //        val dLines = raw.dLines
 //        val exp = parseDNodes(dLines)
-//        val vars = raw.vars
+//        val _vars = raw._vars
 //        raw.invVars
 //        return Dnnf(exp)
 //    }

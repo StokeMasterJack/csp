@@ -43,7 +43,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////    public boolean isVvCareVar(Var vr) {
     ////        assert isOpen(vr);
     ////        for (Exp e : getVVConstraints()) {
-    ////            IntList careVars = e.getVars();
+    ////            IntList careVars = e.get_vars();
     ////            if (careVars.contains(vr.getId())) {
     ////                return true;
     ////            }
@@ -753,14 +753,14 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //    }
     //
     ////    public void addConstraint(Line line, VarSet allInvAcy) {
-    ////        VarSet vars = line.getVars();
+    ////        VarSet _vars = line.get_vars();
     ////
     ////
-    ////        for (int varId : vars) {
+    ////        for (int varId : _vars) {
     ////            assign(varId, true);
     ////        }
     ////
-    ////        for (Var vr : line.getVars()) {
+    ////        for (Var vr : line.get_vars()) {
     ////
     ////        }
     ////    }
@@ -781,7 +781,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //
     //
     ////    public Exp toDnnf() {
-    ////        Set<String> vars = space.getVars();
+    ////        Set<String> _vars = space.get_vars();
     ////        return toDnnf();
     ////    }
     //
@@ -930,7 +930,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //        VarSet coreVars = space.getCoreVars();
     //        DynComplex keep = new DynComplex(space);
     //        for (Exp exp : complex) {
-    //            boolean isCore = coreVars.containsAll(exp.getVars());
+    //            boolean isCore = coreVars.containsAll(exp.get_vars());
     //            if (!isCore) {
     //                keep.add(exp);
     //            }
@@ -1174,7 +1174,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////    }
     //
     //
-    ////    //vars have already been added - this method skips vars line
+    ////    //_vars have already been added - this method skips _vars line
     ////    public void addConstraints(String[] lines) {
     ////        Iterable<String> it = Its.itForArray(lines);
     ////        addConstraints(it);
@@ -1216,12 +1216,12 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //            return;
     //        }
     //
-    //        VarSet newVvVars = newVv.getVars();
+    //        VarSet newVvVars = newVv.get_vars();
     //
     //        for (Exp e : complex) {
     //            if (e == newVv) continue;
     //            if (!e.isVv()) continue;
-    //            VarSet eVars = e.getVars();
+    //            VarSet eVars = e.get_vars();
     //            if (eVars.containsAllVars(newVvVars)) {
     //
     ////                System.err.println(e);
@@ -1255,9 +1255,9 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //        if (vvps.isEmpty()) return;
     //
     //        for (Exp vv : vvs) {
-    //            VarSet vvVars = vv.getVars();
+    //            VarSet vvVars = vv.get_vars();
     //            for (Exp vvp : vvps) {
-    //                VarSet vvpVars = vvp.getVars();
+    //                VarSet vvpVars = vvp.get_vars();
     //                if (vvpVars.containsAllVars(vvVars)) {
     //                    boom++;
     //                }
@@ -1431,7 +1431,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //        space.checkVarInfo();
     //
     //        VarMeta varMeta = space.getVarMeta();
-    //        VarSet formulaVars = getFormula().getVars();
+    //        VarSet formulaVars = getFormula().get_vars();
     //        VarSetBuilder b = space.newMutableVarSet();
     //        for (Var var : formulaVars.varIt()) {
     //            if (varMeta.isInvAcyVar(var)) {
@@ -1755,7 +1755,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //        Exp n = f.toDnnf();
     //        Exp nn = n.copyToOtherSpace();
     //
-    //        VarSet outVars = nn.getSpace().getVars(Prefix.MDL);
+    //        VarSet outVars = nn.getSpace().get_vars(Prefix.MDL);
     //
     //        Exp projection = nn.project(outVars);
     //        Set<Cube> cubes = projection.getCubesSmooth();

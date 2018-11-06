@@ -48,7 +48,6 @@ public class CspBaseTest2 extends CspBaseTest {
         String clob = TestData.loadText(cspSample);
         Space ss = new Space();
         Parser parser = ss.parser;
-        Space space = parser.extractVars(clob);
         return parser.parseExp(clob);
     }
 

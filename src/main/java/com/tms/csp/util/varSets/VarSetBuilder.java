@@ -18,7 +18,7 @@ public class VarSetBuilder extends VarSet {
     public VarSpace vSpace;
 
     public long[] words;
-    public int size;
+    public int _size;
 
     public VarSetBuilder(VarSpace varMap) {
         this.vSpace = varMap;
@@ -115,19 +115,19 @@ public class VarSetBuilder extends VarSet {
 
     public int size() {
         recomputeSize();
-        return size;
+        return _size;
     }
 
     public boolean recomputeSize() {
-        int s1 = size;
+        int s1 = _size;
         calculateSize();
-        int s2 = size;
+        int s2 = _size;
         return (s1 != s2);
     }
 
 
     public boolean maybeRecomputeSize() {
-        if (size == -1) {
+        if (_size == -1) {
             calculateSize();
             return true;
         }
@@ -270,7 +270,7 @@ public class VarSetBuilder extends VarSet {
     }
 
     public boolean maybeDirty() {
-        return size == -1;
+        return _size == -1;
     }
 
 //    public void addVarIdQuiet(int varId) {
@@ -319,23 +319,23 @@ public class VarSetBuilder extends VarSet {
         }
     }
 
-    public boolean addVars(VarSet... varSets) {
-        boolean anyChange = false;
-        for (VarSet varSet : varSets) {
-            boolean ch = addVars(varSet);
-            if (ch) {
-                anyChange = true;
-            }
-        }
-
-        return anyChange;
-    }
+//    public boolean addVars(VarSet... varSets) {
+//        boolean anyChange = false;
+//        for (VarSet varSet : varSets) {
+//            boolean ch = addVars(varSet);
+//            if (ch) {
+//                anyChange = true;
+//            }
+//        }
+//
+//        return anyChange;
+//    }
 
     public boolean addVars(Collection<Var> vars) {
         if (vars == null) return false;
         if (vars instanceof VarSet) {
             VarSet vs = (VarSet) vars;
-            return this.addVars(vs);
+            return this.addVarSet(vs);
         } else {
             boolean anyChange = false;
             for (HasVarId var : vars) {
@@ -349,7 +349,7 @@ public class VarSetBuilder extends VarSet {
     }
 
 
-    public boolean addVars(VarSet vs) {
+    public boolean addVarSet(VarSet vs) {
         if (vs == null) {
             return false;
         } else if (vs.isEmpty()) {
@@ -501,22 +501,22 @@ public class VarSetBuilder extends VarSet {
 
 
     public boolean recalculateSize() {
-        int oldSize = size;
+        int oldSize = _size;
         calculateSize();
-        return oldSize != size;
+        return oldSize != _size;
     }
 
     public void calculateSize() {
-        this.size = computeSize(words);
+        this._size = computeSize(words);
     }
 
     public void clear() {
         Arrays.fill(words, 0);
-        size = 0;
+        _size = 0;
     }
 
     public boolean isEmpty() {
-        return size == 0;
+        return _size == 0;
     }
 
     public Space getSpace() {
@@ -602,11 +602,11 @@ public class VarSetBuilder extends VarSet {
     public VarSet build() {
         recalculateSize();
 
-        if (size == 0) {
+        if (_size == 0) {
             return vSpace.mkEmptyVarSet();
-        } else if (size == 1) {
+        } else if (_size == 1) {
             return vSpace.mkSingleton(min());
-        } else if (size == 2) {
+        } else if (_size == 2) {
 
             int v1 = min();
             int v2 = max();
@@ -717,7 +717,7 @@ public class VarSetBuilder extends VarSet {
     public VarSet minus(VarSet varsToRemove) {
         VarSetBuilder copy = copy();
         copy.removeVars(varsToRemove);
-        return copy;
+        return copy.build();
     }
 
     public VarSetBuilder copy() {
@@ -772,7 +772,7 @@ public class VarSetBuilder extends VarSet {
     }
 
     @Override
-    protected void serialize(Ser a) {
+    public void serialize(Ser a) {
         Iterator<Var> it = varIter();
         while (it.hasNext()) {
             Var next = it.next();

@@ -1,6 +1,7 @@
 package com.tms.csp.ast
 
 import com.tms.csp.fm.dnnf.products.Cube
+import com.tms.csp.util.varSets.VarSet
 
 class KExp(val e: Exp) {
 
@@ -53,6 +54,22 @@ class KExp(val e: Exp) {
     companion object {
         @JvmStatic
         val selector: (Exp) -> Int = { it.expId }
+
+        @JvmStatic
+        fun Or.satCountPL(parentVars: VarSet): Long {
+            val decisionVar: Var = decide()
+            val split = DecisionSplit(this, decisionVar)
+            val baseSatCount = split.plSatCount()
+            return Csp.computeDcVars(baseSatCount, parentVars, vars);
+        }
+
+        @JvmStatic
+        fun Xor.satCountPL(parentVars: VarSet): Long {
+            val baseSatCount = this.argCount.toLong()
+            return Csp.computeDcVars(baseSatCount, parentVars, vars);
+
+
+        }
     }
 
 }

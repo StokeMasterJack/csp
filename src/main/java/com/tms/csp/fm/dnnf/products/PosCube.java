@@ -37,21 +37,21 @@ public class PosCube extends AbstractCube {
 
     public VarSet getVars(EnumSet<Prefix> filter) {
         VarSet that = getSpace().getVars(filter);
-        return vars.intersection(that);
+        return vars.overlap(that);
     }
 
     public VarSet getVars(VarSet filter) {
-        return vars.intersection(filter);
+        return vars.overlap(filter);
     }
 
     public VarSet getVars(Prefix prefix) {
         VarSet that = getSpace().getVars(prefix);
-        return vars.intersection(that);
+        return vars.overlap(that);
     }
 
     public VarSet getVars(String prefix) {
         VarSet that = getSpace().getVars(prefix);
-        return vars.intersection(that);
+        return vars.overlap(that);
     }
 
     @Override

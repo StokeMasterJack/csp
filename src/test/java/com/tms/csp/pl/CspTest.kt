@@ -1,13 +1,15 @@
 package com.tms.csp.pl
 
 import com.tms.csp.ast.Csp
+import com.tms.csp.ast.Parser
 import com.tms.csp.ast.toCube
 import com.tms.csp.ast.toCubes
 import com.tms.csp.data.CspSample
 import com.tms.csp.fm.dnnf.products.Cube
+import com.tms.csp.fm.dnnf.products.print
 import com.tms.csp.util.CspBaseTest2
 import junit.framework.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
 
 class CspTest : CspBaseTest2() {
 
@@ -26,6 +28,7 @@ class CspTest : CspBaseTest2() {
     fun testTiny() {
 
         val tiny = """
+            vars(a b c)
             xor(a b)
             conflict(b c)
         """
@@ -69,10 +72,12 @@ class CspTest : CspBaseTest2() {
 
     }
 
+
     @Test
     fun testTinyWithDontCare() {
 
         val tiny = """
+            vars(a b c d)
             xor(a b)
             conflict(b c)
             dc(d)
@@ -105,8 +110,10 @@ class CspTest : CspBaseTest2() {
         //Exp.printCubes(cubes);
     }
 
+
     @Test
     fun testTrim() {
+
 
         val satCountExpected: Long = 11
 
@@ -125,7 +132,7 @@ class CspTest : CspBaseTest2() {
         """.trim()
 
 
-        val csp = CspSample.Trim.csp()
+        val csp = Csp.parse(CspSample.Trim, tiny = true)
 
         val satCountPL = csp.satCountPL()
 
@@ -272,52 +279,79 @@ class CspTest : CspBaseTest2() {
         val clob = CspSample.EfcOriginal.loadText()
         val csp = Csp.parse(clob)
         val d = csp.toDnnf()
-        assertEquals(expected.bb0.toCube(csp), d.bb)
-
+        val bb0 = d.bb
+        val bb0Expected = expected.bb0.toCube(csp)
+        assertEquals(bb0Expected, bb0)
 
         val csp1 = csp.atRefine()
         val d1 = csp1.toDnnf()
-        assertEquals(expected.bb1.toCube(csp1), d1.bb)
+        val bb1 = d1.bb
+        val bb1Expected = expected.bb1.toCube(csp)
+        assertEquals(bb1Expected, bb1)
+
 
         val csp2: Csp = csp1.reduce();
         val d2 = csp2.toDnnf()
-        assertEquals(expected.bb2.toCube(csp2), d2.bb)
+        val bb2 = d2.bb
+        val bb2Expected = expected.bb2.toCube(csp2)
+        assertEquals(bb2Expected, bb2)
 
         val d3 = d2.condition("YR_2013")
         val bb3 = d3.bb
         assertEquals(expected.bb3.toCube(csp2), bb3)
 
         val d4 = d3.condition("SER_tundra")
-        assertEquals(expected.bb4.toCube(csp2), d4.bb)
+        val bb4 = d4.bb
+        assertEquals(expected.bb4.toCube(csp2), bb4)
+
+
+    }
+
+    @Test
+    fun testSatCountEqAllSat1() {
+
+        val expectedSatCount = 6L
+
+        val clob = """
+            imp(series xor(SER_rav4ev SER_avalon))
+        """.trimIndent()
+
+
+        val csp: Csp = Csp.parse(clob)
+        val satCountPL = csp.satCountPL()
+        val smooth = csp.toDnnfSmooth()
+        val cubes = smooth.cubesSmooth
+
+        assertEquals(expectedSatCount, smooth.satCount)
+        assertEquals(expectedSatCount, satCountPL)
+        assertEquals(expectedSatCount, cubes.size.toLong())
+
 
 
     }
 
     @Test
     fun testSatCountEqAllSat() {
-        val clob = "imp(series xor(SER_rav4ev SER_avalon SER_highlander SER_rav4 SER_tundra SER_landcruiser SER_venza SER_corolla SER_priusv SER_yaris SER_sequoia SER_camry SER_tacoma SER_priusplugin SER_prius SER_fjcruiser SER_priusc SER_4runner SER_sienna))"
+
+        val expectedSatCount = 524307L
+
+        val clob = """
+            imp(series xor(SER_rav4ev SER_avalon SER_highlander SER_rav4 SER_tundra SER_landcruiser SER_venza SER_corolla SER_priusv SER_yaris SER_sequoia SER_camry SER_tacoma SER_priusplugin SER_prius SER_fjcruiser SER_priusc SER_4runner SER_sienna))
+        """.trimIndent()
+
         val csp: Csp = Csp.parse(clob)
 
-        val rough = csp.toDnnf()
-        val smooth = rough.smooth
+        val satCountPL = csp.satCountPL()
 
-        println("rough.satCount = ${rough.satCount}")
-        println("smooth.satCount = ${smooth.satCount}")
+        val smooth = csp.toDnnfSmooth()
 
-        val roughCubesRough = rough.cubesRough
-        val roughCubesSmooth = rough.cubesSmooth
-
-        val smoothCubesRough = smooth.cubesRough
         val smoothCubesSmooth = smooth.cubesSmooth
 
-        println("roughCubesRough.size: " + roughCubesRough.size)
-        println("roughCubesSmooth: " + roughCubesSmooth.size)
+        assertEquals(expectedSatCount, smooth.satCount)
+        assertEquals(expectedSatCount, smoothCubesSmooth.size.toLong())
+        assertEquals(expectedSatCount, satCountPL)
 
 
-        println("smoothCubesRough.size: " + smoothCubesRough.size)
-        println("smoothCubesSmooth: " + smoothCubesSmooth.size)
-
-        assertEquals(smooth.satCount, smoothCubesSmooth.size.toLong())
 
     }
 }

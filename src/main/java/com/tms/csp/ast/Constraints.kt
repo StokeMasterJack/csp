@@ -4,7 +4,7 @@ import com.tms.csp.ast.formula.Formula
 import com.tms.csp.util.DynComplex
 
 enum class Type {
-    Formula, ExpSeq, StrSeq, ExpIt, DynComplex, Clob, NoAction
+    Formula, Or, ExpSeq, StrSeq, ExpIt, DynComplex, Clob, NoAction
 }
 
 enum class SeqType {
@@ -20,6 +20,7 @@ fun guessType(c: Any): Type {
             Type.NoAction
         }
         is Formula -> Type.Formula
+        is Or -> Type.Or
         is DynComplex -> Type.DynComplex
         is Sequence<*> -> Type.ExpSeq
         is Iterable<*> -> Type.ExpIt
@@ -96,6 +97,7 @@ class Constraints(val c: Any, val type: Type = guessType(c)) {
 //    constructor(lit: Lit) : this(lit as Any)
 //    constructor(cube: Cube) : this(cube as Any)
 
+    val isOr: Boolean get() = c is Or;
     val isFormula: Boolean get() = c is Formula;
     val isDynComplex: Boolean get() = c is DynComplex;
     val isExpSeq: Boolean get() = c is Sequence<*> && type == Type.ExpSeq;
@@ -108,6 +110,12 @@ class Constraints(val c: Any, val type: Type = guessType(c)) {
         get() {
             assert(isDynComplex)
             return c as DynComplex
+        }
+
+    val asOr: Or
+        get() {
+            assert(isOr)
+            return c as Or
         }
 
     val asFormula: Formula

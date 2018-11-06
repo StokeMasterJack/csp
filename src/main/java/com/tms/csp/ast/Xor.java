@@ -438,7 +438,7 @@ public class Xor extends PosComplexMultiVar implements IXor {
 
 
         Exp retVal = dOr.mk();
-        assert retVal.isSmooth():retVal + " " + retVal.getSimpleName();
+        assert retVal.isSmooth() : retVal + " " + retVal.getSimpleName();
         return retVal;
     }
 
@@ -453,6 +453,9 @@ public class Xor extends PosComplexMultiVar implements IXor {
     }
 
 
+    public long satCountPL(VarSet parentVars) {
+        return KExp.satCountPL(this, parentVars);
+    }
 
 
 }

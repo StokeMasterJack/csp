@@ -83,7 +83,7 @@ class CspOldJava(var k: Csp,
 
 
     val openCareVarCount: Int
-        get() = k.getFormulaVars().size
+        get() = 99
 
 
     val isNnf: Boolean
@@ -482,7 +482,7 @@ class CspOldJava(var k: Csp,
     //    public boolean isVvCareVar(Var vr) {
     //        assert isOpen(vr);
     //        for (Exp e : getVVConstraints()) {
-    //            IntList careVars = e.getVars();
+    //            IntList careVars = e.get_vars();
     //            if (careVars.contains(vr.getId())) {
     //                return true;
     //            }
@@ -865,7 +865,7 @@ class CspOldJava(var k: Csp,
     fun removeAllComplexConstraints(that: Csp) {
         assert(this.space === that.space)
         val complex = that.complexDyn
-        this.complex!!.removeAll(complex)
+        this.complex!!.removeAll(complex!!.argIt)
     }
 
     fun removeComplexConstraints(complexConstraintsToRemove: Set<Exp>) {
@@ -890,14 +890,14 @@ class CspOldJava(var k: Csp,
     }
 
     //    public void addConstraint(Line line, VarSet allInvAcy) {
-    //        VarSet vars = line.getVars();
+    //        VarSet _vars = line.get_vars();
     //
     //
-    //        for (int varId : vars) {
+    //        for (int varId : _vars) {
     //            assign(varId, true);
     //        }
     //
-    //        for (Var vr : line.getVars()) {
+    //        for (Var vr : line.get_vars()) {
     //
     //        }
     //    }
@@ -917,7 +917,7 @@ class CspOldJava(var k: Csp,
 
 
     //    public Exp toDnnf() {
-    //        Set<String> vars = space.getVars();
+    //        Set<String> _vars = space.get_vars();
     //        return toDnnf();
     //    }
 
@@ -1282,7 +1282,7 @@ class CspOldJava(var k: Csp,
     //    }
 
 
-    //    //vars have already been added - this method skips vars line
+    //    //_vars have already been added - this method skips _vars line
     //    public void addConstraints(String[] lines) {
     //        Iterable<String> it = Its.itForArray(lines);
     //        addConstraints(it);

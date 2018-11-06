@@ -272,7 +272,7 @@ public abstract class PosComplexMultiVar extends PosComplex {
                 b.addVar(var);
             } else if (arg.isComplex()) {
                 VarSet vars1 = arg.getVars();
-                b.addVars(vars1);
+                b.addVarSet(vars1);
             }
         }
         return b.immutable();

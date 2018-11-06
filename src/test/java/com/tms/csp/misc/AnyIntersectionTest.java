@@ -22,8 +22,8 @@ public class AnyIntersectionTest extends CspBaseTest2 {
         Formula formula = csp.mkFormula().asFormula();
 
         VarSet vars = formula.getVars();
-        System.err.println("formula vars[" + vars.size() + "]");
-        System.err.println("space vars  [" + csp.getSpace().getVars().size() + "]");
+        System.err.println("formula _vars[" + vars.size() + "]");
+        System.err.println("space _vars  [" + csp.getSpace().getVars().size() + "]");
 
         int cc = formula.getConstraintCount();
         System.err.println("cc[" + cc + "]");

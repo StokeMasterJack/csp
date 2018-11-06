@@ -235,4 +235,8 @@ public class Or extends PosComplexMultiVar {
         return b.mk();
     }
 
+    public long satCountPL(VarSet parentVars) {
+        return KExp.satCountPL(this, parentVars);
+    }
+
 }

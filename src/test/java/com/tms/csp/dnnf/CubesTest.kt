@@ -52,9 +52,9 @@ class CubesTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.TrimColorOptions)
 
         val rough = csp.toDnnf()
-        System.err.println("rough.getVars().size()[" + rough.vars.size + "]")
+        System.err.println("rough.get_vars().size()[" + rough.vars.size + "]")
         val smooth = rough.smooth
-        System.err.println("smooth.getVars().size()[" + smooth.vars.size + "]")
+        System.err.println("smooth.get_vars().size()[" + smooth.vars.size + "]")
         val t1 = System.currentTimeMillis()
         val cubes = smooth.cubesSmooth
         val t2 = System.currentTimeMillis()

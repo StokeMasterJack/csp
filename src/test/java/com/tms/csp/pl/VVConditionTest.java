@@ -25,7 +25,7 @@ public class VVConditionTest extends CspBaseTest2 {
         String expText = "and(or(x y z) or(a b c) or(j k m))";
 
 
-        Csp csp = Csp.parse("vars(x y z a b c m j k)");
+        Csp csp = Csp.parse("_vars(x y z a b c m j k)");
         Space space = csp.getSpace();
 
         System.err.println("csp[" + csp + "]");
@@ -103,7 +103,7 @@ public class VVConditionTest extends CspBaseTest2 {
 
 //        Space csp = new Space("x or b");
 
-        Space space = Space.withVars("vars(a b c d e f j k l m n o p)");
+        Space space = Space.withVars("_vars(a b c d e f j k l m n o p)");
 
         Csp csp = space.getCsp();
 
@@ -133,7 +133,7 @@ public class VVConditionTest extends CspBaseTest2 {
     @Test
     public void testCondition2() throws Exception {
 
-        Space space = Space.withVars("vars(a b c d e f j k l m n o p)");
+        Space space = Space.withVars("_vars(a b c d e f j k l m n o p)");
 
         Csp csp = space.getCsp();
 

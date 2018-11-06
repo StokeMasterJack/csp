@@ -372,7 +372,7 @@ public class MinFCardTest extends CspBaseTest2 {
 
 //        Set<Cube> products = n.getProducts();
 //        for (Cube p : products) {
-//            VarSet falseVars = p.getVars().minus(p.getTrueVars());
+//            VarSet falseVars = p.get_vars().minus(p.getTrueVars());
 //            System.err.println(falseVars.size());
 //        }
     }
@@ -471,8 +471,8 @@ public class MinFCardTest extends CspBaseTest2 {
 
         n = n.reduce();
 
-//        VarSet vars = n.getVars();
-//        for (Var vr : vars) {
+//        VarSet _vars = n.get_vars();
+//        for (Var vr : _vars) {
 //            System.err.println(vr);
 //        }
 

@@ -13,7 +13,7 @@ import com.tms.csp.varCodes.VarCode;
  *
  * The determination or Core/NonCore is solely based c fact rules. It does not involve the inventory table.
  *
- * The purpose is to determine outOfStock vars when formula Inventory Mode.
+ * The purpose is to determine outOfStock _vars when formula Inventory Mode.
  * So when formula Inventory Mode: any Var that is Core but *not* formula the inventory table should be set to false.
  *
  */

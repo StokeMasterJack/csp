@@ -17,6 +17,7 @@ import com.tms.csp.fm.dnnf.vars.VarFilter;
 import com.tms.csp.fm.dnnf.vars.VarGrp;
 import com.tms.csp.parse.Head;
 import com.tms.csp.parse.ParseCounter;
+import com.tms.csp.parse.ParseUtil;
 import com.tms.csp.parse.VarSpace;
 import com.tms.csp.ssutil.SingleLineLogFormatter;
 import com.tms.csp.util.*;
@@ -103,20 +104,21 @@ public class Space extends SpaceUtil implements PLConstants {
         vSpace.mkVars(varCodes);
     }
 
+    public Space(@Nonnull VarSet vars) {
+        this();
+        vSpace.mkVars(vars);
+    }
+
+
     public SortedSet<String> getVarCodesSorted() {
         return vSpace.getVarCodesSorted();
     }
 
     public Exp parseExp(String expText) {
-
         return parser.parseExp(expText);
 
     }
 
-    public Space(@Nonnull VarSet vars) {
-        this();
-        vSpace.mkVars(vars);
-    }
 
     public static Space withVars(String varList) {
         if (Vars.isVarsLine(varList)) {
@@ -135,8 +137,8 @@ public class Space extends SpaceUtil implements PLConstants {
 //    }
 
 //    public static Space extractVars(String fact) {
-//        Set<String> vars = extractVarCodes(fact);
-//        return new Space(vars);
+//        Set<String> _vars = extractVarCodes(fact);
+//        return new Space(_vars);
 //    }
 
 //    public static Set<String> extractVarCodes(String fact) {
@@ -367,6 +369,23 @@ public class Space extends SpaceUtil implements PLConstants {
         a.newLine();
         serialize(a);
     }
+
+    public static void serializeVarIt(Ser a, Iterable<Var> vars) {
+        ParseUtil.serializeVarIt(a, vars);
+    }
+
+    public static void serializeVarArray(Ser a, Var... vars) {
+        ParseUtil.serializeVarArray(a, vars);
+    }
+
+    public static void serializeVarCodes(Ser a, Iterable<String> varCodes) {
+        ParseUtil.serializeVarCodes(a, varCodes);
+    }
+
+    public static void serializeVarCodes(Iterable<String> varCodes) {
+        ParseUtil.serializeVarCodes(varCodes);
+    }
+
 
     public void serialize(Ser a) {
         csp.serialize(a);
@@ -1197,14 +1216,14 @@ public class Space extends SpaceUtil implements PLConstants {
         return getExp(expId);
     }
 
-//    public static Space init(String vars) {
-//        String[] split = vars.split(" ");
+//    public static Space init(String _vars) {
+//        String[] split = _vars.split(" ");
 //        return new Space(split);
 //    }
 
 
     public VarSet mkEmptyVarSet() {
-        return newMutableVarSet();
+        return vSpace.mkEmptyVarSet();
     }
 
     public boolean addNode(Exp exp) {
@@ -1568,7 +1587,7 @@ public class Space extends SpaceUtil implements PLConstants {
 //        }
 //
 //        for (Exp constraint : complex) {
-//            b.addVars(constraint.getVars());
+//            b.addVars(constraint.get_vars());
 //        }
 //        return b.build();
 //    }
@@ -1938,22 +1957,22 @@ public class Space extends SpaceUtil implements PLConstants {
         return b.build();
     }
 
-//    public Set<Var> getVars(VarGrp key) {
+//    public Set<Var> get_vars(VarGrp key) {
 //        VarFilter varFilter = mkVarFilter(key);
-//        return getVars(varFilter);
+//        return get_vars(varFilter);
 //    }
 //
 //
-//    public void vars(VarGrp key) {
-//        Set<Var> vars = getVars(key);
-//        String sVars = ParseUtil.serializeVars(vars);
+//    public void _vars(VarGrp key) {
+//        Set<Var> _vars = get_vars(key);
+//        String sVars = ParseUtil.serializeVars(_vars);
 //        System.err.println(sVars);
 //    }
 //
-//    public Set<Var> getVars(VarFilter filter) {
-//        Set<Var> vars = getVars();
+//    public Set<Var> get_vars(VarFilter filter) {
+//        Set<Var> _vars = get_vars();
 //        ImmutableSet.Builder<Var> b = ImmutableSet.builder();
-//        for (Var vr : vars) {
+//        for (Var vr : _vars) {
 //            if (filter.accept(vr)) {
 //                b.add(vr);
 //            }
@@ -2289,12 +2308,8 @@ public class Space extends SpaceUtil implements PLConstants {
 //    }
 
 
-    public Sequence<Exp> parsePL(String clob, boolean cubes) {
-        return parser.parsePL(clob, cubes);
-    }
-
     public Sequence<Exp> parsePL(String clob) {
-        return parser.parsePL(clob, false);
+        return parser.parsePL(clob);
     }
 
     public DynComplex mkComplex() {

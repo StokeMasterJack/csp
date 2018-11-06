@@ -169,7 +169,7 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
             boolean isSat2 = root.computeSat(pics1);
         }
 
-        tt.t("condition c vars");
+        tt.t("condition c _vars");
 
 
         for (int i = 0; i < 10000; i++) {

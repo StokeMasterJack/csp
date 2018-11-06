@@ -1,3 +1,4 @@
+vars(m:2513 m:2514 m:2531 m:2532 m:2552 m:2540 m:2554 m:2545 m:2546 m:2550 m:2560 e:L4 e:V6 e:Hybrid g:Base g:LE g:SE g:XLE g:Hyb t:6MT t:6AT t:ECVT)
 xor(m:2513 m:2514 m:2531 m:2532 m:2552 m:2540 m:2554 m:2545 m:2546 m:2550 m:2560)
 xor(e:L4 e:V6 e:Hybrid)
 xor(g:Base g:LE g:SE g:XLE g:Hyb)

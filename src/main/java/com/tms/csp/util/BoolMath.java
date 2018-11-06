@@ -18,7 +18,7 @@ public class BoolMath {
     }
 
     /**
-     * all vars
+     * all _vars
      */
     public static int permCount(int boolVarCount) {
         return twoPow(boolVarCount);

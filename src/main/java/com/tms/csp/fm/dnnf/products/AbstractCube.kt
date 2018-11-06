@@ -249,7 +249,7 @@ abstract class AbstractCube : Cube {
 
 
     /**
-     * Does not include msrp or dlr vars
+     * Does not include msrp or dlr _vars
      */
     override fun varIt(): Iterable<Var> {
         return object : Iterable<Var> {

@@ -78,7 +78,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return a.toString();
     }
 
-    protected abstract void serialize(Ser a);
+    public abstract void serialize(Ser a);
 
     public static int computeVarCount(long[] words) {
         int varCount = 0;
@@ -157,8 +157,8 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public abstract boolean containsVarId(int varId);
 
-    final public boolean containsVar(Var var) {
-        return containsVarId(var.getVarId());
+    final public boolean containsVar(Var vr) {
+        return containsVarId(vr.getVarId());
     }
 
     final public boolean containsVar(Lit lit) {
@@ -547,7 +547,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public VarSet mutableCopy() {
         VarSetBuilder b = getSpace().newMutableVarSet();
-        b.addVars(this);
+        b.addVarSet(this);
         return b;
     }
 
@@ -618,12 +618,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public static VarSet union(Space space, VarSet... that) {
-        VarSetBuilder vs = space.newMutableVarSet();
-        vs.addVars(that);
+        VarSetBuilder b = space.varSetBuilder();
         for (VarSet vars : that) {
-            vs.addVars(vars);
+            b.addVarSet(vars);
         }
-        return vs.immutable();
+        return b.build();
     }
 
 
@@ -641,7 +640,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     final public boolean isVarDisjoint(DynComplex s) {
-        return !anyVarOverlap(s.vars());
+        return !anyVarOverlap(s.getVars());
     }
 
     final public boolean isVarDisjoint(Cube cube) {
@@ -673,7 +672,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return false;
     }
 
-    public VarSet intersection(VarSet that) {
+    public VarSet overlap(VarSet that) {
         if (that == null || that.isEmpty()) return mkEmptyVarSet();
         if (that.isSingleton()) {
             Var v = that.getFirstVar();
@@ -847,8 +846,16 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     //mutatations
 
-    public boolean addVars(VarSet other) {
+
+    public boolean addVarSet(VarSet other) {
         throw new UnsupportedOperationException();
+    }
+
+    public VarSet plusVarSet(VarSet that) {
+        VarSetBuilder b = getSpace().varSetBuilder();
+        b.addVarSet(this);
+        b.addVarSet(that);
+        return b.build();
     }
 
     public boolean addVar(Var var) {

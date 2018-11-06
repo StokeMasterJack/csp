@@ -6,7 +6,6 @@ import com.tms.csp.Vars
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.parse.*
 import com.tms.csp.util.DynComplex
-import java.util.*
 
 private val posComplexOpMap = PLConstants.PosOp.getPosComplexOpMap()
 
@@ -16,7 +15,8 @@ class Parser(val space: Space) {
 
 
     private fun maybeAddVarsLines(lines: Sequence<String?>): Sequence<String?> {
-        return if (Vars.isVarsLine(lines.first())) {
+        val firstLine = lines.first()
+        return if (Vars.isVarsLine(firstLine)) {
             val varsLine: String? = lines.take(1).single()
             val varCodes: Iterable<String> = Vars.parseVarsLine(varsLine)
             space.mkVars(varCodes)
@@ -262,15 +262,16 @@ class Parser(val space: Space) {
 //    }
 
 
-    fun parsePL(clob: String, cubes: Boolean = false): Sequence<Exp> {
-        val lines: Sequence<String?> = parseLines(clob)
-        return lines.map { parseExpOrNull(it) }.filterNotNull()
-    }
-
-
     fun parsePL(clob: String): Sequence<Exp> {
-        return parsePL(clob, cubes = false)
+        val lines1: Sequence<String?> = parseLines(clob)
+        return parsePL(lines1)
     }
+
+    fun parsePL(lines1: Sequence<String?>): Sequence<Exp> {
+        val lines2: Sequence<String?> = maybeAddVarsLines(lines1)
+        return lines2.map { parseExpOrNull(it) }.filterNotNull()
+    }
+
 
     fun mkComplex(): DynComplex {
         return DynComplex(space)
@@ -299,16 +300,16 @@ class Parser(val space: Space) {
         return b.build()
     }
 
-    fun extractVarCodes(fact: String): Set<String> {
-        val exp: Exp = parseExp(fact)
-        val vars = exp.vars
-        return vars.toVarCodeSet()
-    }
+//    fun extractVarCodes(fact: String): Set<String> {
+//        val exp: Exp = parseExp(fact)
+//        val vars = exp.vars
+//        return vars.toVarCodeSet()
+//    }
 
-    fun extractVars(fact: String): Space {
-        val vars = extractVarCodes(fact)
-        return Space(vars)
-    }
+//    fun extractVars(fact: String): Space {
+//        val vars = extractVarCodes(fact)
+//        return Space(vars)
+//    }
 
 
     fun parseExpressions1(vararg expressions: String): Array<Exp> {
@@ -391,11 +392,50 @@ class Parser(val space: Space) {
         return exp
     }
 
+    data class Raw(val varsLine: String, val strSeq: Sequence<String>) {
+        val varCodes: Iterable<String> by lazy { Vars.parseVarsLine(varsLine) }
+        val space: Space by lazy { Space(varCodes) }
+
+        val expSeq: Sequence<Exp> by lazy {
+            strSeq.map { space.parseExp(it) }
+        }
+
+        val csp: Csp by lazy {
+            val add = Add(expSeq, space)
+            add.mkCsp()
+        }
+
+    }
+
     companion object {
 
 
         fun isComment(expLine: String): Boolean = expLine.trim().startsWith("#")
 
+        @JvmStatic
+        fun parseCsp(clob: String, tiny: Boolean = false): Csp {
+            val raw: Raw = parsePL(clob, tiny)
+            return raw.csp
+        }
+
+
+        @JvmStatic
+        fun parsePL(clob: String, tiny: Boolean): Raw {
+            val lines = parseLines(clob)
+            val firstLine = lines.first()
+            return if (Vars.isVarsLine(firstLine)) {
+                val varsLine: String = lines.take(1).single()
+                val constraints = lines.drop(1)
+                Raw(varsLine, constraints)
+            } else {
+                val varsLine: String = extractVarCodesLine(lines, tiny)
+                val constraints = lines
+                Raw(varsLine, constraints)
+            }
+        }
+
+
+        @JvmStatic
         fun parseLines(clob: String): Sequence<String> = clob.lineSequence().map { preProcessLine(it) }.filterNotNull()
 
         fun preProcessLine(line: String?): String? {
@@ -411,15 +451,29 @@ class Parser(val space: Space) {
 
         fun parseLines1(clob: String): List<String> = parseLines(clob).toList();
 
-        fun extractVarCodes(constraint: String): SortedSet<String> {
+        @JvmStatic
+        @JvmOverloads
+        fun extractVarCodes(constraints: Sequence<String>, tiny: Boolean = false): Set<String> {
             val space0 = Space()
-            val lines = constraint.lineSequence()
-            lines.map { space0.parser.parseExpOrNull(it) }.filterNotNull()
-            val constraints: Sequence<Exp> = space0.parser.parseLines(lines)
-            for (constraint in constraints) {
-            }
-            return space0.varCodesSorted
+            val parser = space0.parser;
+
+            return constraints
+                    .map { parser.parseExpOrNull(it) }
+                    .filterNotNull()
+                    .fold(emptySet()) { acc, e -> acc.plus(e.vars.map { it.getVarCode(tiny) }) }
         }
+
+        @JvmStatic
+        @JvmOverloads
+        fun extractVarCodesLine(constraints: Sequence<String>, tiny: Boolean = false): String {
+            val codes = extractVarCodes(constraints, tiny)
+            val a = Ser()
+            a.ap(Vars.HEAD_VARS_LINE)
+            ParseUtil.serializeVarCodes(a, codes);
+            a.ap(Vars.FOOT)
+            return a.toString()
+        }
+
 
     }
 

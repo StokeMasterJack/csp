@@ -4,6 +4,7 @@ import com.tms.csp.ast.formula.Formula
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.DynComplex
 import com.tms.csp.util.XorCube
+import com.tms.csp.util.asSeq
 
 data class Add(
         val space: Space,
@@ -12,7 +13,9 @@ data class Add(
 ) {
 
     //simple var split
-    constructor(c: Formula, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
+    constructor(c: Exp, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
+
+    constructor(c: Or, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
 
     //xor split
     constructor(c: Formula, cc: XorCube) : this(cc.space, Constraints(c), Condition(cc))
@@ -49,11 +52,14 @@ data class Add(
                 constraints.asExpSeq
             }
             constraints.isStrSeq -> {
-                val strSeq: Sequence<String?> = constraints.asStrSeq
-                parser.parseLines(strSeq)
+                parser.parsePL(constraints.asStrSeq)
             }
             constraints.isFormula -> {
                 constraints.asFormula.argSeq
+            }
+            constraints.isOr -> {
+                val constraint = constraints.asOr
+                sequenceOf(constraint)
             }
             else -> {
                 throw IllegalStateException(constraints.type.toString())
@@ -87,7 +93,7 @@ data class Add(
     }
 
     private fun addConstraintsDynComplex(csp: Csp, complex: DynComplex): Boolean {
-        val constraintVars = complex.vars()
+        val constraintVars = complex.vars
 
         if (condition.isExp) {
             val overlap = condition.asExp.anyVarOverlap(constraintVars)
@@ -124,19 +130,13 @@ data class Add(
     }
 
     private fun addConstraintsClob(csp: Csp, clob: String): Boolean {
-        val lines: Sequence<String?> = clob.lineSequence()
-        return addConstraintsLines(csp, lines)
+        val expSeq: Sequence<Exp> = space.parser.parsePL(clob)
+        return addConstraintsExpSeq(csp, expSeq)
     }
 
     private fun addConstraintsLines(csp: Csp, strSeq: Sequence<String?>): Boolean {
-
-
-        fun f(expText: String?): Exp? {
-            return space.parser.parseExpOrNull(expText);
-        }
-
-        val expSeq: Sequence<Exp> = strSeq.map(::f).filterNotNull()
-        return addConstraintsExpSeq(csp, expSeq);
+        val expSeq: Sequence<Exp> = space.parser.parsePL(strSeq)
+        return addConstraintsExpSeq(csp, expSeq)
     }
 
     fun mkCsp(): Csp {
@@ -154,7 +154,7 @@ data class Add(
         //actions
 
         @JvmStatic
-        fun decisionSplit(formula: Formula, decisionVar: Var, sign: Boolean): Add {
+        fun decisionSplit(formula: Exp, decisionVar: Var, sign: Boolean): Add {
             val add = Add(c = formula, cc = decisionVar.lit(sign))
             return add
         }

@@ -432,38 +432,38 @@ public class DynCube extends AbstractCube {
         return t.size();
     }
 
-    @Nullable
-    public Cube intersection(DynComplex complex) {
-        if (complex == null) return null;
-        return intersection(complex.vars());
-    }
-
-    @Nullable
-    public Cube intersection(Exp exp) {
-        if (exp == null) return null;
-        return intersection(exp.getVars());
-    }
-
-    @Nullable
-    public Cube intersection(VarSet vars) {
-        if (v == null || v.isEmpty()) {
-            return null;
-        }
-        if (vars == null || vars.isEmpty()) {
-            return null;
-        }
-
-        VarSet vi = vars.intersection(v);
-
-        if (t == null) {
-            return new DynCube(space, vi, null);
-        } else {
-            VarSet ti = t.intersection(vars);
-            return new DynCube(space, vi, ti);
-        }
-
-
-    }
+//    @Nullable
+//    public Cube intersection(DynComplex complex) {
+//        if (complex == null) return null;
+//        return intersection(complex.vars);
+//    }
+//
+//    @Nullable
+//    public Cube intersection(Exp exp) {
+//        if (exp == null) return null;
+//        return intersection(exp.getVars());
+//    }
+//
+//    @Nullable
+//    public Cube intersection(VarSet vars) {
+//        if (v == null || v.isEmpty()) {
+//            return null;
+//        }
+//        if (vars == null || vars.isEmpty()) {
+//            return null;
+//        }
+//
+//        VarSet vi = vars.overlap(v);
+//
+//        if (t == null) {
+//            return new DynCube(space, vi, null);
+//        } else {
+//            VarSet ti = t.overlap(vars);
+//            return new DynCube(space, vi, ti);
+//        }
+//
+//
+//    }
 
     public void assignSafe(Lit lit) {
         try {
@@ -491,10 +491,6 @@ public class DynCube extends AbstractCube {
 
     public boolean isConstantTrue() {
         return isEmpty();
-    }
-
-    public boolean isConstantFalse() {
-        return false;
     }
 
     public boolean isAssignedFlip(Lit lit) {

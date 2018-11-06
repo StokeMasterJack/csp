@@ -36,7 +36,7 @@ public class VarPair extends VarSet {
 //    }
 
     @Override
-    protected void serialize(Ser a) {
+    public void serialize(Ser a) {
         a.append(var1.getVarCode());
         a.argSep();
         a.append(var2.getVarCode());

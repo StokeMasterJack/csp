@@ -6,7 +6,6 @@ import com.google.common.collect.Iterators
 import com.tms.csp.Vars
 import com.tms.csp.ast.PLConstants
 import com.tms.csp.ast.Ser
-import com.tms.csp.ast.Space
 import com.tms.csp.ast.Var
 import com.tms.csp.util.HasCode
 import com.tms.csp.util.it.Its
@@ -118,16 +117,19 @@ class ParseUtil : PLConstants {
         }
 
 
+        @JvmStatic
         fun serializeCodes(codes: Collection<HasCode>): String {
             val a = Ser()
             serializeCodes(a, codes)
             return a.toString()
         }
 
+        @JvmStatic
         fun serializeCodes(a: Ser, codes: Iterable<HasCode>) {
             serializeCodes(a, codes.iterator())
         }
 
+        @JvmStatic
         fun serializeCodes(a: Ser, codes: Iterator<HasCode>) {
             val codeSet = Its.toSortedCodeSet(codes)
             val it = codeSet.iterator()
@@ -138,6 +140,25 @@ class ParseUtil : PLConstants {
                     a.argSep()
                 }
             }
+        }
+
+        @JvmStatic
+        fun serializeVarCodes(a: Ser, codes: Iterable<String>) {
+            val it = codes.iterator()
+            while (it.hasNext()) {
+                val code = it.next()
+                a.append(code)
+                if (it.hasNext()) {
+                    a.argSep()
+                }
+            }
+        }
+
+        @JvmStatic
+        fun serializeVarCodes(codes: Iterable<String>):String {
+            val a = Ser()
+            serializeVarCodes(a, codes)
+            return a.toString()
         }
 
         fun serializeCodes2(intCodes: Collection<Int>): String {
@@ -162,15 +183,13 @@ class ParseUtil : PLConstants {
             }
         }
 
-        fun serializeVars(a: Ser, vararg vars: Var) {
+        @JvmStatic
+        fun serializeVarArray(a: Ser, vararg vars: Var) {
             serializeCodes(a, Iterators.forArray(*vars))
         }
 
-        fun serializeVars(a: Ser, vars: Iterable<Var>) {
-            serializeCodes(a, vars)
-        }
-
-        fun serializeVars(a: Ser, vars: Iterator<Var>) {
+        @JvmStatic
+        fun serializeVarIt(a: Ser, vars: Iterable<Var>) {
             serializeCodes(a, vars)
         }
 
@@ -182,20 +201,11 @@ class ParseUtil : PLConstants {
         //        return argList.split(ARG_SEP_TOKEN);
         //    }
 
-        fun serializeVars(a: Ser, space: Space, vars: VarSet) {
-            val it = vars.varIter()
-            while (it.hasNext()) {
-                val `var` = it.next()
-                val varCode = `var`.varCode
-                a.ap(varCode)
-                if (it.hasNext()) {
-                    a.argSep()
-                }
-            }
-
+        fun serializeVarSet(a: Ser, vars: VarSet) {
+            vars.serialize(a)
         }
 
-        fun serializeVars2(a: Ser, vars: Collection<String>) {
+        fun serializeVarCodes(a: Ser, vars: Collection<String>) {
             val L = vars.size
             val it = vars.iterator()
             for (i in 0 until L) {
@@ -208,13 +218,12 @@ class ParseUtil : PLConstants {
         }
 
 
-
     }
 
 
-    //    public static InvVar parseInvVar(String varCode) {
-    //        String prefix = getPrefixFromVarCode(varCode);
-    //        String suffix = getSuffixFromVarCode(varCode);
-    //        return new InvVar(prefix, suffix);
-    //    }
+//    public static InvVar parseInvVar(String varCode) {
+//        String prefix = getPrefixFromVarCode(varCode);
+//        String suffix = getSuffixFromVarCode(varCode);
+//        return new InvVar(prefix, suffix);
+//    }
 }

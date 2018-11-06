@@ -129,8 +129,8 @@ fun tEq(c1: Cube, c2: Cube): Boolean {
 }
 
 
-fun Iterable<Cube>.print() {
-    CubesK.printCubes(cols = 12, cubes = this)
+fun Iterable<Cube>.print(cols:Int = 20) {
+    CubesK.printCubes(cols = cols, cubes = this)
 }
 
 fun Iterable<Cube>.spaceEq(sp: Space): Boolean = this.all { it.space == sp }

@@ -30,7 +30,7 @@ public class EmptyVarSet extends VarSet {
     }
 
     @Override
-    protected void serialize(Ser a) {
+    public void serialize(Ser a) {
 
     }
 

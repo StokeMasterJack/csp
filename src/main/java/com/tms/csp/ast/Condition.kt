@@ -92,7 +92,7 @@ class Condition(val on: Any) {
     }
 
     fun anyVarOverlap(complex: DynComplex): Boolean {
-        val vars = complex.vars()
+        val vars = complex.vars
         return when (on) {
             is Exp -> on.anyVarOverlap(vars)
             else -> throw IllegalStateException()

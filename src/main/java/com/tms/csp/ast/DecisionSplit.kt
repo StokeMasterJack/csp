@@ -2,23 +2,22 @@ package com.tms.csp.ast
 
 import com.google.common.base.Preconditions.checkNotNull
 import com.tms.csp.argBuilder.ArgBuilder
-import com.tms.csp.ast.formula.Formula
 
-class DecisionSplit(val formula: Formula, val decisionVar: Var) {
+class DecisionSplit(val formula: Exp, val decisionVar: Var) {
 
 
     val argSeq = formula.argSeq
     val space: Space = decisionVar.space;
     val formulaVars = formula.vars
 
-    val depthPlus = formula.getDepth() + 1
-
 
     init {
         checkNotNull(formula)
         checkNotNull(decisionVar)
+        check(formula.isFormula || formula.isOr || formula.isXor)
         //        assert formula.isFcc();
     }
+
 
     val isSat: Boolean
         get() {
@@ -77,33 +76,16 @@ class DecisionSplit(val formula: Formula, val decisionVar: Var) {
     }
 
     fun mkCsp(sign: Boolean): Csp {
-        /*
-            val argSeq = formula.argSeq
-    val space: Space = decisionVar.space;
-    val formulaVars = formula.vars
-
-    val depthPlus = formula.getDepth() + 1
-
-         */
-
-        val add = Add.decisionSplit(formula,decisionVar,sign)
+        val add = Add.decisionSplit(formula, decisionVar, sign)
         return add.mkCsp();
     }
 
     fun plSatCount(): Long {
-
-
         val t = mkCsp(true)
-
-        val pSatCount = t.satCountPL(formulaVars)
-
+        val pSatCount = t.satCountPL(formula.vars)
         val f = mkCsp(false)
-        val nSatCount = f.satCountPL(formulaVars)
-
+        val nSatCount = f.satCountPL(formula.vars)
         return pSatCount + nSatCount
     }
 
-    //    public long plSatCount() {
-    //        return 0;
-    //    }
 }

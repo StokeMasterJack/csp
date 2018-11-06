@@ -84,7 +84,7 @@ non-exp
 interned
     interned Y
             constants
-            vars
+            _vars
                 lits
                 dcOr
             pos complex exp
@@ -356,7 +356,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public Or asOr() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(this.getSimpleName() + "  " + toString());
     }
 
     public DOr asDOr() {
@@ -1330,8 +1330,8 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     public abstract void notNew();
 
-    public long plSatCount(VarSet parentVars) {
-        throw new UnsupportedOperationException();
+    public long satCountPL(VarSet parentVars) {
+        throw new UnsupportedOperationException(this.getSimpleName() + ": " + toString());
     }
 
 
@@ -1417,6 +1417,10 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     public VarSet getVars() {
         throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    public Iterable<String> getVarCodeIt() {
+        return getVars().varCodeIt();
     }
 
     public ImmutableSet<Integer> getVars2() {
@@ -2697,7 +2701,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     /**
-     * @return true if this.vars.containsAll(that.vars)
+     * @return true if this._vars.containsAll(that._vars)
      */
     public boolean vvpSubsumesVV(Exp vv) {
         assert vv.isVv();
@@ -3551,7 +3555,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
 //    public VarSet getOpenCareVars() {
 //        Exp reduced = reduce();
-//        return reduced.getVars();
+//        return reduced.get_vars();
 //    }
 
     public Exp reduce() {
@@ -3606,7 +3610,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     public void printHead(int depth) {
 //        prindent(depth, "op1:         " + getOp1());
 //        prindent(depth, "satCount:   " + getSatCount());
-//        prindent(depth, "careVars:   " + getVars().size() + ": " + getVars());
+//        prindent(depth, "careVars:   " + get_vars().size() + ": " + get_vars());
 //        System.err.println();
     }
 

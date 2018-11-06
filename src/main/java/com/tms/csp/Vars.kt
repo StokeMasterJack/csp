@@ -11,7 +11,7 @@ object Vars {
     const val HEAD_VARS_LINE = "vars("
     const val HEAD_INV_VARS_LINE = "invVars("
     const val HEAD_DONTCARES_LINE = "dontCares("
-    private const val FOOT = ")"
+    const val FOOT = ")"
 
     @JvmStatic
     fun isVarsLine(line: String?): Boolean = if (line == null)

@@ -64,8 +64,8 @@ public class DnnfDeadCubesTest extends CspBaseTest2 {
 //        Exp n = csp.getConditioned();
 //
 //
-//        Set<Var> vars = n.getVars();
-//        for (Var vr : vars) {
+//        Set<Var> _vars = n.get_vars();
+//        for (Var vr : _vars) {
 //            printBB(n, vr.toString());
 //            printBB(n, "!" + vr.toString());
 //        }

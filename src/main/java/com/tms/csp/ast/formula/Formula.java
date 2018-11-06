@@ -377,11 +377,11 @@ public class Formula extends And implements FConstraintSet {
     }
 
 
-//    public VarSet getVars() {
-//        if (vars == null) {
-//            vars = computeVars();
+//    public VarSet get_vars() {
+//        if (_vars == null) {
+//            _vars = computeVars();
 //        }
-//        return vars;
+//        return _vars;
 //    }
 //
 //
@@ -389,7 +389,7 @@ public class Formula extends And implements FConstraintSet {
 //        VarSetBuilder b = getSpace().varSetBuilder();
 //        for (Exp e : args) {
 //            assert !e.isLeaf();
-//            b.addVars(e.getVars());
+//            b.addVars(e.get_vars());
 //        }
 //        return b.build();
 //    }
@@ -763,7 +763,7 @@ public class Formula extends And implements FConstraintSet {
     }
 
     private void computeBbForXorPrefix(final String xorPrefix, DynCube bb) {
-//        System.err.println("testing xor prefix[" + xorPrefix + "] for dead vars: ");
+//        System.err.println("testing xor prefix[" + xorPrefix + "] for dead _vars: ");
 
         final VarSet xorVars;
         Xor xor = getXor(xorPrefix);
@@ -866,7 +866,7 @@ public class Formula extends And implements FConstraintSet {
     }
 
     private void computeBbForNonXorPrefix(String prefix, DynCube bb) {
-//        System.err.println("testing prefix[" + prefix + "] for dead vars");
+//        System.err.println("testing prefix[" + prefix + "] for dead _vars");
 
 
         VarSet vars = getVars().filter(prefix);
@@ -883,7 +883,7 @@ public class Formula extends And implements FConstraintSet {
     }
 
     private void computeBbForNonXorPrefixLite(String prefix, DynCube bb) {
-//        System.err.println("testing prefix[" + prefix + "] for dead vars");
+//        System.err.println("testing prefix[" + prefix + "] for dead _vars");
 
 
         VarSet vars = getVars().filter(prefix);

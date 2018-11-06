@@ -55,9 +55,9 @@ public class Solution extends AbstractCubeSet {
 
     public VarSet getVars() {
         VarSetBuilder b = getSpace().newMutableVarSet();
-        b.addVars(solutionCube.getVars());
-        b.addVars(dcVars);
-        if (prefix != null) b.addVars(prefix.getVars());
+        b.addVarSet(solutionCube.getVars());
+        b.addVarSet(dcVars);
+        if (prefix != null) b.addVarSet(prefix.getVars());
         return b.build();
     }
 
@@ -65,9 +65,9 @@ public class Solution extends AbstractCubeSet {
     public VarSet getTrueVars(int dcPerm) {
         VarSetBuilder b = getSpace().newMutableVarSet();
 
-        b.addVars(solutionCube.getTrueVars());
+        b.addVarSet(solutionCube.getTrueVars());
         if (prefix != null) {
-            b.addVars(prefix.getTrueVars());
+            b.addVarSet(prefix.getTrueVars());
         }
         collectDcTrueVars(b, dcPerm);
         return b.build();

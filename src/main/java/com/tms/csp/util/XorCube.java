@@ -83,7 +83,7 @@ public class XorCube extends AbstractCube {
 //    @Override
 //    public void print() {
 //        System.err.println("  XorChildEvalContext");
-//        System.err.println("    vars: " + xor.getVars());
+//        System.err.println("    _vars: " + xor.get_vars());
 //        System.err.println("    tVar: " + trueVar);
 //    }
 

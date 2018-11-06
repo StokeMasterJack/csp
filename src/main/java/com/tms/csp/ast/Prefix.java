@@ -26,7 +26,7 @@ public enum Prefix implements VarConstants {
     public static final EnumSet<Prefix> color = of(XCOL, ICOL);
     public static final EnumSet<Prefix> core = of(yearModel, color);
     public static final EnumSet<Prefix> inv = of(core, ACY);
-    public static final EnumSet<Prefix> atts = of(GRD, TX, ENG, TRAN, DRV, DISC,BED,CAB);
+    public static final EnumSet<Prefix> atts = of(GRD, TX, ENG, TRAN, DRV, DISC, BED, CAB);
     public static final EnumSet<Prefix> xors = of(core, atts);
 
     public static Map<VarGrp, EnumSet<Prefix>> prefixGroups;
@@ -204,6 +204,16 @@ public enum Prefix implements VarConstants {
             return tiny;
         }
         return p.name();
+    }
+
+    public static Prefix largeToTiny(String large) {
+        for (Prefix prefix : values()) {
+            String n = prefix.getName();
+            if (n != null && n.equals(large)) {
+                return prefix;
+            }
+        }
+        return null;
     }
 
     public static boolean isEmpty(String prefix) {

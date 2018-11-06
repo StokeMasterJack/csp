@@ -15,7 +15,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, fcc: Boolean?) : Form
 
 
 
-    override fun plSatCount(parentVars: VarSet): Long {
+    override fun satCountPL(parentVars: VarSet): Long {
 
 
         fun topXorSplitSatCount(): Long? {
@@ -70,7 +70,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, fcc: Boolean?) : Form
 //        val satCountWithDc = if (parentVars.isNullOrEmpty()) {
 //            baseSatCount
 //        } else {
-//            val dcVars = parentVars.minus(this.vars)
+//            val dcVars = parentVars.minus(this._vars)
 //            val pow = Math.pow(2.0, dcVars.size.toDouble()).toLong()
 //            baseSatCount * pow
 //        }

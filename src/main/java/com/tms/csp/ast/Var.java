@@ -189,6 +189,15 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
         return varCode;
     }
 
+
+    public String getVarCodeTiny() throws UnsupportedOperationException {
+        return getVarCode2().getVarCodeTiny();
+    }
+
+    public String getVarCode(boolean tiny) throws UnsupportedOperationException {
+        return tiny ? getVarCodeTiny() : getVarCode();
+    }
+
     public Xor getXorParent() {
         return xorParent;
     }
@@ -540,7 +549,7 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
 
         List<MetaVar> varMetas = meta.getParent().getChildVars();
 
-//        VarSet vars = space.mkEmptyVarSet();
+//        VarSet _vars = space.mkEmptyVarSet();
         VarSetBuilder vars = space.newMutableVarSet();
         for (MetaVar varMeta : varMetas) {
             String varCode = varMeta.getCode();
