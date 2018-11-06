@@ -1,0 +1,109 @@
+<dontCare-meta>
+    <group code="GRD" radio="true">
+        <dontCare code="SE"/>
+        <dontCare code="Base"/>
+        <dontCare code="Hyb"/>
+        <dontCare code="XLE"/>
+        <dontCare code="LE"/>
+    </group>
+    <group code="ICF" radio="true">
+        <dontCare code="40"/>
+        <dontCare code="13"/>
+        <dontCare code="15"/>
+        <dontCare code="14"/>
+    </group>
+    <group code="TRAN" radio="true">
+        <dontCare code="6MT"/>
+        <dontCare code="6AT"/>
+        <dontCare code="ECVT"/>
+    </group>
+    <group code="ENG" radio="true">
+        <dontCare code="Hybrid"/>
+        <dontCare code="L4"/>
+        <dontCare code="V6"/>
+    </group>
+    <group code="IMATL" radio="true">
+        <dontCare code="Leather"/>
+        <dontCare code="Fabric"/>
+    </group>
+    <group code="MDL" radio="true">
+        <dontCare code="2550"/>
+        <dontCare code="2545"/>
+        <dontCare code="2554"/>
+        <dontCare code="2552"/>
+        <dontCare code="2531"/>
+        <dontCare code="2546"/>
+        <dontCare code="2513"/>
+        <dontCare code="2540"/>
+        <dontCare code="2532"/>
+        <dontCare code="2560"/>
+        <dontCare code="2514"/>
+    </group>
+    <group code="XCOL" radio="true">
+        <dontCare code="1G3"/>
+        <dontCare code="4T8"/>
+        <dontCare code="8T5"/>
+        <dontCare code="8U8"/>
+        <dontCare code="040"/>
+        <dontCare code="1F7"/>
+        <dontCare code="776"/>
+        <dontCare code="202"/>
+        <dontCare code="3R3"/>
+        <dontCare code="6V4"/>
+    </group>
+    <group code="ICLR" radio="true">
+        <dontCare code="Bisque"/>
+        <dontCare code="Charcoal"/>
+        <dontCare code="Ash"/>
+    </group>
+    <group code="ICOL" radio="true">
+        <dontCare code="LB14"/>
+        <dontCare code="FA13"/>
+        <dontCare code="LA13"/>
+        <dontCare code="FB40"/>
+        <dontCare code="FB13"/>
+        <dontCare code="FC14"/>
+        <dontCare code="LA40"/>
+        <dontCare code="LB15"/>
+        <dontCare code="FA40"/>
+        <dontCare code="FC15"/>
+    </group>
+    <group code="ACY">
+        <dontCare code="2Q"/>
+        <dontCare code="CF"/>
+        <dontCare code="CQ"/>
+        <dontCare code="QF"/>
+        <dontCare code="Wood"/>
+        <dontCare code="LA"/>
+        <dontCare code="BTButton"/>
+        <dontCare code="QC"/>
+        <dontCare code="QE"/>
+        <dontCare code="UP"/>
+        <dontCare code="LF"/>
+        <dontCare code="Camera"/>
+        <dontCare code="NV"/>
+        <dontCare code="32"/>
+        <dontCare code="EC"/>
+        <dontCare code="28"/>
+        <dontCare code="QB"/>
+        <dontCare code="UT"/>
+        <dontCare code="AW"/>
+        <dontCare code="StartButton"/>
+        <dontCare code="Chrome"/>
+        <dontCare code="HD"/>
+        <dontCare code="Antenna"/>
+        <dontCare code="SR"/>
+        <dontCare code="SK"/>
+        <dontCare code="R7"/>
+        <dontCare code="QA"/>
+        <dontCare code="EX"/>
+        <dontCare code="EJ"/>
+        <dontCare code="Buttons"/>
+        <dontCare code="WB"/>
+        <dontCare code="QD"/>
+        <dontCare code="LeatherWheel"/>
+        <dontCare code="E5"/>
+        <dontCare code="ACButton"/>
+        <dontCare code="RearAC"/>
+    </group>
+</dontCare-meta>

@@ -1,0 +1,4 @@
+dc(d)
+or(a b)
+or(!b !a)
+or(!b c)

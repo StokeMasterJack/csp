@@ -1,0 +1,37 @@
+xor(SER_sienna SER_yaris SER_corolla SER_camry SER_priusc SER_4runner SER_venza SER_rav4 SER_highlander SER_prius SER_avalon SER_priusv SER_fjcruiser SER_landcruiser SER_sequoia SER_tacoma SER_rav4ev SER_tundra SER_matrix SER_priusplugin)
+
+imp(ACY_H0
+
+imp(
+	 ACY_H0
+	 or(
+
+
+
+and(YR_2014 SER_sequoia MDL_7917)
+and(YR_2014 SER_sequoia MDL_7919)
+and(YR_2014 SER_sequoia MDL_7927)
+and(YR_2014 SER_sequoia MDL_7929)
+and(YR_2014 SER_sequoia MDL_7931)
+and(YR_2014 SER_sequoia MDL_7933)
+and(YR_2014 SER_sequoia MDL_7940)
+and(YR_2014 SER_sequoia MDL_7942)
+and(YR_2014 SER_sequoia MDL_7944)
+and(YR_2014 SER_venza MDL_2810)
+and(YR_2014 SER_venza MDL_2812)
+and(YR_2014 SER_venza MDL_2820)
+and(YR_2014 SER_venza MDL_2822)
+and(YR_2014 SER_venza MDL_2830)
+and(YR_2014 SER_venza MDL_2832)
+and(YR_2014 SER_venza MDL_2834)
+and(YR_2014 SER_venza MDL_2836)
+and(YR_2014 SER_venza MDL_2842)
+and(YR_2014 SER_venza MDL_2846)
+and(YR_2014 SER_yaris MDL_1421)
+and(YR_2014 SER_yaris MDL_1422)
+and(YR_2014 SER_yaris MDL_1424)
+and(YR_2014 SER_yaris MDL_1462)
+
+
+	)
+)

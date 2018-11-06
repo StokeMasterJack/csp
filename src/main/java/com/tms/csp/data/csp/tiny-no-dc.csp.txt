@@ -1,0 +1,2 @@
+xor(a b)
+nand(b c)

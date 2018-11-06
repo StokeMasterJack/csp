@@ -1,0 +1,12 @@
+Root
+options
+model
+imp(and(YR_2013 SER_prius MDL_1225 ACY_SW) ACY_NW)
+imp(and(YR_2013 SER_tundra MDL_8239 ICOL_FF13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8241 ICOL_FF13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8331 ICOL_FF13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8339 ICOL_FF13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8341 ICOL_FF13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8222 ICOL_FN13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8323 ICOL_FN13) ACY_Graphite)
+imp(and(YR_2013 SER_tundra MDL_8324 ICOL_FN13) ACY_Graphite)

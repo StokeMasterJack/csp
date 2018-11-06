@@ -1,0 +1,33 @@
+Diff: reqs needed by current Toyota UI and our API
+
+Note: See inventoryrules.json for some hints
+
+
+Out of inventory colors (or Out of inventory anything)
+Toyota is start with "init defaults"
+    defaulted user pics, computed once at session init
+    thereafter, these are treated as user pics
+
+    After session init every dontCare is set to either true or false. There are no opens.
+        this negates half our api:
+        this negates csp.getBB();
+
+    An invalid pic (i.e. implied false) is:
+        sometimes *hidden*
+        sometimes shown with special "invalid pic" ui treatment (which, when clicked, triggers a fix list popup)
+        Pic Ones: sometimes shown like anyother pic (no fix list) which must mean, if they pick it, it's doing some type fixlist (and the subsequent fix) auto-magically.
+
+    distinguishing between "invalid pic due to factory rules" vs "invalid pic due to out of stock"
+        formula current Hitachi impl, this is kind of a fudge:
+            series/year/region wide "out of stock features" are simply:
+                series/year/region wide "dead features"
+
+        out of inventory color means:
+            series/year factory dead features minus series/year/region inventory "dead features"
+            where:
+                series/year factory "dead features" is generated from old csp (FM)
+                series/year/region inventory "dead features" is generated from dnnf csp
+
+        invalid (bang) color means: "dead features" based on current picks
+
+

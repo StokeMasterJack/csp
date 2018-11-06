@@ -1,0 +1,113 @@
+# generated - spa.jsp and tc/index.jsp
+war/src/main/webapp/tc/index.jsp
+war/src/main/webapp/spa.jsp
+
+# tmp and scratch files
+tmp/
+tmp.js
+tmp.xml
+tmp.html
+tmp.java
+tmp.sql
+scratch/
+
+# OS generated files - OS X
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+Icon
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# OS generated files - Windows
+ehthumbs.db
+Thumbs.db
+
+# generated files - java/kotlin
+*.class
+*.jar
+*.war
+*.ear
+
+# generated files - dart
+.dart_tool/
+.packages
+.pub/
+build/
+pubspec.lock
+doc/api/
+
+# generated files - windows 
+*.com
+*.dll
+*.exe
+
+# generated files - linux/unix 
+*.o
+*.so
+
+# generated files - maven
+target/
+*.ser
+*.ec
+
+# React
+node_modules/
+react/node_modules/
+webpackCache/
+.tmp
+.sass-cache
+
+# Bower
+bower_components/
+
+# package/zip files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sqlite
+
+# IntelliJ - user-specific
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+*.iws
+
+# IntelliJ - Generated files
+.idea/**/contentModel.xml
+out/
+
+# IntelliJ - Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# intellij - maven redundant
+.idea/libraries/
+.idea/*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+
+
+
+
