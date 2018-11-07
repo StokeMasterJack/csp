@@ -1,6 +1,7 @@
 package com.tms.csp.ast
 
 import com.tms.csp.ast.formula.Formula
+import com.tms.csp.ast.formula.KFormula
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.DynComplex
 import com.tms.csp.util.XorCube
@@ -23,7 +24,7 @@ data class Add(
     constructor(c: Or, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
 
     //xor split
-    constructor(c: Formula, cc: XorCube) : this(cc.space, Constraints(c), Condition(cc))
+    constructor(c: KFormula, cc: XorCube) : this(cc.space, Constraints(c), Condition(cc))
 
     constructor(c: DynComplex, cc: Lit) : this(cc.space, Constraints(c), Condition(cc))
     constructor(c: DynComplex, cc: Cube) : this(cc.space, Constraints(c), Condition(cc))
@@ -165,7 +166,7 @@ data class Add(
         }
 
         @JvmStatic
-        fun xorSplit(formula: Formula, xor: Xor, trueVar: Var): Add {
+        fun xorSplit(formula: KFormula, xor: Xor, trueVar: Var): Add {
             val xorCube = XorCube(xor, trueVar)
             val add = Add(c = formula, cc = xorCube)
             return add

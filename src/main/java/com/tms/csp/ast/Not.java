@@ -25,8 +25,6 @@ public class Not extends Complex {
     }
 
 
-
-
     @Override
     public Exp flip() {
         return pos;
@@ -217,10 +215,7 @@ public class Not extends Complex {
     }
 
     public Exp toDnnf() {
-        System.err.println("Not.toDnnf");
         Exp nnf = toNnf();
-        System.err.println("Not: " + this);
-        System.err.println("  nnf: " + nnf);
         assert !nnf.isNot();
         return nnf.toDnnf();
     }
@@ -252,4 +247,10 @@ public class Not extends Complex {
     public boolean samePos(Not that) {
         return pos.equals(that.pos);
     }
+
+    public long satCountPL(VarSet parentVars) {
+
+        return toNnf().satCountPL(parentVars);
+    }
+
 }

@@ -632,54 +632,6 @@ class CspOldJava(var k: Csp,
     //    }
 
 
-    @Throws(FailedCspException::class)
-    fun simplify2(lit: Lit) {
-
-        if (k.isSolved || k.isFailed) {
-            return
-        }
-
-        assert(lit.isLit)
-        val `var` = lit.getVr()
-
-        val dirty = getComplexConstraintsContaining(`var`)
-
-        for (before in dirty) {
-            assert(before.containsVar(lit))
-            if (isFailed) {
-                return
-            }
-
-            val removed = complex!!.remove(before)
-            assert(removed)
-
-            val after = before.condition(lit)
-            if (before === after) {
-                System.err.println("lit[$lit]")
-                System.err.println("before[$before]")
-                System.err.println("after[$after]")
-                throw IllegalStateException()
-            }
-            k.logSimplified(lit, before, after)
-
-            if (after.isFalse) {
-                k.failCspConstraintSimplifiedToFalse(before, lit)
-                return
-            }
-
-
-            if (after.isTrue) {
-                //ignore
-                continue
-            }
-
-            assert(after.isOpen)
-
-            addConstraint(after)
-
-        }
-
-    }
 
 
     fun addSeriesModelImps() {
@@ -863,13 +815,7 @@ class CspOldJava(var k: Csp,
     }
 
     fun removeAllComplexConstraints(that: Csp) {
-        assert(this.space === that.space)
-        val complex = that.complexDyn
-        this.complex!!.removeAll(complex!!.argIt)
-    }
-
-    fun removeComplexConstraints(complexConstraintsToRemove: Set<Exp>) {
-        complex!!.removeAll(complexConstraintsToRemove)
+        TODO()
     }
 
 
@@ -885,9 +831,6 @@ class CspOldJava(var k: Csp,
         return k
     }
 
-    fun removeConstraint(constraint: Exp): Boolean {
-        return k.removeConstraint(constraint)
-    }
 
     //    public void addConstraint(Line line, VarSet allInvAcy) {
     //        VarSet _vars = line.get_vars();
@@ -1081,25 +1024,6 @@ class CspOldJava(var k: Csp,
         return k
     }
 
-
-    inner class VVsConditionPropagator(private val subsumedVvs: Collection<Exp>, private val vvp: Exp) : Propagator() {
-        var out: Exp? = null
-            private set
-
-
-        override fun execute(csp: Csp) {
-            val nnf = vvp.toNnf()
-            var out = nnf
-            for (subsumedVv in subsumedVvs) {
-                out = out.conditionVV(subsumedVv)
-            }
-            if (out !== vvp) {
-                csp.removeConstraint(vvp)
-                csp.addConstraint(out)
-            }
-            this.out = out
-        }
-    }
 
     //    public class NewVV extends Propagator {
     //        private final Exp vv;
@@ -1722,7 +1646,7 @@ class CspOldJava(var k: Csp,
         fun parse(clob: String): Csp {
             val space = Space()
             val expSeq = space.parsePL(clob)
-            val aa = Add(c = expSeq,space = space)
+            val aa = Add(c = expSeq, space = space)
             return Csp(space, add = aa)
         }
 

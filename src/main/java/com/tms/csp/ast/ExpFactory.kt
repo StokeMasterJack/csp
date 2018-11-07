@@ -1,7 +1,10 @@
 package com.tms.csp.ast
 
 import com.google.common.collect.ImmutableSet
-import com.tms.csp.*
+import com.tms.csp.ExpFn
+import com.tms.csp.ExpIt
+import com.tms.csp.Fn
+import com.tms.csp.It
 import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.argBuilder.IArgBuilder
 import com.tms.csp.fm.dnnf.products.Cube
@@ -280,9 +283,6 @@ class ExpFactory(val sp: Space) {
 
 
     @JvmOverloads
-    fun mkCubeLitPair(arg1: Lit, arg2: Lit): Exp = LitPairCubeBuilder(arg1, arg2).mk()
-
-    @JvmOverloads
     fun mkCubePair(arg1: Exp, arg2: Exp): Exp {
         return mkPair(op = Op.Cube, arg1 = arg1, arg2 = arg2)
     }
@@ -344,38 +344,88 @@ class ExpFactory(val sp: Space) {
             sp.mkFalse()
         } else if (arg1.isTrue) {
             arg2
-        } else if (arg2.isFalse) {
+        } else if (arg2.isTrue) {
             arg1
-        } else if (arg1.isLit && arg2.isLit) {
-            mkCubeLitPair(arg1.asLit(), arg2.asLit());
-        } else if (arg1.isCube) {
-            val cube: Cube = arg1.asCube()
-            val pair = cube.split(arg2)
-            val s2: Exp = arg2.condition(pair.intersection)
-            if (s2.isLit) {
-                mkCube(cube = cube, lit = s2.asLit(), disjoint = Bit.TRUE);
-            } else {
-                mkCubeExp(cube = cube, arg = s2, disjoint = Bit.TRUE)
-            }
-        } else if (arg2.isCube) {
-            val cube: Cube = arg2.asCube()
-            val pair = cube.split(arg1)
-            val s1: Exp = arg1.condition(pair.intersection)
-            if (s1.isLit) {
-                mkCube(cube = cube, lit = s1.asLit(), disjoint = Bit.TRUE);
-            } else {
-                mkCubeExp(cube = cube, arg = s1, disjoint = Bit.TRUE)
-            }
         } else {
-            mCube(arg1, arg2)
+            argBuilder(Op.DAnd).addExp(arg1).addExp(arg2).mk()
         }
-
 
     }
 
 
     fun intersection(vars1: VarSet, vars2: VarSet): VarSet {
         return vars1.overlap(vars2)
+    }
+
+
+    /**
+     * Args are already known to be disjoint and dnnf
+     */
+    fun mkDAnd(lit: Lit, f: Exp): Exp {
+        return when (f) {
+            is False -> _space.mkFalse();
+            is True -> lit
+            is Lit -> mkDCubeLitPair(lit, f)
+            is Cube -> mkDAnd(lit, f.asCubeExp())
+            else -> argBuilder(Op.DAnd).addExp(lit).addExp(f).mk()
+        }
+    }
+
+    /**
+     * Args are already known to be disjoint and dnnf
+     */
+    fun mkDAnd(cube: CubeExp, f: Exp): Exp {
+        return when (f) {
+            is False -> _space.mkFalse();
+            is True -> cube
+            is Lit -> mkDAnd(f.asLit(), cube)
+            is CubeExp -> mkDAnd(cube, f.asCubeExp())
+            else -> argBuilder(Op.DAnd).addExp(cube).addExp(f).mk()
+        }
+    }
+
+    /**
+     * Args are already known to be disjoint and dnnf
+     */
+    @JvmOverloads
+    fun mkDAnd(cube1: CubeExp, cube2: CubeExp): Exp = CubeCubeDAndBuilder(cube1, cube2).mk()
+
+
+    /**
+     * Args are already known to be disjoint
+     */
+    @JvmOverloads
+    fun mkDAnd(arg1: Lit, arg2: CubeExp): Exp = LitCubeDAndBuilder(arg1, arg2).mk()
+
+    /**
+     * Args are already known to be disjoint
+     */
+    @JvmOverloads
+    fun mkDCubeLitPair(arg1: Lit, arg2: Lit): Exp = LitPairDCubeBuilder(arg1, arg2).mk()
+
+
+    /**
+     * Args are already known to be disjoint and dnnf
+     */
+    fun mkDAnd(c: Exp, f: Exp): Exp {
+        return if (c.isFalse || f.isFalse) {
+            _space.mkFalse()
+        } else if (c.isTrue) {
+            f
+        } else if (f.isTrue) {
+            c
+        } else if (c === f) {
+            c
+        } else if (c == f.flip()) {
+            _space.mkFalse()
+        } else if (c.isLit) {
+            mkDAnd(c.asLit(), f)
+        } else if (f.isLit) {
+            mkDAnd(f.asLit(), c)
+        } else {
+            argBuilder(Op.DAnd).addExp(c).addExp(f).mk()
+        }
+
     }
 
 
@@ -544,35 +594,96 @@ class ExpFactory(val sp: Space) {
 
 val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 
-class LitPairCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
+
+//class LitPairCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
+//
+//    init {
+//        assert(op.isCube || op.isOrLike)
+//    }
+//
+//    val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
+//    val space: Space = arg1.sp
+//
+//    override val isFcc: Boolean? get() = null
+//    override val size: Int get() = 2
+//    override val op: Op get() = Op.Cube
+//    override val argIt: Iterable<Exp> get() = a.asIterable()
+//
+//    override fun mk(): Exp {
+//
+//        return if (arg1.sameVar(arg2)) {
+//            if (arg1.sameSign(arg2)) {
+//                arg1
+//            } else {
+//                space.mkFalse()
+//            }
+//        } else {
+//            space.mkPosComplex(this);
+//        }
+//    }
+//
+//    override fun createExpArray(): Array<Exp> = a
+//}
+//
+
+/**
+ * Args are already known to be disjoint
+ */
+class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 
     init {
-        assert(op.isCube || op.isOrLike)
+        assert(arg1.vr != arg2.vr)
     }
 
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
-    val space: Space = arg1.sp
+    val space: Space = arg1.space
 
     override val isFcc: Boolean? get() = null
     override val size: Int get() = 2
     override val op: Op get() = Op.Cube
     override val argIt: Iterable<Exp> get() = a.asIterable()
-
-    override fun mk(): Exp {
-
-        return if (arg1.sameVar(arg2)) {
-            if (arg1.sameSign(arg2)) {
-                arg1
-            } else {
-                space.mkFalse()
-            }
-        } else {
-            space.mkPosComplex(this);
-        }
-    }
-
+    override fun mk(): Exp = space.mkPosComplex(this);
     override fun createExpArray(): Array<Exp> = a
 }
 
 
+/**
+ * Args are already known to be disjoint
+ */
+class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
+
+    init {
+        assert(!cube.containsVar(lit.vr))
+    }
+
+    val a: Array<Exp> = ExpFactory.MinMax.mkArray(lit, cube)
+    val space: Space = lit.space
+
+    override val isFcc: Boolean? get() = null
+    override val size: Int get() = 2
+    override val op: Op get() = Op.DAnd
+    override val argIt: Iterable<Exp> get() = a.asIterable()
+    override fun mk(): Exp = space.mkPosComplex(this);
+    override fun createExpArray(): Array<Exp> = a
+}
+
+/**
+ * Args are already known to be disjoint
+ */
+class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder {
+
+    init {
+        assert(cube1.isVarDisjoint(cube2.vars))
+    }
+
+    val a: Array<Exp> = ExpFactory.MinMax.mkArray(cube1, cube2)
+    val space: Space = cube2.space
+
+    override val isFcc: Boolean? get() = null
+    override val size: Int get() = 2
+    override val op: Op get() = Op.DAnd
+    override val argIt: Iterable<Exp> get() = a.asIterable()
+    override fun mk(): Exp = space.mkPosComplex(this);
+    override fun createExpArray(): Array<Exp> = a
+}
 

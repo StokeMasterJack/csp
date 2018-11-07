@@ -20,11 +20,25 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     override var isFcc: Boolean? = null
 
     constructor(sp: Space, args: Iterable<Exp>) : this(sp) {
-        addExpIt(args)
+        val t: TreeSequence<Exp> = TreeSequence()
+//        val b = space.varSetBuilder()
+        for (arg in args) {
+            t.put(arg.expId, arg)
+//            b.addVarSet(arg.vars)
+        }
+        this.args = t
+//        _vars = b.build()
     }
 
     constructor(sp: Space, args: Array<Exp>) : this(sp) {
-        addExpArray(args)
+        val t: TreeSequence<Exp> = TreeSequence()
+//        val b = space.varSetBuilder()
+        for (arg in args) {
+            t.put(arg.expId, arg)
+//            b.addVarSet(arg.vars)
+        }
+        this.args = t
+//        _vars = b.build()
     }
 
     constructor(that: DynComplex) : this(that.space) {
@@ -58,23 +72,26 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
     override fun iterator(): Iterator<Exp> = argIter()
 
-
     fun copy(): DynComplex {
         return DynComplex(this)
     }
 
 
-    fun addExpArray(args: Array<Exp>) {
-        for (arg in args) {
-            add(arg)
-        }
-    }
-
-    fun addExpIt(args: Iterable<Exp>) {
-        for (arg in args) {
-            add(arg)
-        }
-    }
+//    private fun addExpArray(args: Array<Exp>) {
+//        for (arg in args) {
+//            addInternal(arg)
+//            addVars(arg)
+//        }
+//    }
+//
+//    private fun addExpIt(args: Iterable<Exp>) {
+//        val b = space.varSetBuilder()
+//        for (arg in args) {
+//            addInternal(arg)
+//        }
+//
+//        b.addVarSet()
+//    }
 
     fun assertVars(): Boolean {
         return assertVars("")
@@ -105,9 +122,14 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         }
 
     fun add(e: Exp): Boolean {
+        return addInternal(e)
+    }
+
+    private fun addInternal(e: Exp): Boolean {
         requireNotNull(e)
         if (e.isAnd) throw IllegalArgumentException("Ands should be added at the csp level")
 
+//        val beforeSize = args?.size() ?: 0
         val old = mkArgs.put(e.getExpId(), e)
         val ch = old == null
         return if (!ch) {
@@ -124,12 +146,19 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
             //            System.err.println("Dup complex constraint: " + old);
             false
         } else {
-            addVars(e)
+//            if (_vars == null) {
+//                if (beforeSize > 0) {
+//                    recomputeVars();
+//                }
+//            }
+//            addVars(e)
+            _vars = null
             true
         }
 
 
     }
+
 
     private fun addVars(e: Exp) {
         this._vars = VarSet.union(space, _vars, e.vars);
@@ -155,30 +184,42 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
     private val a: TreeSequence<Exp> get() = args!!
 
-    fun remove(arg: Exp): Boolean {
+//    fun remove(arg: Exp): Boolean {
+//        return if (args == null) {
+//            false
+//        } else {
+//            val expId = arg.getExpId()
+//            val removed: Exp? = args!!.remove(expId)
+//            val ch = removed != null
+//            if (ch) {
+//                _vars = null
+//            }
+//            return ch
+//        }
+//
+//    }
+
+    private fun take(expId: Int): Exp? {
         return if (args == null) {
-            false
+            null
         } else {
-            val expId = arg.getExpId()
-            val removed: Exp? = args!!.remove(expId)
-            val ch = removed != null
-            if (ch) {
+            val oldValue = args!!.remove(expId)
+            if (oldValue != null) {
                 _vars = null
             }
-            return ch
+            return oldValue
         }
-
     }
-
-    fun removeAll(complex: Iterable<Exp>): Boolean {
-        var ch = false
-        for (exp in complex) {
-            if (remove(exp)) {
-                ch = true
-            }
-        }
-        return ch
-    }
+//
+//    fun removeAll(complex: Iterable<Exp>): Boolean {
+//        var ch = false
+//        for (exp in complex) {
+//            if (remove(exp)) {
+//                ch = true
+//            }
+//        }
+//        return ch
+//    }
 
 
     fun eq(that: DynComplex): Boolean {
@@ -200,8 +241,16 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         return if (isEmpty) {
             space.mkEmptyVarSet()
         } else {
-            space.varSetBuilder().apply { argIt.forEach { addVarSet(it.vars) } }.build()
+            val vs = space.varSetBuilder()
+            argIt.forEach {
+                vs.addVarSet(it.vars)
+            }
+            vs.build();
         }
+    }
+
+    fun recomputeVars() {
+        _vars = _computeVars()
     }
 
     val vars: VarSet
@@ -213,9 +262,10 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         }
 
 
-    fun remove(o: Any): Boolean {
-        return remove(o as Exp)
-    }
+//    fun remove(o: Any): Boolean {
+//        throw UnsupportedOperationException()
+////        return remove(o as Exp)
+//    }
 
     fun clear() {
         _vars = null
@@ -307,7 +357,6 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     override fun createExpArray(): Array<Exp> {
         check(!isEmpty)
         check(size != 1)
-        val a = args!!
         val aa: Array<Exp?> = arrayOfNulls(size)
         for ((i, arg) in argIt.withIndex()) {
             aa[i] = arg
@@ -327,6 +376,28 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
 
     fun toList(): List<Exp> = argIt.toList()
+
+    fun takeConstraintsContainingLit(lit: Lit): List<Exp>? {
+        if (this.args == null) return null
+
+        var a: MutableList<Exp>? = null
+
+        for (exp in argIt) {
+            if (exp.containsVar(lit.vr)) {
+                val take = take(exp.expId)
+                checkNotNull(take)
+                if (a == null) {
+                    a = mutableListOf<Exp>()
+                }
+                a.add(take)
+            }
+        }
+
+        if (!a.isNullOrEmpty()) {
+            _vars = null
+        }
+        return a;
+    }
 
 
 }

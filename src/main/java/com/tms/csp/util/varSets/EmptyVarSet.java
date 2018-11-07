@@ -126,6 +126,11 @@ public class EmptyVarSet extends VarSet {
     }
 
     @Override
+    public boolean recomputeSize() {
+        return false;
+    }
+
+    @Override
     public boolean containsAllBitSet(VarSetBuilder other) {
         return false;
     }

@@ -1,12 +1,10 @@
 package com.tms.csp.pl
 
 import com.tms.csp.ast.Csp
-import com.tms.csp.ast.Parser
 import com.tms.csp.ast.toCube
 import com.tms.csp.ast.toCubes
 import com.tms.csp.data.CspSample
 import com.tms.csp.fm.dnnf.products.Cube
-import com.tms.csp.fm.dnnf.products.print
 import com.tms.csp.util.CspBaseTest2
 import junit.framework.Assert.assertEquals
 import kotlin.test.Test
@@ -232,18 +230,18 @@ class CspTest : CspBaseTest2() {
      */
 
     @Test
-    @Throws(Exception::class)
     fun testEfcSimplifyAtVarsNo() {
 
         val t0 = System.currentTimeMillis()
         val clob = CspSample.EfcOriginal.loadText()
         val t1 = System.currentTimeMillis()
 
-        val csp = Csp.parse(clob)
+        val csp = Csp.parse2(clob)  //parse rules: 1782, 1495, 1499,1614
+//        val csp = Csp.parse(clob)  //parse rules: 1446, 1410,1600
 
         val t2 = System.currentTimeMillis()
 
-        val rough = csp.toDnnf()
+        val rough = csp.toDnnf()   //11014
         val t3 = System.currentTimeMillis()
         val dNode = rough.smooth
         val t4 = System.currentTimeMillis()
@@ -327,7 +325,6 @@ class CspTest : CspBaseTest2() {
         assertEquals(expectedSatCount, cubes.size.toLong())
 
 
-
     }
 
     @Test
@@ -350,7 +347,6 @@ class CspTest : CspBaseTest2() {
         assertEquals(expectedSatCount, smooth.satCount)
         assertEquals(expectedSatCount, smoothCubesSmooth.size.toLong())
         assertEquals(expectedSatCount, satCountPL)
-
 
 
     }

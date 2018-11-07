@@ -228,6 +228,11 @@ public class VarPair extends VarSet {
     }
 
     @Override
+    public boolean recomputeSize() {
+        return false;
+    }
+
+    @Override
     public boolean containsAllBitSet(VarSetBuilder s) {
         if (s.size() > 2) return false;
         for (Var var : s) {

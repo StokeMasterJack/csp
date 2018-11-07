@@ -35,7 +35,7 @@ class PosComplexSpace(val space: Space) {
             Op.Cube -> CubeExp(space, expId, args)
             Op.DAnd -> DAnd(space, expId, args)
             Op.Formula -> KFormula(space, expId, args, b.isFcc)
-            Op.Fcc -> Formula(space, expId, args, true)
+            Op.Fcc -> KFormula(space, expId, args, true)
             Op.And -> And(space, expId, args)
             Op.DOr -> DOr(space, expId, args)
             Op.Xor -> Xor(space, expId, args)

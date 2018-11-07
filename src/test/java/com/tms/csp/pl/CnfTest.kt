@@ -4,67 +4,67 @@ import com.tms.csp.ast.Csp
 import com.tms.csp.data.CspSample
 import com.tms.csp.util.CspBaseTest2
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class CnfTest : CspBaseTest2() {
 
-    /*
-    name1[csp/camry-2011-no-dc.csp.txt]
-    name2[csp/efcOriginal/factory.txt]
-     */
-
     @Test
-    @Throws(Exception::class)
-    fun test1() {
-        //        String clob1 = loadText(CspSample.Camry2011NoDc);
-        //        String clob1 = "ppop";
+    fun testCamry() {
+
+        val expectedSatCount = 520128L
+        val csp = Csp.parse(CspSample.Camry2011NoDc)
+        val satCountPL1 = csp.satCountPL()
+        val d1 = csp.toDnnfSmooth()
+        val satCount1 = d1.satCount
+
+        csp.toCnf()
+
+        assertTrue(csp.isCnf)
+        val satCountPL2 = csp.satCountPL()
+        val d2 = csp.toDnnfSmooth()
+        val satCount2 = d2.satCount
+
+        assertEquals(expectedSatCount, satCountPL1)
+        assertEquals(expectedSatCount, satCount1)
+        assertEquals(expectedSatCount, satCountPL2)
+        assertEquals(expectedSatCount, satCount2)
 
 
-        val clob1 = CspSample.EfcOriginal.loadText()
-        System.err.println("clob1 loaded")
-
-        val clob2 = CspSample.Camry2011NoDc.loadText()
-        System.err.println("clob2 loaded")
-
-
-        //        String clob2 = loadResource(path2);
-        //        String clob = SpaceJvm.loadResource(CspSample.Camry2011NoDc.getPath());
-
-        if (true) return
-
-
-        //
-        //        URL url1 = Resources.getResource(localResourceName);
-        //
-        //        Space space = new Space(clob1);
-        //        space.toCnf();
-        //        String dimacs = space.serializeDimacs();
-        //
-        //        System.err.println(dimacs);
-        //
-        //        long satCount = space.toDnnf().getSmooth().getSatCount();
-        //
-        //        System.err.println("satCount[" + satCount + "]");  //satCount[520128]
     }
 
+    //34s
     @Test
-    @Throws(Exception::class)
-    fun test2() {
+    fun testTundra() {
+
+        val expectedSatCount = 1545337914624L
 
         val csp = CspSample.Tundra.csp()
+
+        val satCountPL1 = csp.satCountPL()
+        val d1 = csp.toDnnfSmooth()
+        val satCount1 = d1.satCount
+
         csp.toCnf()
+
+        assertTrue(csp.isCnf)
+        val satCountPL2 = csp.satCountPL()
+        val d2 = csp.toDnnfSmooth()
+        val satCount2 = d2.satCount
+
+        assertEquals(expectedSatCount, satCountPL1)
+        assertEquals(expectedSatCount, satCount1)
+        assertEquals(expectedSatCount, satCountPL2)
+        assertEquals(expectedSatCount, satCount2)
+
+
         val dimacs = csp.serializeDimacs()
 
-        System.err.println(dimacs)
-
-
-        val satCount = csp.toDnnf().smooth.satCount
-
-        System.err.println("satCount[$satCount]")  //satCount[520128]
     }
 
 
     /**
-     * This is to make something small enough would actually complete when converting to CNF
+     * This is to make something small enough that would actually complete when converting to CNF
      */
     private fun buildEfc2013MinusTundraPL(): Csp {
         val clob = CspSample.EfcOriginal.loadText()
@@ -78,7 +78,6 @@ class CnfTest : CspBaseTest2() {
 
 
     @Test
-    @Throws(Exception::class)
     fun testEfc2013MinusTundraToCnf() {
         val csp1 = buildEfc2013MinusTundraPL()
         csp1.toCnf()
@@ -87,7 +86,6 @@ class CnfTest : CspBaseTest2() {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testEfc2013MinusTundraToDnnfPlusSatCount() {
         val csp1 = buildEfc2013MinusTundraPL()
 

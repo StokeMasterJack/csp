@@ -7,7 +7,7 @@ import com.tms.csp.util.Bit
 import com.tms.csp.util.varSets.VarSet
 import java.util.*
 
-interface Cube : PLConstants, HasVars, VarPredicate {
+interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
 
 
     /**
@@ -92,6 +92,10 @@ interface Cube : PLConstants, HasVars, VarPredicate {
 //    fun serializeFixedWidth(a: Ser, cols: Int = 5) {
 //        serialize(a, this, cols);
 //    }
+
+    override fun conditionThat(that: Exp): Exp {
+        return that.condition(this)
+    }
 
     fun varCodesSorted(): SortedSet<String> = vars.toVarCodeSetSorted()
 

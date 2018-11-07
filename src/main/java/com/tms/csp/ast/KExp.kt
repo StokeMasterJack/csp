@@ -70,6 +70,16 @@ class KExp(val e: Exp) {
 
 
         }
+
+        @JvmStatic
+        fun Exp.conditionThat(that: Exp): Exp {
+            return when (this) {
+                is Lit -> that.condition(this)
+                is Cube -> that.condition(this)
+                else -> throw IllegalStateException()
+            }
+
+        }
     }
 
 }
@@ -87,6 +97,17 @@ val Exp.argSeq
         is LitAndFalse -> sequenceOf(lit, mkFalse())
         else -> throw IllegalStateException()
     }
+
+
+fun Exp.collectVarCodes(s: MutableSet<String>) {
+    when (this) {
+        is Lit -> s.add(this.varCode)
+        is Not -> this.arg.collectVarCodes(s)
+        is PosComplex -> this.args.forEach { it.collectVarCodes(s) }
+        is Constant-> Unit
+        else->throw  IllegalStateException()
+    }
+}
 
 
 //fun And.condition(): ArgBuilder {

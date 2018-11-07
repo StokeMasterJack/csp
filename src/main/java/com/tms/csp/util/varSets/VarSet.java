@@ -1054,4 +1054,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return b.build();
     }
 
+    abstract public boolean recomputeSize();
+
+    public VarSet refreshSize() {
+        recomputeSize();
+        return this;
+    }
+
 }

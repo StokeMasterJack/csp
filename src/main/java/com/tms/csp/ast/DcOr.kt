@@ -13,16 +13,23 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
     private var value: Int? = null  //for counting graph
 
-    private val cubes = ImmutableSet.of(
-            _vr.nLit().asCube(),
-            _vr.pLit().asCube()
-    )
+//    private val cubes2 = ImmutableSet.of(
+//            _vr.nLit().asCube(),
+//            _vr.pLit().asCube()
+//    )
+
+    private val cubes by lazy {
+        ImmutableSet.of(
+                _vr.nLit().asCube(),
+                _vr.pLit().asCube()
+        )
+    }
 
     override fun notNew() {
         _isNew = false;
     }
 
-    override fun isNew(): Boolean  = _isNew
+    override fun isNew(): Boolean = _isNew
 
     private val args = listOf<Exp>(_vr.nLit(), _vr.pLit())
 

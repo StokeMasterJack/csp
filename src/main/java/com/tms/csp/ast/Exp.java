@@ -4,7 +4,7 @@ import com.google.common.collect.*;
 import com.tms.csp.It;
 import com.tms.csp.VarInfo;
 import com.tms.csp.argBuilder.ArgBuilder;
-import com.tms.csp.ast.formula.Formula;
+import com.tms.csp.ast.formula.KFormula;
 import com.tms.csp.common.SeriesYear;
 import com.tms.csp.fm.dnnf.ChildCounts;
 import com.tms.csp.fm.dnnf.DAnd;
@@ -320,7 +320,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public Lit asLit() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(this.getSimpleName() + " " + toString());
     }
 
     public DcOr asDcOr() {
@@ -1118,13 +1118,17 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     }
 
-    public Formula asFormula() {
+    public KFormula asFormula() {
         throw new UnsupportedOperationException(getClass().getName());
     }
 
 
     public Exp toDnnf() {
         throw new UnsupportedOperationException(getClass().getName() + ": " + this);
+    }
+
+    public Exp toDnnfSmooth() {
+        return toDnnf().getSmooth();
     }
 
     public void print() {
@@ -3956,7 +3960,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
                     VarSet dcVars = parentVars.minus(childVars);
                     Exp nCube = space.mkNCube(dcVars);
                     Exp argMinTModels = arg.minTModels();
-                    Exp aa = space.mkDAnd(argMinTModels, nCube);
+                    Exp aa = space.expFactory.mkDAnd(argMinTModels, nCube);
                     b.addExp(aa);
                 }
             }
@@ -4038,7 +4042,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
                     VarSet dcVars = parentVars.minus(childVars);
                     Exp pCube = space.mkPCube(dcVars);
                     Exp argMinFModels = arg.minFModels();
-                    Exp aa = space.mkDAnd(argMinFModels, pCube);
+                    Exp aa = space.expFactory.mkDAnd(argMinFModels, pCube);
                     b.addExp(aa);
                 }
             }

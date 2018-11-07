@@ -15,7 +15,7 @@ import java.util.Set;
 
 import static com.tms.csp.ssutil.Strings.lpad;
 
-public class Lit extends Exp {
+public class Lit extends Exp implements ConditionOn {
 
     private static final String L_SP = "L ";
 
@@ -460,5 +460,11 @@ public class Lit extends Exp {
     @NotNull
     public String toString(int cols) {
         return lpad(toString(), ' ', cols);
+    }
+
+    @NotNull
+    @Override
+    public Exp conditionThat(@NotNull Exp that) {
+        return that.condition(this);
     }
 }

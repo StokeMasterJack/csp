@@ -54,7 +54,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 //    public VarSpace() {
 //    }
 
-    int getMaxVarCount() {
+    public int getMaxVarCount() {
         return 1000;
     }
 
@@ -63,7 +63,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
     public boolean setFreeze() {
         if (!freeze) {
-//            if(true) throw new RuntimeException();
+            if(true) throw new RuntimeException();
             freeze = true;
             return true;
         } else {
@@ -359,10 +359,6 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
 
-    public Set<Var> getVarSet() {
-        return set;
-    }
-
     public int getMaxVarIndex() {
         return list.size() - 1;
     }
@@ -584,6 +580,11 @@ public class VarSpace implements PLConstants, Iterable<Var> {
             this.vars = b.build();
         }
         return this.vars;
+    }
+
+
+    public Set<Var> getVarSet() {
+        return set;
     }
 
 

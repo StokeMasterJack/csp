@@ -10,7 +10,7 @@ object Vars {
 
     const val HEAD_VARS_LINE = "vars("
     const val HEAD_INV_VARS_LINE = "invVars("
-    const val HEAD_DONTCARES_LINE = "dontCares("
+    const val HEAD_DC_LINE = "dc("
     const val FOOT = ")"
 
     @JvmStatic
@@ -20,8 +20,9 @@ object Vars {
         line.startsWith(HEAD_VARS_LINE) && line.endsWith(FOOT)
 
 
+
     @JvmStatic
-    fun isDontCaresLine(line: String): Boolean = line.startsWith(HEAD_DONTCARES_LINE) && line.endsWith(FOOT)
+    fun isDcLine(line: String): Boolean = line.startsWith(HEAD_DC_LINE) && line.endsWith(FOOT)
 
     @JvmStatic
     fun isInvVarsLine(line: String): Boolean = line.startsWith(HEAD_INV_VARS_LINE) && line.endsWith(FOOT)
@@ -35,8 +36,8 @@ object Vars {
     }
 
     @JvmStatic
-    fun parseDontCaresLine(varsLine: String): Set<String> {
-        return parseVarsLineInternal(varsLine, HEAD_DONTCARES_LINE).toSet()
+    fun parseDcLine(varsLine: String): Set<String> {
+        return parseVarsLineInternal(varsLine, HEAD_DC_LINE).toSet()
     }
 
 

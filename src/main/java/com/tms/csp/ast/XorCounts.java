@@ -3,6 +3,7 @@ package com.tms.csp.ast;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.tms.csp.ast.formula.Formula;
+import com.tms.csp.ast.formula.KFormula;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +36,7 @@ public class XorCounts {
     }
 
 
-    public static Xor getMax(Formula formula) {
+    public static Xor getMax(KFormula formula) {
         return getBestXor(formula.argIt());
     }
 

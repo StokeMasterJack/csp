@@ -2,28 +2,24 @@ package com.tms.csp.ast
 
 import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.ast.formula.Formula
+import com.tms.csp.ast.formula.KFormula
 
 /**
  * csp - formula and XorSplit  or varSplit
  * are all c the same level
  */
-class XorSplit(val formula: Formula, val xor: Xor) {
+class XorSplit(val formula: KFormula, val xor: Xor) {
 
 
     val argSeq = formula.argSeq
     val space: Space = formula.space;
-    val depth = formula.getDepth()
     val xorVars = xor.vars
     val formulaVars = formula.vars
-
-    val depthPlus = depth + 1
 
 
     val isSat: Boolean
         get() {
 
-
-            val dd = depth + 1
 
 
 
@@ -98,9 +94,6 @@ class XorSplit(val formula: Formula, val xor: Xor) {
 
     fun plSatCount(): Long {
 
-
-        val depth = formula.getDepth()
-        val dd = depth + 1
 
 
         var t: Long = 0

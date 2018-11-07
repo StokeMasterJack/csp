@@ -40,9 +40,15 @@ public class ExpComparator implements Comparator<Exp> {
 
                 int L = e1.getArgCount();
 
+                List<Exp> args1 = new ArrayList<Exp>(e1.args());
+                List<Exp> args2 = new ArrayList<Exp>(e2.args());
+
+                args1.sort(INSTANCE);
+                args2.sort(INSTANCE);
+
                 for (int i = 0; i < L; i++) {
-                    Exp a1 = e1.getArg(i);
-                    Exp a2 = e2.getArg(i);
+                    Exp a1 = args1.get(i);
+                    Exp a2 = args2.get(i);
 
                     aa = compare(a1, a2);
                     if (aa != 0) {
@@ -50,6 +56,7 @@ public class ExpComparator implements Comparator<Exp> {
                     }
 
                 }
+
 
                 return 0;
 
@@ -59,7 +66,7 @@ public class ExpComparator implements Comparator<Exp> {
 
     }
 
-    private static String sortArity(Exp e) {
+    public static String sortArity(Exp e) {
 
         boolean negated = e.isNegated();
         StringBuilder sb = new StringBuilder();
@@ -87,7 +94,7 @@ public class ExpComparator implements Comparator<Exp> {
         } else if (e.isNary()) {
             sb.append(e.getArgCount());
         } else {
-            throw new IllegalStateException(e.toString() + " " + e.getClass() );
+            throw new IllegalStateException(e.toString() + " " + e.getClass());
         }
 
 

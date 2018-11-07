@@ -38,12 +38,12 @@ public class Or extends PosComplexMultiVar {
         Lit tLit = decisionVar.mkPosLit();
         Exp t = this.condition(tLit);
         Exp tt = t.toDnnf();
-        Exp ttt = space.mkDAnd(tLit, tt);
+        Exp ttt = space.expFactory.mkDAnd(tLit, tt);
 
         Lit fLit = decisionVar.mkNegLit();
         Exp f = this.condition(fLit);
         Exp ff = f.toDnnf();
-        Exp fff = space.mkDAnd(fLit, ff);
+        Exp fff = space.expFactory.mkDAnd(fLit, ff);
 
         return space.mkDOr(ttt, fff);
 

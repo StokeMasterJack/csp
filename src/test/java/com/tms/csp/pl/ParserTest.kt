@@ -20,7 +20,7 @@ class ParserTest : PLTestBase() {
 
 
     @Before
-    @Throws(Exception::class)
+
     fun setUp() {
         val vars = "a b Base LE SE XLE Hyb red blue v6 LA Ash Bisque 1F7 776 4T8".split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val varSet = ImmutableSet.copyOf(vars)
@@ -40,7 +40,6 @@ class ParserTest : PLTestBase() {
 
 
     @Test
-    @Throws(Exception::class)
     fun test_parsePosConstant() {
         val e = f.parseExp("true")
         assertTrue(e.isPos)
@@ -50,7 +49,7 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_parseNegConstant() {
         val e = f.parseExp("false")
         assertTrue(e.isConstant)
@@ -60,7 +59,7 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_parsePosSimple() {
         val e = f.parseExp("red")
         assertTrue(e.isPos)
@@ -70,14 +69,14 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_parseImp() {
         val expText = "imp(red v6)"
         val csp = Csp.parse(expText)
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_parsePosBinary() {
 
 
@@ -117,7 +116,7 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun testSort() {
         val e = f.parseExp("or(red blue)")
         assertTrue(e.isPos && e.isPair)
@@ -128,7 +127,7 @@ class ParserTest : PLTestBase() {
 
 
     @Test
-    @Throws(Exception::class)
+
     fun test_parseNegSimple() {
         val e = f.parseExp("!red")
         assertTrue(e.isNegated)
@@ -148,7 +147,7 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_Flip2() {
         flp("!imp(red v6)", "imp(red v6)")
         flp("!nand(red v6)", "nand(red v6)")
@@ -156,7 +155,7 @@ class ParserTest : PLTestBase() {
 
 
     @Test
-    @Throws(Exception::class)
+
     fun testXor() {
         val text = "xor(Base LE SE XLE Hyb)"
         val e = f.parseExp(text)
@@ -171,7 +170,7 @@ class ParserTest : PLTestBase() {
     }
 
     @Test
-    @Throws(Exception::class)
+
     fun test_Composition1() {
         val text1 = "or(and(Ash 4T8) and(Ash 776) and(Bisque !1F7))"
         val e = f.parseExp(text1)
@@ -191,26 +190,23 @@ class ParserTest : PLTestBase() {
 
 
     @Test
-    @Throws(Exception::class)
     fun parseThenSerializeThenCompareCamry2011() {
         parseThenSerializeThenCompare1(CspSample.Camry2011)
     }
 
     @Test
-    @Throws(Exception::class)
     fun parseThenSerializeThenCompareTundra2013() {
         parseThenSerializeThenCompare1(CspSample.Tundra)
     }
 
     @Test
-    @Throws(Exception::class)
     fun parseThenSerializeThenCompareEfc() {
         parseThenSerializeThenCompare1(CspSample.Efc)
     }
 
 
     @Test
-    @Throws(Exception::class)
+
     fun testLoadPLCsp() {
         val t1 = System.currentTimeMillis()
 
@@ -228,6 +224,7 @@ class ParserTest : PLTestBase() {
 
         val sp = Space()
         val lines = TestData.loadCspAsTextLines(cspSample)
+
         for (line in lines) {
             if (Parser.isComment(line)) {
                 continue
@@ -238,11 +235,14 @@ class ParserTest : PLTestBase() {
 
             val exp1 = sp.parseExp(line) ?: continue
 
-            val toString = exp1.toString()
+            val sExp1 = exp1.toString()
 
-            val exp2 = space.parseExp(toString)
+            val exp2 = space.parseExp(sExp1)
 
-            assert(exp1 == exp2)
+            assertEquals(exp1, exp2)
+            assertEquals(exp1.toString(), exp2.toString())
+
+
         }
     }
 

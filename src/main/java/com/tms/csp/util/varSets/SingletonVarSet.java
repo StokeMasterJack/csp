@@ -182,4 +182,10 @@ public class SingletonVarSet extends VarSet {
 //        if (that == null || that.isEmpty()) return false;
 //        return that.containsVarId(vr.varId);
 //    }
+
+
+    @Override
+    public boolean recomputeSize() {
+        return false;
+    }
 }

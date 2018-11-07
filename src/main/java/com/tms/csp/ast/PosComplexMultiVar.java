@@ -16,7 +16,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class PosComplexMultiVar extends PosComplex {
 
     protected final Exp[] args;
-    public final Exp[] _args;
 
     protected Exp neg;
 
@@ -32,7 +31,6 @@ public abstract class PosComplexMultiVar extends PosComplex {
         assert expId >= 0;
         assert fixedArgs != null;
         this.args = fixedArgs;
-        this._args = args;
 
         for (Exp fixedArg : fixedArgs) {
             assert fixedArg != null;
@@ -54,9 +52,6 @@ public abstract class PosComplexMultiVar extends PosComplex {
         Space space = getSpace();
         return space.mkPosComplex(op, args);
     }
-
-
-
 
 
     @Override

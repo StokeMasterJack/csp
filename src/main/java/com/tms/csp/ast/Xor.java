@@ -281,22 +281,22 @@ public class Xor extends PosComplexMultiVar implements IXor {
         return new LitIterator(varIterator(), true);
     }
 
-    final public void serialize(Ser a) {
-        String token = "xor";
-        a.append(token);
-        a.append(LPAREN);
-
-        Iterator<Lit> it = litIterator();
-        while (it.hasNext()) {
-            Lit lit = it.next();
-            lit.serialize(a);
-            if (it.hasNext()) {
-                a.argSep();
-            }
-        }
-
-        a.append(RPAREN);
-    }
+//    final public void serialize(Ser a) {
+//        String token = "xor";
+//        a.append(token);
+//        a.append(LPAREN);
+//
+//        Iterator<Lit> it = litIterator();
+//        while (it.hasNext()) {
+//            Lit lit = it.next();
+//            lit.serialize(a);
+//            if (it.hasNext()) {
+//                a.argSep();
+//            }
+//        }
+//
+//        a.append(RPAREN);
+//    }
 
     @Override
     public Exp toDnnf() {

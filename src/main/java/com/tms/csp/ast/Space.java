@@ -52,6 +52,8 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public final Random random = new Random();
 
+    public final SpaceConfig config = new SpaceConfig();
+
 
     public VarSpace varSpace;
 
@@ -177,56 +179,6 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public ParseCounter getParseCounter() {
         return parser.getParseCounter();
-    }
-
-    /**
-     * Args are already known to be disjoint and dnnf
-     */
-    public Exp mkDAnd(Exp c, Exp f) {
-
-        if (c == null || c.isTrue()) {
-            return f;
-        }
-        if (f == null || f.isTrue()) {
-            return c;
-        }
-
-
-//        if (c == null) {
-//            return f;
-//        }
-//        if (f == null) {
-//            return c;
-//        }
-
-        assert c.isDnnf();
-        assert f.isDnnf();
-//        assert c.checkDnnf();
-//        assert f.checkDnnf();
-//        assert c.isVarDisjoint(f);
-
-        if (c == f) {
-            return c;
-        }
-
-        if (c.isFalse()) {
-            return mkFalse();
-        }
-
-        if (f.isFalse()) {
-            return mkFalse();
-        }
-
-        //both c and f are non-constant, disjoint and dnnf
-
-
-        ArgBuilder b = new ArgBuilder(this, Op.DAnd);
-        b.addExp(c);
-        b.addExp(f);
-
-        return b.mk();
-
-
     }
 
 
@@ -668,9 +620,6 @@ public class Space extends SpaceUtil implements PLConstants {
         return expFactory.mkBinaryAnd(arg1, arg2);
     }
 
-    public Exp mkAnd(CubeExp cube, Exp arg2) {
-        return expFactory.mkBinaryAnd(cube, arg2);
-    }
 
     public Exp mkAnd(Exp... args) {
         return expFactory.mCube(args);
