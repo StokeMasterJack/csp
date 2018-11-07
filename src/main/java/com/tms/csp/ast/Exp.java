@@ -1026,8 +1026,8 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
             Lit f = var.mkNegLit();
 
 
-//            boolean tSat = computeSat(t);
-//            boolean fSat = computeSat(f);
+//            boolean tSat = computeSat(tCon);
+//            boolean fSat = computeSat(fCon);
 
             Exp tt = condition(t);
             Exp ff = condition(f);
@@ -3682,8 +3682,9 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         assert cubes != null;
         Ser a = new Ser();
 
+
         for (Cube cube : cubes) {
-            a.append(cube.serialize());
+            a.ap(cube.serialize(10));
             a.newLine();
         }
         System.err.println(a);

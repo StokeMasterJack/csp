@@ -1,4 +1,4 @@
-package com.tms.csp.util
+package com.tms.csp.misc
 
 import com.tms.csp.ast.Space
 import com.tms.csp.ast.toCube
@@ -50,7 +50,7 @@ class VarSetTest {
 
     @Test
     fun test3() {
-        val parseVarCodes = Space.parseVarCodes("a b c d e f g")
+        val parseVarCodes = Space.parseVarCodes("a b c d e fCon g")
         val sp = Space(parseVarCodes.asIterable())
 
         val b1 = sp.varSetBuilder()

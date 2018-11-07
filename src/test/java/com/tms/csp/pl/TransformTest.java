@@ -30,7 +30,7 @@ public class TransformTest extends Transforms {
     //
     @Before
     public void setUp() throws Exception {
-        Iterable<String> vars = Vars.parseVarList("a b c d e f g x y z ee rr s 6MT 6AT ECVT SE LE L4 6AT 2546 QA AW LA Ash 4T8 776 Bisque 1F7");
+        Iterable<String> vars = Vars.parseVarList("a b c d e fCon g x y z ee rr s 6MT 6AT ECVT SE LE L4 6AT 2546 QA AW LA Ash 4T8 776 Bisque 1F7");
         Space space = new Space(vars);
         f = space.parser;
     }
@@ -61,7 +61,7 @@ public class TransformTest extends Transforms {
 
         System.err.println();
 
-        e1 = f.parseExp("and(a b c d e f g)");
+        e1 = f.parseExp("and(a b c d e fCon g)");
         System.err.println("e1[" + e1 + "]");
 
         e2 = andToBinary(e1);
@@ -102,10 +102,10 @@ public class TransformTest extends Transforms {
 
     @Test
     public void testFlattenImps() throws Exception {
-//        Transformer t = new FlattenImps();
+//        Transformer tCon = new FlattenImps();
 //        String formula = "imp(x and(a b c))";
 //        String expected = "and(imp(x a) imp(x b) imp(x c))";
-//        testTransform(t, formula, expected);
+//        testTransform(tCon, formula, expected);
     }
 
     @Test

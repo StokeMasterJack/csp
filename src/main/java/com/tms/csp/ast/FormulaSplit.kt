@@ -1,0 +1,68 @@
+package com.tms.csp.ast
+
+//class Foo<T>(val tCon: T) where T : Bar, T : Baz { ... }
+import com.tms.csp.ast.formula.KFormula
+
+class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
+
+
+    val space: Space get() = formula.space;
+    val expFactory: ExpFactory get() = space.expFactory
+
+    val isSat: Boolean
+        get() {
+
+
+            val t = mkCsp(true)
+            if (t.isSat()) {
+                return true
+            } else {
+                val f = mkCsp(false)
+                return f.isSat()
+            }
+        }
+
+    val isSatLite: Lit?
+        get() {
+            val t = mkCsp(true)
+            if (t.isFailed) {
+                return decisionVar.mkNegLit()
+            } else {
+                val f = mkCsp(false)
+                return if (f.isFailed) {
+                    decisionVar.mkPosLit()
+                } else {
+                    null
+                }
+            }
+        }
+
+
+    fun toDnnf(): Exp {
+
+        val t = mkCsp(true)
+        val tt = t.toDnnf()
+        if (tt.isTrue) return space.mkTrue()
+
+        val ff = mkCsp(false).toDnnf();
+
+        return expFactory.mkDOr(tt, ff)
+
+
+    }
+
+    fun mkCsp(sign: Boolean): Csp {
+        val lit = decisionVar.lit(sign)
+        return Csp(formula, lit)
+    }
+
+
+    fun plSatCount(): Long {
+        val t = mkCsp(true)
+        val pSatCount = t.satCountPL(formula.vars)
+        val f = mkCsp(false)
+        val nSatCount = f.satCountPL(formula.vars)
+        return pSatCount + nSatCount
+    }
+
+}

@@ -10,11 +10,11 @@ public class VarSetKey {
 //
 //    public VarSetKey(int size, int firstVar, int lastVar, int subId) {
 //        byte[] s = Shorts.toByteArray(Shorts.checkedCast(size));
-//        byte[] f = Shorts.toByteArray(Shorts.checkedCast(firstVar));
+//        byte[] fCon = Shorts.toByteArray(Shorts.checkedCast(firstVar));
 //        byte[] l = Shorts.toByteArray(Shorts.checkedCast(lastVarId));
 //        byte[] i = Ints.toByteArray(Shorts.checkedCast(subId));
 //
-//        Longs.fromBytes(s[0], s[1], f[0], f[1], l[0], l[1], i[0], i[1]);
+//        Longs.fromBytes(s[0], s[1], fCon[0], fCon[1], l[0], l[1], i[0], i[1]);
 //        this.firstVarId = firstVar;
 //        this.subId = subId;
 //    }

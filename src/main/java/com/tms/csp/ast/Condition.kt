@@ -30,7 +30,8 @@ class Condition(val on: Any) {
     val asTransformer: Transformer get() = on as Transformer
     val asExp: Exp get() = on as Exp
 
-    fun condition(constraint: Exp, log: Boolean = false, depth: Int = 0): Exp {
+    fun condition(constraint: Exp, log: Boolean = true, depth: Int = 0): Exp {
+
 
         val conditioned: Exp = when {
             isIdentity -> constraint
@@ -42,10 +43,15 @@ class Condition(val on: Any) {
         }
 
 
-        if (conditioned != constraint && log) {
-            println("$depth Conditioned: $constraint")
-            println("     c: $on")
-            println("     to: $conditioned")
+        if (conditioned != constraint && constraint.space.config.logCondition2) {
+            if (constraint.toString() == "or(!QD and(R7 SE SR))") {
+                println("aaa $on")
+
+                println("Conditioned: $constraint")
+                println("     on: $on")
+                println("     to: $conditioned")
+
+            }
         }
 
         return conditioned

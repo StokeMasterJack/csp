@@ -1,16 +1,14 @@
 package com.tms.csp.ast;
 
 
-import com.tms.csp.util.ints.Ints;
-
-import static com.google.common.base.Preconditions.checkState;
+import com.tms.csp.util.varSets.VarSet;
 
 public class True extends Constant {
 
     private Exp neg;
 
     True(Space space, int expId) {
-        super(space,expId);
+        super(space, expId);
     }
 
     @Override
@@ -71,6 +69,10 @@ public class True extends Constant {
     public void toXml(Ser a, int depth) {
         a.indent(depth);
         a.constantTrue();
+    }
+
+    public long satCountPL(VarSet parentVars) {
+        return Csp.computeDcVars(1, parentVars, getVars());
     }
 
 }

@@ -16,7 +16,7 @@ public abstract class Clauses {
      * assigned true, return null (the clause is satisfied) b) if a literal is
      * assigned false, remove it c) if a clause contains a literal and its
      * opposite (tautology) return null d) remove duplicate literals e) if the
-     * clause is empty, return null f) if the clause if unit, transmit it to the
+     * clause is empty, return null fCon) if the clause if unit, transmit it to the
      * object responsible for unit propagation
      * 
      * @param ps

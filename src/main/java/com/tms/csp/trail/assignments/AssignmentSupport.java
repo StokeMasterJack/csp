@@ -101,6 +101,6 @@ public class AssignmentSupport {
 
     @Override
     public String toString() {
-        return "AssignmentSupport[t:" + tCauses + "   f:" + fCauses + "]";
+        return "AssignmentSupport[tCon:" + tCauses + "   fCon:" + fCauses + "]";
     }
 }

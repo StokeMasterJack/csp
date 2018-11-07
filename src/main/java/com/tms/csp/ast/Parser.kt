@@ -463,6 +463,7 @@ class Parser(val space: Space) {
 
 
         @JvmStatic
+        @JvmOverloads
         fun compareVarsLineToExtract(clob: String, tiny: Boolean = false) {
             val extract = extractVarCodes(clob, tiny = false)
             val lines = parseLines(clob)

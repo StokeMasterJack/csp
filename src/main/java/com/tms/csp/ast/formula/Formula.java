@@ -1,15 +1,9 @@
 package com.tms.csp.ast.formula;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.tms.csp.Structure;
-import com.tms.csp.argBuilder.ArgBuilder;
 import com.tms.csp.ast.*;
 import com.tms.csp.ssutil.Console;
-import com.tms.csp.util.UnionFind;
 import com.tms.csp.util.varSets.VarSet;
-import com.tms.csp.util.varSets.VarSetBuilder;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 //import com.tms.csp.ast.*;
@@ -60,14 +54,14 @@ public class Formula extends And implements FConstraintSet {
 
 
 
-//    public void transform(Transformer t) {
+//    public void transform(Transformer tCon) {
 //        DynFormula d = new DynFormula();
 //        Formula tmp = this;
 //        for (Exp b : tmp) {
 //            if (isFailed()) {
 //                return;
 //            }
-//            Exp a = t.transform(b);
+//            Exp a = tCon.transform(b);
 //            addConstraint(a);
 //        }
 //    }
@@ -266,45 +260,45 @@ public class Formula extends And implements FConstraintSet {
 
 
 
+//
+//
+//    private Lit proposeBothWaysLite(Var var) {
+//        FormulaSplit split = new FormulaSplit(this, var);
+//        Csp tt = split.mkCsp(true);
+//
+//        if (tt.isFailed()) {
+//            //must be fCon
+//            //            System.err.println("  found bb lit[" + vr.mkNegLit() + "]");
+//            return var.nLit();
+//        } else {
+//
+//            Csp ff = split.mkCsp(false);
+//            if (ff.isFailed()) {
+//                //must be tCon
+//                //                System.err.println("  found bb lit[" + vr.mkPosLit() + "]");
+//                return var.pLit();
+//            } else {
+//                return null; //open
+//            }
+//        }
+//    }
 
-
-    private Lit proposeBothWaysLite(Var var) {
-        DecisionSplit split = new DecisionSplit(this, var);
-        Csp tt = split.mkCsp(true);
-
-        if (tt.isFailed()) {
-            //must be f
-            //            System.err.println("  found bb lit[" + vr.mkNegLit() + "]");
-            return var.nLit();
-        } else {
-
-            Csp ff = split.mkCsp(false);
-            if (ff.isFailed()) {
-                //must be t
-                //                System.err.println("  found bb lit[" + vr.mkPosLit() + "]");
-                return var.pLit();
-            } else {
-                return null; //open
-            }
-        }
-    }
-
-    private void computeBbForNonXorPrefixLite(String prefix, DynCube bb) {
-//        System.err.println("testing prefix[" + prefix + "] for dead _vars");
-
-
-        VarSet vars = getVars().filter(prefix);
-
-        for (Var var : vars) {
-//            System.err.println("    testing vr[" + vr + "]");
-            Lit bbLit = proposeBothWaysLite(var);
-            if (bbLit != null) {
-                bb.assign(bbLit);
-//                System.err.println("bbLit[" + bbLit + "]");
-            }
-        }
-
-    }
+//    private void computeBbForNonXorPrefixLite(String prefix, DynCube bb) {
+////        System.err.println("testing prefix[" + prefix + "] for dead _vars");
+//
+//
+//        VarSet vars = getVars().filter(prefix);
+//
+//        for (Var var : vars) {
+////            System.err.println("    testing vr[" + vr + "]");
+//            Lit bbLit = proposeBothWaysLite(var);
+//            if (bbLit != null) {
+//                bb.assign(bbLit);
+////                System.err.println("bbLit[" + bbLit + "]");
+//            }
+//        }
+//
+//    }
 
     public boolean isFormula() {
         return true;

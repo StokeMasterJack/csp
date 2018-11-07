@@ -72,7 +72,7 @@ public class StringCube {
     }
 
     public void print() {
-//        System.err.println("tVars: " + ParseUtil.serializeCodes2(t));
-//        System.err.println("fVars: " + ParseUtil.serializeCodes2(f));
+//        System.err.println("tVars: " + ParseUtil.serializeCodes2(tCon));
+//        System.err.println("fVars: " + ParseUtil.serializeCodes2(fCon));
     }
 }

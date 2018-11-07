@@ -130,8 +130,8 @@ public class SetUtil {
 //        ImmutableSet.Builder<Integer> b = ImmutableSet.builder();
 //        IntList careVars = cube.get_vars();
 //        for (int careVar : careVars) {
-//            boolean t = cube.isTrue(careVar);
-//            if (t) {
+//            boolean tCon = cube.isTrue(careVar);
+//            if (tCon) {
 //                b.add(careVar);
 //            } else {
 //                b.add(-careVar);

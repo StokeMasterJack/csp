@@ -94,7 +94,7 @@ class ParserTest : PLTestBase() {
         assertEquals("or", e.opTag())
         assertEquals("or(!red !v6)", e.toString())
 
-        //        e = f.parseExp("iff(red v6)");
+        //        e = fCon.parseExp("iff(red v6)");
         //        assertTrue(e.isPos() && e.isPair());
         //        assertEquals("iff", e.opTag());
         //        assertEquals("iff(red v6)", e.toString());

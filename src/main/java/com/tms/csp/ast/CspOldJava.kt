@@ -884,7 +884,7 @@ class CspOldJava(var k: Csp,
     //    }
 
 
-    //    public void transform(Transformer t) {
+    //    public void transform(Transformer tCon) {
     //        Formula formula = getFormula();
     //        DynFormula tmp = fDyn;
     //        fDyn = new DynFormula(space);
@@ -892,7 +892,7 @@ class CspOldJava(var k: Csp,
     //            if (isFailed()) {
     //                return;
     //            }
-    //            Exp a = t.transform(b);
+    //            Exp a = tCon.transform(b);
     //            addConstraint(a);
     //        }
     //    }
@@ -1505,7 +1505,7 @@ class CspOldJava(var k: Csp,
     //                Var vr = getVr(varId).asVar();
     //                System.err.println("spExamining Var: " + vr);
     //                OpenVarState openVarState = validateOpenVar(vr);
-    //                System.err.println("\t " + openVarState);
+    //                System.err.println("\tCon " + openVarState);
     //            }
     //        }
     //
@@ -1514,26 +1514,26 @@ class CspOldJava(var k: Csp,
     //
     //           System.err.println("spValidateOpenVar[" + vr + "]");
     //           boolean d = isDontCare(vr);
-    //           System.err.println("\t spDC: " + d);
+    //           System.err.println("\tCon spDC: " + d);
     //
     //           if (d) {
     //               return OpenVarState.DontCare;
     //           }
     //
-    //           boolean t = proposeTrue(vr.getVarId());
-    //           System.err.println("\t spProposeTrue:" + t);
+    //           boolean tCon = proposeTrue(vr.getVarId());
+    //           System.err.println("\tCon spProposeTrue:" + tCon);
     //
-    //           boolean f = proposeFalse(vr.getVarId());
-    //           System.err.println("\t spProposeFalse:" + f);
+    //           boolean fCon = proposeFalse(vr.getVarId());
+    //           System.err.println("\tCon spProposeFalse:" + fCon);
     //
     //
-    //           if (!t && f) {
+    //           if (!tCon && fCon) {
     //               //vr must be assigned false
     //               return OpenVarState.False;
-    //           } else if (t && !f) {
+    //           } else if (tCon && !fCon) {
     //               //vr must be assigned true
     //               return OpenVarState.True;
-    //           } else if (t && f) {
+    //           } else if (tCon && fCon) {
     //               //vr must be assigned false
     //               return OpenVarState.CareVar;
     //           } else {

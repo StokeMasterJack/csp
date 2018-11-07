@@ -33,6 +33,7 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
     private val args = listOf<Exp>(_vr.nLit(), _vr.pLit())
 
+
     override fun isPos(): Boolean = true
 
     override fun getPos(): Exp = this
@@ -112,6 +113,13 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
     override fun getVr(): Var = _vr
 
+    override fun argIt(): Iterable<Exp> {
+        return Iterable { argIter() }
+    }
+
+    override fun argIter(): Iterator<Exp> {
+        return args.iterator()
+    }
 
     override fun isDOr(): Boolean = true
 

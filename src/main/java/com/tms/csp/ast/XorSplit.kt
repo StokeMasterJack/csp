@@ -58,7 +58,7 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
                 val rr = mkCsp(trueVar)
 
                 val n = rr.toDnnf()
-                if (n.isFalse()) {
+                if (n.isFalse) {
                     //                    System.err.println("XorSplit.toDnnf - skip");
                     //skip
                 } else if (n.isTrue()) {

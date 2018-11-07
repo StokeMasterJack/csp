@@ -56,14 +56,14 @@ public class CspBaseTest2 extends CspBaseTest {
 //    }
 //
 //    public void writeText(Path dir, String name, String clob) {
-//        Path f = dir.append(name);
-//        writeText(f, clob);
+//        Path fCon = dir.append(name);
+//        writeText(fCon, clob);
 //    }
 //
 //    public void writeText(Path p, String clob) {
-//        File f = new File(p.toString());
+//        File fCon = new File(p.toString());
 //        try {
-//            Files.write(clob, f, UTF8);
+//            Files.write(clob, fCon, UTF8);
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -79,17 +79,17 @@ public class CspBaseTest2 extends CspBaseTest {
     }
 
 //    public String loadText(Path p) {
-//        File f = new File(p.toString());
+//        File fCon = new File(p.toString());
 //        try {
-//            return Files.toString(f, UTF8);
+//            return Files.toString(fCon, UTF8);
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
 //    }
 //
 //    public SerAppender fileAppender(Ser a) throws Exception {
-//        Path f = a.getFilePath();
-//        return new SerAppender(f);
+//        Path fCon = a.getFilePath();
+//        return new SerAppender(fCon);
 //    }
 
     public static class SerAppender implements Appendable, Ser.Closer {
@@ -151,8 +151,8 @@ public class CspBaseTest2 extends CspBaseTest {
 
 //    public void serializeToFile(Space space) throws IOException {
 //        String name = space.getName();
-//        File f = CspSample.getCspFile(cspDir, name);
-//        BufferedWriter aa = Files.newWriter(f, Charsets.UTF_8);
+//        File fCon = CspSample.getCspFile(cspDir, name);
+//        BufferedWriter aa = Files.newWriter(fCon, Charsets.UTF_8);
 //        Ser a = new Ser(aa);
 //        space.serialize(a);
 //        aa.close();

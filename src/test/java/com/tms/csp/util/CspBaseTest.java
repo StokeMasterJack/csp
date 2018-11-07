@@ -132,8 +132,8 @@ public abstract class CspBaseTest extends SpaceJvm implements PLConstants {
 
 //    public void serializeToFile(Space space) throws IOException {
 //        String name = space.getName();
-//        File f = CspSample.getCspFile(cspDir, name);
-//        BufferedWriter aa = Files.newWriter(f, Charsets.UTF_8);
+//        File fCon = CspSample.getCspFile(cspDir, name);
+//        BufferedWriter aa = Files.newWriter(fCon, Charsets.UTF_8);
 //        Ser a = new Ser(aa);
 //        space.serialize(a);
 //        aa.close();

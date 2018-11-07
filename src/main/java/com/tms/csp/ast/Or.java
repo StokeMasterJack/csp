@@ -2,6 +2,7 @@ package com.tms.csp.ast;
 
 
 import com.tms.csp.argBuilder.ArgBuilder;
+import com.tms.csp.ast.formula.CanSplit;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.util.ints.IntIterator;
 import com.tms.csp.util.varSets.VarSet;
@@ -9,7 +10,7 @@ import com.tms.csp.util.varSets.VarSet;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 
-public class Or extends PosComplexMultiVar {
+public class Or extends PosComplexMultiVar implements CanSplit {
 
     public static final PosOp OP = PosOp.OR;
 
@@ -31,22 +32,9 @@ public class Or extends PosComplexMultiVar {
 
     @Override
     public Exp toDnnf() {
-
         Var decisionVar = decide();
-        Space space = decisionVar.getSpace();
-
-        Lit tLit = decisionVar.mkPosLit();
-        Exp t = this.condition(tLit);
-        Exp tt = t.toDnnf();
-        Exp ttt = space.expFactory.mkDAnd(tLit, tt);
-
-        Lit fLit = decisionVar.mkNegLit();
-        Exp f = this.condition(fLit);
-        Exp ff = f.toDnnf();
-        Exp fff = space.expFactory.mkDAnd(fLit, ff);
-
-        return space.mkDOr(ttt, fff);
-
+        OrVarSplit split = new OrVarSplit(this, decisionVar);
+        return split.toDnnf();
     }
 
     @Override
@@ -147,7 +135,7 @@ public class Or extends PosComplexMultiVar {
 
         //todo
         //2 bugs here:
-        //  UNFIXED: 1. if !containsLocalLitWithVar it shouldn't try to create a new Exp
+        //  UNFIXED: 1. if !containsLocalLitWithVar it shouldn'tCon try to create a new Exp
         //  FIXED:   2. if space is allowing dup expressions (much bigger bug)
 
         ArgBuilder a = new ArgBuilder(_space, Op.Or);
@@ -217,12 +205,9 @@ public class Or extends PosComplexMultiVar {
 
     @Override
     public boolean computeIsSat() {
-        for (Exp arg : args) {
-            if (arg.isSat()) {
-                return true;
-            }
-        }
-        return false;
+        Var decisionVar = decide();
+        OrVarSplit split = new OrVarSplit(this, decisionVar);
+        return split.isSat();
     }
 
     @Override
@@ -236,7 +221,16 @@ public class Or extends PosComplexMultiVar {
     }
 
     public long satCountPL(VarSet parentVars) {
-        return KExp.satCountPL(this, parentVars);
+        Var decisionVar = decide();
+        OrVarSplit split = new OrVarSplit(this, decisionVar);
+        return split.satCountPL();
     }
+
+
+//
+//    public long satCountPL(VarSet parentVars) {
+//        return KExp.satCountPL(this, parentVars);
+//    }
+
 
 }

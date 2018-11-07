@@ -63,7 +63,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
     public boolean setFreeze() {
         if (!freeze) {
-            if(true) throw new RuntimeException();
+//            if(true) throw new RuntimeException();
             freeze = true;
             return true;
         } else {

@@ -2,6 +2,7 @@ package com.tms.csp.minModels;
 
 import com.tms.csp.ast.Csp;
 import com.tms.csp.ast.Exp;
+import com.tms.csp.ast.Parser;
 import com.tms.csp.data.CspSample;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.ssutil.Path;
@@ -398,22 +399,28 @@ public class MinTCardTest extends CspBaseTest2 {
 //        String clob1 = loadResource(p);
 
 
-        String clob2 = loadResource(this, "stageisfullrules.txt");
-        Csp csp = Csp.parse(clob2);
 
+        String clob2 = loadResource(this, "stageisfullrules.txt");
         tt.t("load");
+
+        Csp csp = Csp.parse(clob2);
         tt.t("parse");
+
         Exp n = csp.toDnnf();
         tt.t("compile");
 
         assertEquals(72, n.getVarCount());
         tt.t("getVarCount");
+
         assertEquals(196410880L, n.getSmooth().getSatCount());
         tt.t("getSatCount");
+
         assertEquals(11, n.minCard());
         tt.t("minCard");
 
         Exp mm = n.minModels();
+        tt.t("minCard");
+
         System.err.println("mm[" + mm + "]");
 
     }

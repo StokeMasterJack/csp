@@ -257,7 +257,7 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
      *            objet utilis? pour la propagation
      * @param p
      *            le litt?ral propag? (il doit etre falsifie)
-     * @return false ssi une inconsistance est d?t?ct?e
+     * @return false ssi une inconsistance est d?tCon?ct?e
      */
     public boolean propagate(UnitPropagationListener s, int p) {
 

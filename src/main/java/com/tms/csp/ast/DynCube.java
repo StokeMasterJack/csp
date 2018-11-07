@@ -455,10 +455,10 @@ public class DynCube extends AbstractCube {
 //
 //        VarSet vi = vars.overlap(v);
 //
-//        if (t == null) {
+//        if (tCon == null) {
 //            return new DynCube(space, vi, null);
 //        } else {
-//            VarSet ti = t.overlap(vars);
+//            VarSet ti = tCon.overlap(vars);
 //            return new DynCube(space, vi, ti);
 //        }
 //

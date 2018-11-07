@@ -320,8 +320,9 @@ class CspTest : CspBaseTest2() {
         val smooth = csp.toDnnfSmooth()
         val cubes = smooth.cubesSmooth
 
-        assertEquals(expectedSatCount, smooth.satCount)
         assertEquals(expectedSatCount, satCountPL)
+        assertEquals(expectedSatCount, smooth.satCount)
+
         assertEquals(expectedSatCount, cubes.size.toLong())
 
 

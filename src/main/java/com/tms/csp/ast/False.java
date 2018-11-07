@@ -3,6 +3,7 @@ package com.tms.csp.ast;
 
 import com.google.common.collect.ImmutableSet;
 import com.tms.csp.fm.dnnf.products.Cube;
+import com.tms.csp.util.varSets.VarSet;
 
 import java.util.Set;
 
@@ -11,7 +12,7 @@ public class False extends Constant {
     private final Exp pos;
 
     False(Exp pos) {
-        super(pos.getSpace(),FALSE_EXP_ID);
+        super(pos.getSpace(), FALSE_EXP_ID);
         this.pos = pos;
     }
 
@@ -83,6 +84,11 @@ public class False extends Constant {
 
 
     public False asFalse() {
-        return  this;
+        return this;
     }
+
+    public long satCountPL(VarSet parentVars) {
+        return 0L;
+    }
+
 }

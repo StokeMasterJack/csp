@@ -229,7 +229,7 @@ abstract class AbstractCube : Cube {
 
     override fun hashCode(): Int {
         //using hashcode2 *majorly* slowed down computeCubes for a camry c jvm
-        //hashCode2 may (I think) have speed something else (can't remember what - maybe client-side) up
+        //hashCode2 may (I think) have speed something else (can'tCon remember what - maybe client-side) up
         //todo test this - maybe use hashCode1 for jvm and hashCode2 for browser
         return hashCode1()
     }

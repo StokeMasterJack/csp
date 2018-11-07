@@ -169,8 +169,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService, I
 
     /**
      * creates a Solver without LearningListener. A learningListener must be
-     * added to the solver, else it won't backtrack!!! A data structure fact
-     * must be provided, else it won't work either.
+     * added to the solver, else it won'tCon backtrack!!! A data structure fact
+     * must be provided, else it won'tCon work either.
      */
 
     public Solver(LearningStrategy<D> learner, D dsf, IOrder order,

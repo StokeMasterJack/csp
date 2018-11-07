@@ -56,7 +56,7 @@ public class DnnfCondition extends CspBaseTest2 {
 
     /**
      * Note that the satCounts differ between camryRough and camrySmooth.
-     * This is due to to don't cares.
+     * This is due to to don'tCon cares.
      * <p>
      * smoothSatCount = roughSatCount * 2 ^ (smoothVarCount - roughVarCount)
      */

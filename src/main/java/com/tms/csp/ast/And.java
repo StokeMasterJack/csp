@@ -195,8 +195,8 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 //                    }
 //                } else {
 //                    System.err.println("BOOM: ");
-//                    System.err.println("\t and: " + this);
-//                    System.err.println("\t vv:  " + vv);
+//                    System.err.println("\tCon and: " + this);
+//                    System.err.println("\tCon vv:  " + vv);
 //                    return this;
 //                }
 //            }

@@ -875,6 +875,9 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Csp getCsp() {
+        if (csp == null) {
+            csp = new Csp(this);
+        }
         return csp;
     }
 
@@ -918,13 +921,13 @@ public class Space extends SpaceUtil implements PLConstants {
 //    public static class Csp1 extends And {
 //        //all over lap
 //        Cube cube;
-//        Formula f;
+//        Formula fCon;
 //    }
 //
 //    //no over lap
 //    public static class StableCsp{
 //        Cube cube;
-//        Formula f;
+//        Formula fCon;
 //    }
 //
 //    public static class DElement1{
@@ -994,21 +997,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public Exp mkDOr(Exp arg1, Exp arg2) {
-        assert arg1.isDnnf();
-        assert arg2.isDnnf();
-        if (arg1 == null || arg1.isTrue()) {
-            return mkTrue();
-        } else if (arg2 == null || arg2.isTrue()) {
-            return mkTrue();
-        } else if (arg1.isFalse() && arg2.isFalse()) {
-            return mkFalse();
-        } else if (arg1.isFalse()) {
-            return arg2;
-        } else if (arg2.isFalse()) {
-            return arg1;
-        }
-        ArgBuilder b = new ArgBuilder(this, Op.DOr, arg1, arg2);
-        return b.mk();
+        return expFactory.mkDOr(arg1, arg2);
     }
 
     public Exp mkDOr(Set<Exp> args) {

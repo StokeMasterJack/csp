@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.Multimap
 import com.tms.csp.*
 import com.tms.csp.argBuilder.ArgBuilder
+import com.tms.csp.ast.formula.KFormula
 import com.tms.csp.data.CspSample
 import com.tms.csp.fm.dnnf.Dnnf
 import com.tms.csp.fm.dnnf.products.Cube
@@ -65,6 +66,8 @@ class Csp @JvmOverloads constructor(
 
     var formula: Exp? = null
 
+    var flag = false
+
 
     init {
         if (add != null) {
@@ -72,12 +75,18 @@ class Csp @JvmOverloads constructor(
         }
     }
 
-    private fun addConstraintsExpSeq(expSeq: Sequence<Exp>): Boolean {
+    private fun addConstraintsExpSeq(expSeq: Sequence<Exp>, ctx: ConditionOn? = null): Boolean {
         var anyChange = false
 
         expSeq.forEach {
             if (isFailed) return true
-            val ch = addConstraint(it)
+
+
+            if (it.toString() == "or(!QD and(R7 SE SR))" && ctx != null) {
+                println(888)
+            }
+
+            val ch = addConstraint(it, ctx)
             if (isFailed) return true
             if (ch) anyChange = true
         }
@@ -91,6 +100,25 @@ class Csp @JvmOverloads constructor(
     constructor(space: Space, constraints: Sequence<Exp>) : this(space = space) {
         addConstraintsExpSeq(constraints)
     }
+
+    //simple decision: formula and condition are disjoint
+    constructor(formula: KFormula, condition: ConditionOn) : this(space = formula.space) {
+        addConstraintsExpSeq(formula.argSeq, condition)
+        condition.assignSafe(this)
+        assert(isSimpleComplexDisjoint)
+    }
+
+    //simple decision: or and condition are disjoint
+    constructor(or: Or, condition: ConditionOn) : this(space = or.space) {
+        addConstraint(or, condition)
+        condition.assignSafe(this)
+        assert(isSimpleComplexDisjoint)
+    }
+
+//    //simple decision: formula and condition are disjoint
+//    constructor(or: Or, condition: ConditionOn) : this(space = or.space) {
+//        val conditionThat = condition.conditionThat(or)
+//    }
 
     //    constructor(parent = null, space, mixed) : this(mixed.space, add = Action(c = mixed.complex, cc = mixed.simple))
 //
@@ -191,21 +219,29 @@ class Csp @JvmOverloads constructor(
 //    }
 
     @Throws(AlreadyFailedException::class, ConflictingAssignmentException::class)
-    fun addConstraint(constraint: Exp, ctx: ConditionOn): Boolean {
+    fun addConstraint(constraint: Exp, ctx: ConditionOn? = null): Boolean {
         assert(space === constraint.sp())
         if (isFailed) {
             throw AlreadyFailedException(_failure.toString())
         }
 
-        val conditioned = ctx.conditionThat(constraint)
+        if(constraint.toString() == "or(!QD and(R7 SE SR))" && ctx != null){
+            println(444)
+        }
+        return if (ctx != null) {
+            val conditioned = ctx.conditionThat(constraint)
 
-        if (conditioned != constraint && space.config.logCondition) {
-            println("$depth Conditioned: $constraint")
-            println("     ctx: $ctx")
-            println("     to: $conditioned")
+            if (conditioned != constraint && space.config.logCondition) {
+                println("$depth Conditioned: $constraint")
+                println("     ctx: $ctx")
+                println("     to: $conditioned")
+            }
+
+            addConstraint(conditioned)
+        } else {
+            addConstraint(constraint)
         }
 
-        return addConstraint(conditioned)
     }
 
 
@@ -216,6 +252,10 @@ class Csp @JvmOverloads constructor(
             throw AlreadyFailedException(_failure.toString())
         }
 
+
+        if(constraint.toString() == "or(!QD and(R7 SE SR))" && condition != null){
+            println(999)
+        }
 
         val simplified: Exp = condition.condition(constraint, log = false, depth = depth)
         return addConstraint(simplified)
@@ -321,16 +361,13 @@ class Csp @JvmOverloads constructor(
 
         propagate()
 
-        return if (isFailed) {
-            0
-        } else if (isSolved) {
-            computeDcVars(1, parentVars.minus(simpleVars), vars)
-        } else {
-            val ff = mkFormula()
-            val minus = parentVars.minus(simpleVars);
-            ff.satCountPL(minus)
-
-
+        return when {
+            isFailed -> 0
+            isSolved -> computeDcVars(1, parentVars.minus(simpleVars), vars)
+            else -> {
+                val pVars = parentVars.minus(simpleVars);
+                return mkFormula().satCountPL(pVars)
+            }
         }
 
 
@@ -579,14 +616,10 @@ class Csp @JvmOverloads constructor(
         } else if (!hasSimple && !hasComplex) {
             space.mkTrue()
         } else if (!hasSimple && hasComplex) {
-            mkComplex.toDnnf()
+            complex!!.toDnnf()
         } else if (hasSimple && !hasComplex) {
             simple!!.toDnnf()
         } else if (hasSimple && hasComplex) {
-
-            assert(simple != null)
-            assert(complex != null)
-
             val dSimple = simple!!.toDnnf()   //T|F|Lit|Cube
             val dComplex = complex!!.toDnnf()
 
@@ -1090,7 +1123,6 @@ class Csp @JvmOverloads constructor(
     }
 
     fun print() {
-        println("depth: " + depth)
         val sDontCares = if (dontCares.isNullOrEmpty) "" else dontCares.toString()
         val sSimple = if (simple.isNullOrEmpty) "" else simple.toString()
         println("<csp>");
@@ -1212,14 +1244,14 @@ class Csp @JvmOverloads constructor(
         val tt: Csp = Csp(space, add = p)
 
         if (tt.isFailed) {
-            //must be f
+            //must be fCon
             //            System.err.println("  found bb lit[" + vr.mkNegLit() + "]");
             return vr.nLit()
         } else {
 
             val ff = Csp(space = space, add = n)
             return if (ff.isFailed) {
-                //must be t
+                //must be tCon
                 //                System.err.println("  found bb lit[" + vr.mkPosLit() + "]");
                 vr.pLit()
             } else {
@@ -1276,49 +1308,61 @@ class Csp @JvmOverloads constructor(
     }
 
 
-    fun simplifyBasedOnVvs() {
+    fun simplifyBasedOnVvs(): Boolean {
 
-        if (complex.isNullOrEmpty) {
-            return
-        }
+        var masterChange = false;
+        while (true) {
 
-        propagate()
+            propagate()
 
-        val vvs = vvConstraints
+            var anyChange = false
 
-        val copy = complex!!.copy();
-
-        val ff = DynComplex(space)
-
-        for (e in copy) {
-            if (e.isXorOrContainsXor || e.isIffOrContainsIff) {
-                ff.add(e)
-            } else if (e.isVVPlus) {
-                val subsumedVVs = CspOldJava.findSubsumedVVs(e, vvs)
-                if (subsumedVVs.isEmpty()) {
-                    ff.add(e)
-                } else {
-                    val s = e.conditionVVs(subsumedVVs)
-                    if (s !== e) {
-                        addConstraint(s)
-                        logSimplified(subsumedVVs, e, s)
-                        if (isFailed) throw IllegalStateException("Failed after adding constraint[$e]")
-                    } else {
-                        ff.add(e)
-                    }
-                }
-            } else if (e.isVv) {
-                ff.add(e)
-            } else {
-                throw IllegalStateException()
+            if (complex.isNullOrEmpty) {
+                return false
             }
 
-        }
 
-        if (ff != copy) {
-            System.err.println("repeat")
-            simplifyBasedOnVvs()
-        }
+            val vvs = vvConstraints
+
+            val copy = complex!!.copy();
+
+            complex = DynComplex(space)
+
+            for (e in copy) {
+                if (e.isXorOrContainsXor || e.isIffOrContainsIff) {
+                    addConstraint(e)
+                } else if (e.isVVPlus) {
+                    val subsumedVVs = findSubsumedVVs(e, vvs)
+
+                    if (subsumedVVs.isEmpty()) {
+                        addConstraint(e)
+                    } else {
+                        val s = e.conditionVVs(subsumedVVs)
+                        if (s !== e) {
+                            anyChange = true
+                            addConstraint(s)
+                            logSimplified(subsumedVVs, e, s)
+                            if (isFailed) throw IllegalStateException("Failed after adding constraint[$e]")
+                        } else {
+                            addConstraint(e)
+                        }
+                    }
+                } else if (e.isVv) {
+                    addConstraint(e)
+                } else {
+                    throw IllegalStateException()
+                }
+
+            }
+
+            if (!anyChange) {
+                break
+            } else {
+                masterChange = true
+            }
+        }//while
+
+        return masterChange
 
     }
 
@@ -1339,7 +1383,7 @@ class Csp @JvmOverloads constructor(
     }
 
     fun logSimplified(ctx: Any, before: Exp, after: Exp) {
-        if (true && before !== after) {
+        if (!(before === after || !space.config.logVvSimplified)) {
             System.err.println("Simplified from ctx: $ctx")
             System.err.println("\t before: $before")
             System.err.println("\t after:  $after")
@@ -1355,11 +1399,12 @@ class Csp @JvmOverloads constructor(
     }
 
     fun toDnnf(): Exp {
-        //        assert space.posComplexTable != null;
+
         val n = toDnnfInternal()
         assert(n.isDnnf)
 
-        return if (dontCares != null && dontCares!!.isNotEmpty()) {
+
+        return if (hasDontCares && space.config.includeDontCaresInDnnf) {
             addDcOrs(n, dontCares!!)
         } else {
             n
@@ -1548,15 +1593,14 @@ class Csp @JvmOverloads constructor(
         if (isFailed()) {
             return;
         }
-        Exp a = t.transform(b);
+        Exp a = tCon.transform(b);
         addConstraint(a);
     }
  */
 
     fun toNnf() {
-        assert(!hasSimple)
+        println("Csp.toNnf")
         propagate();
-        assert(!hasSimple)
 
         if (!hasComplex) return;
 
@@ -1570,7 +1614,6 @@ class Csp @JvmOverloads constructor(
             addConstraint(nnf);
         }
 
-        assert(!hasSimple)
     }
 
 
@@ -1755,7 +1798,7 @@ class Csp @JvmOverloads constructor(
 
     companion object {
 
-
+        @JvmStatic
         fun computeDcVars(baseSatCount: Long, parentVars: VarSet, myVars: VarSet): Long {
             val dcVars = parentVars.minus(myVars)
             val pow = Math.pow(2.0, dcVars.size.toDouble()).toLong()
@@ -1973,6 +2016,17 @@ class Csp @JvmOverloads constructor(
 //        }
 //    }
 
+
+    fun findSubsumedVVs(vvp: Exp, vvs: Iterable<Exp>): List<Exp> {
+        val subsumedVVs = ArrayList<Exp>()
+        for (vv in vvs) {
+            if (vvp.vvpSubsumesVV(vv)) {
+                subsumedVVs.add(vv)
+            }
+        }
+        return subsumedVVs
+
+    }
 
 }//end csp
 

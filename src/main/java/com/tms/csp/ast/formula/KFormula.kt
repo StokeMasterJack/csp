@@ -100,7 +100,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
         fun decisionSplitSatCount(): Long {
             val decisionVar: Var = decide()
-            val split = DecisionSplit(this, decisionVar)
+            val split = FormulaSplit(this, decisionVar)
             return split.plSatCount()
         }
 
@@ -146,7 +146,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             return split.isSat
         } else {
             val `var` = decide()
-            val split = DecisionSplit(this, `var`)
+            val split = FormulaSplit(this, `var`)
             return split.isSat
         }
     }
@@ -182,7 +182,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun decisionSplit(decisionVar: Var): Exp {
-        val split = DecisionSplit(this, decisionVar)
+        val split = FormulaSplit(this, decisionVar)
         return split.toDnnf()
     }
 
@@ -254,7 +254,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             }
 
             val vr = decide()
-            val decisionSplit =  decisionSplit(vr)
+            val decisionSplit = decisionSplit(vr)
             return decisionSplit
 
         } else if (fcc != null && !fcc!!) {
@@ -311,7 +311,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             return split.toDnnf()
         } else {
             val `var` = decide()
-            val split = DecisionSplit(this, `var`)
+            val split = FormulaSplit(this, `var`)
             return split.toDnnf()
         }
     }
@@ -515,20 +515,20 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         return bb!!
     }
 
-    private fun proposeBothWays(`var`: Var): Lit? {
-        val split = DecisionSplit(this, `var`)
+    private fun proposeBothWays(vr: Var): Lit? {
+        val split = FormulaSplit(this, vr)
         val tt = split.mkCsp(true)
         if (!tt.isSat()) {
-            //must be f
+            //must be fCon
             //            System.err.println("  found bb lit[" + vr.mkNegLit() + "]");
-            return `var`.nLit()
+            return vr.nLit()
         } else {
 
             val ff = split.mkCsp(false)
             return if (!ff.isSat()) {
-                //must be t
+                //must be tCon
                 //                System.err.println("  found bb lit[" + vr.mkPosLit() + "]");
-                `var`.pLit()
+                vr.pLit()
             } else {
                 null //open
             }
@@ -626,4 +626,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
+    override fun asFormula(): KFormula {
+        return this
+    }
 }

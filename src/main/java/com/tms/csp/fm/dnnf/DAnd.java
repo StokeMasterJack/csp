@@ -27,7 +27,7 @@ public class DAnd extends And {
 
         for (Exp arg : args) {
             if (!arg.isDnnf()) {
-                throw new IllegalStateException();
+                throw new IllegalStateException(arg.getSimpleName() + " " + arg.toString());
             }
 
         }

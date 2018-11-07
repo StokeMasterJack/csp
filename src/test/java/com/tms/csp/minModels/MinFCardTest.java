@@ -1,13 +1,13 @@
 package com.tms.csp.minModels;
 
-import com.tms.csp.util.CspBaseTest2;
-import com.tms.csp.data.CspSample;
 import com.tms.csp.ast.Csp;
 import com.tms.csp.ast.Exp;
 import com.tms.csp.ast.Var;
+import com.tms.csp.data.CspSample;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.ssutil.Path;
 import com.tms.csp.ssutil.TT;
+import com.tms.csp.util.CspBaseTest2;
 import com.tms.csp.util.varSets.VarSet;
 import org.junit.Test;
 
@@ -303,30 +303,33 @@ public class MinFCardTest extends CspBaseTest2 {
     @Test
     public void test3() throws Exception {
         Csp csp = Csp.parse("xor(a b)\nconflict(a c)");
-        Exp n = csp.toDnnf().getSmooth();
+        Exp smooth = csp.toDnnfSmooth();
 
-        Set<Cube> products = n.getProducts();
+        Set<Cube> cubes = smooth.getCubesSmooth();
+
         System.err.println("products: ");
+        Exp.printCubes(cubes);
+
+
+        assertEquals(3, smooth.getVarCount());
+        assertEquals(3, smooth.getSatCount());
+        assertEquals(3, smooth.getProducts().size());
+
+
+        assertEquals(1, smooth.minFCard());
+
+        Exp minFModels = smooth.minFModels();
+        System.err.println("minFModels[" + minFModels + "]");
+
+
+        Set<Cube> products = minFModels.getProducts();
+        System.err.println("minFModelsCubes: ");
         for (Cube p : products) {
-            System.err.println("  " + p);
-        }
-
-        assertEquals(3, n.getVarCount());
-        assertEquals(3, n.getSatCount());
-        assertEquals(3, n.getProducts().size());
-        assertEquals(1, n.minFCard());
-
-        Exp mm = n.minFModels();
-        System.err.println("mm[" + mm + "]");
-
-        Set<Cube> mmProducts = mm.getProducts();
-        System.err.println("minModels: ");
-        for (Cube p : mmProducts) {
             System.err.println("  " + p);
             assertEquals(1, p.getFalseVarCount());
         }
 
-        assertEquals(1, mm.getProducts().size());
+        assertEquals(1, products.size());
 
 
     }

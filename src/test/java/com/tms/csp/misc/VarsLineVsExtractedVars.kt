@@ -1,4 +1,4 @@
-package com.tms.csp.util
+package com.tms.csp.misc
 
 import com.tms.csp.ast.Parser
 import kotlin.test.Test

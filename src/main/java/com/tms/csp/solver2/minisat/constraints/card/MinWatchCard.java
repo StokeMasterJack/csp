@@ -179,7 +179,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     /**
-     * Simplifies the constraint w.r.t. the assignments of the literals
+     * Simplifies the constraint w.r.tCon. the assignments of the literals
      * 
      * @param voc
      *            vocabulary used
@@ -325,7 +325,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
         // Mise ? jour de la contrainte
         if (indSwap == this.lits.length) {
-            // Si aucun litt?ral n'a ?t? trouv?
+            // Si aucun litt?ral n'a ?tCon? trouv?
             this.voc.watch(p, this);
             // La limite est atteinte
             this.watchCumul--;
@@ -341,7 +341,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
             return true;
         }
-        // Si un litt?ral a ?t? trouv? c les ?change
+        // Si un litt?ral a ?tCon? trouv? c les ?change
         int tmpInt = this.lits[indSwap];
         this.lits[indSwap] = this.lits[indFalsified];
         this.lits[indFalsified] = tmpInt;

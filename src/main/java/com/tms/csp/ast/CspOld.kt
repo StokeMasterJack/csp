@@ -337,24 +337,24 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //    private void logSimplified(Exp lit, Exp before, Exp after) {
     //        if (false && before != after) {
     //            System.err.println("Simplified from lit: " + lit);
-    //            System.err.println("\t before: " + before);
-    //            System.err.println("\t after:  " + after);
+    //            System.err.println("\tCon before: " + before);
+    //            System.err.println("\tCon after:  " + after);
     //        }
     //    }
     //
     //    private void logSimplified(EvalContext ctx, Exp before, Exp after) {
     //        if (false && before != after) {
     //            System.err.println("Simplified from ctx: " + ctx);
-    //            System.err.println("\t before: " + before);
-    //            System.err.println("\t after:  " + after);
+    //            System.err.println("\tCon before: " + before);
+    //            System.err.println("\tCon after:  " + after);
     //        }
     //    }
     //
     //    private void logSimplified(Object ctx, Exp before, Exp after) {
     //        if (true && before != after) {
     //            System.err.println("Simplified from ctx: " + ctx);
-    //            System.err.println("\t before: " + before);
-    //            System.err.println("\t after:  " + after);
+    //            System.err.println("\tCon before: " + before);
+    //            System.err.println("\tCon after:  " + after);
     //        }
     //    }
     //
@@ -805,7 +805,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////    }
     //
     //
-    ////    public void transform(Transformer t) {
+    ////    public void transform(Transformer tCon) {
     ////        Formula formula = getFormula();
     ////        DynFormula tmp = fDyn;
     ////        fDyn = new DynFormula(space);
@@ -813,7 +813,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////            if (isFailed()) {
     ////                return;
     ////            }
-    ////            Exp a = t.transform(b);
+    ////            Exp a = tCon.transform(b);
     ////            addConstraint(a);
     ////        }
     ////    }
@@ -1276,17 +1276,17 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //
     //        propagate();
     //
-    //        DynComplex f = new DynComplex(space);
+    //        DynComplex fCon = new DynComplex(space);
     //
     //        for (Exp e : complex) {
     //            if (skipNnf(e)) {
-    //                f.add(e);
+    //                fCon.add(e);
     //            } else {
-    //                f.add(e.toNnf());
+    //                fCon.add(e.toNnf());
     //            }
     //        }
     //
-    //        complex = f;
+    //        complex = fCon;
     //
     //    }
     //
@@ -1597,7 +1597,7 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////                Var vr = getVr(varId).asVar();
     ////                System.err.println("spExamining Var: " + vr);
     ////                OpenVarState openVarState = validateOpenVar(vr);
-    ////                System.err.println("\t " + openVarState);
+    ////                System.err.println("\tCon " + openVarState);
     ////            }
     ////        }
     ////
@@ -1606,26 +1606,26 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     ////
     ////           System.err.println("spValidateOpenVar[" + vr + "]");
     ////           boolean d = isDontCare(vr);
-    ////           System.err.println("\t spDC: " + d);
+    ////           System.err.println("\tCon spDC: " + d);
     ////
     ////           if (d) {
     ////               return OpenVarState.DontCare;
     ////           }
     ////
-    ////           boolean t = proposeTrue(vr.getVarId());
-    ////           System.err.println("\t spProposeTrue:" + t);
+    ////           boolean tCon = proposeTrue(vr.getVarId());
+    ////           System.err.println("\tCon spProposeTrue:" + tCon);
     ////
-    ////           boolean f = proposeFalse(vr.getVarId());
-    ////           System.err.println("\t spProposeFalse:" + f);
+    ////           boolean fCon = proposeFalse(vr.getVarId());
+    ////           System.err.println("\tCon spProposeFalse:" + fCon);
     ////
     ////
-    ////           if (!t && f) {
+    ////           if (!tCon && fCon) {
     ////               //vr must be assigned false
     ////               return OpenVarState.False;
-    ////           } else if (t && !f) {
+    ////           } else if (tCon && !fCon) {
     ////               //vr must be assigned true
     ////               return OpenVarState.True;
-    ////           } else if (t && f) {
+    ////           } else if (tCon && fCon) {
     ////               //vr must be assigned false
     ////               return OpenVarState.CareVar;
     ////           } else {
@@ -1751,8 +1751,8 @@ class CspOld(private val k: Csp) : SpaceUtil() {
     //        if (!seriesName.startsWith("SER")) {
     //            seriesName = "SER_" + seriesName;
     //        }
-    //        Formula f = refineFormulaOnly(seriesName);
-    //        Exp n = f.toDnnf();
+    //        Formula fCon = refineFormulaOnly(seriesName);
+    //        Exp n = fCon.toDnnf();
     //        Exp nn = n.copyToOtherSpace();
     //
     //        VarSet outVars = nn.getSpace().get_vars(Prefix.MDL);

@@ -12,10 +12,9 @@ import com.tms.csp.util.Bit
 import com.tms.csp.util.DynComplex
 import com.tms.csp.util.varSets.VarSet
 
-class ExpFactory(val sp: Space) {
+class ExpFactory(val space: Space) {
 
-    val _space: Space = sp
-    val parser: Parser get() = sp.parser
+    val parser: Parser get() = space.parser
 
     @JvmOverloads
     fun mkNCube(vars: VarSet): Exp {
@@ -58,7 +57,7 @@ class ExpFactory(val sp: Space) {
     fun mkBinaryIff(arg1: Exp, arg2: Exp): Exp {
 
         if (arg1 === arg2) {
-            return sp.mkTrue()
+            return space.mkTrue()
         }
 
         if (arg1.getExpId() == arg2.getExpId()) {
@@ -72,23 +71,23 @@ class ExpFactory(val sp: Space) {
         assert(arg1.getExpId() != arg2.getExpId()) { arg1.toString() + " = " + arg2 }
 
         if (arg1 === arg2.flip()) {
-            return sp.mkFalse()
+            return space.mkFalse()
         }
 
         if (arg1.isFalse && arg2.isFalse) {
-            return sp.mkTrue()
+            return space.mkTrue()
         }
 
         if (arg1.isTrue && arg2.isTrue) {
-            return sp.mkTrue()
+            return space.mkTrue()
         }
 
         if (arg1.isFalse && arg2.isTrue) {
-            return sp.mkFalse()
+            return space.mkFalse()
         }
 
         if (arg1.isTrue && arg2.isFalse) {
-            return sp.mkFalse()
+            return space.mkFalse()
         }
 
         if (arg1.isTrue && arg2.isOpen) {
@@ -215,26 +214,26 @@ class ExpFactory(val sp: Space) {
     @JvmOverloads
     fun argBuilder(op: Op): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
-        return ArgBuilder(sp, op)
+        return ArgBuilder(space, op)
     }
 
 
     @JvmOverloads
     fun argBuilder(op: Op, args: ExpIt): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
-        return ArgBuilder(sp, op, args)
+        return ArgBuilder(space, op, args)
     }
 
 
     @JvmOverloads
     fun argBuilder(op: Op, cube: Cube): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
-        return ArgBuilder(sp, op, cube.argIt())
+        return ArgBuilder(space, op, cube.argIt())
     }
 
     @JvmOverloads
     fun argBuilderPair(op: Op = Op.And, arg1: Exp, arg2: Exp): ArgBuilder {
-        return ArgBuilder(sp, op).addExp(arg1).addExp(arg2);
+        return ArgBuilder(space, op).addExp(arg1).addExp(arg2);
     }
 
     @JvmOverloads
@@ -297,7 +296,7 @@ class ExpFactory(val sp: Space) {
 
 
     fun mkCubeExp(vars: VarSet, trueVars: VarSet): Exp {
-        val cube: DynCube = DynCube(sp, vars, trueVars);
+        val cube: DynCube = DynCube(space, vars, trueVars);
 
         val exp: Exp = cube.mk()
 
@@ -306,12 +305,12 @@ class ExpFactory(val sp: Space) {
 
     fun mkCubeExp(c: DynCube?, f: DynComplex?): Exp {
 
-        return if (c.isNullOrEmpty && f.isNullOrEmpty) sp.mkTrue()
+        return if (c.isNullOrEmpty && f.isNullOrEmpty) space.mkTrue()
         else if (c.isNullOrEmpty) f!!.mk()
         else if (f.isNullOrEmpty) c!!.mk()
         else {
 
-            //both c and f are now both "open"
+            //both c and fCon are now both "open"
 
             val cc = c!!.mk()
             val ff = f!!.mkFormula()
@@ -337,11 +336,11 @@ class ExpFactory(val sp: Space) {
 
     fun mkBinaryAnd(arg1: Exp, arg2: Exp): Exp {
         return if (arg1.isFalse || arg2.isFalse) {
-            sp.mkFalse()
+            space.mkFalse()
         } else if (arg1 === arg2) {
             arg1
         } else if (arg1 === arg2.flip()) {
-            sp.mkFalse()
+            space.mkFalse()
         } else if (arg1.isTrue) {
             arg2
         } else if (arg2.isTrue) {
@@ -363,7 +362,7 @@ class ExpFactory(val sp: Space) {
      */
     fun mkDAnd(lit: Lit, f: Exp): Exp {
         return when (f) {
-            is False -> _space.mkFalse();
+            is False -> space.mkFalse();
             is True -> lit
             is Lit -> mkDCubeLitPair(lit, f)
             is Cube -> mkDAnd(lit, f.asCubeExp())
@@ -375,8 +374,9 @@ class ExpFactory(val sp: Space) {
      * Args are already known to be disjoint and dnnf
      */
     fun mkDAnd(cube: CubeExp, f: Exp): Exp {
+        println("ExpFactory.mkDAnd")
         return when (f) {
-            is False -> _space.mkFalse();
+            is False -> space.mkFalse();
             is True -> cube
             is Lit -> mkDAnd(f.asLit(), cube)
             is CubeExp -> mkDAnd(cube, f.asCubeExp())
@@ -409,7 +409,7 @@ class ExpFactory(val sp: Space) {
      */
     fun mkDAnd(c: Exp, f: Exp): Exp {
         return if (c.isFalse || f.isFalse) {
-            _space.mkFalse()
+            space.mkFalse()
         } else if (c.isTrue) {
             f
         } else if (f.isTrue) {
@@ -417,13 +417,16 @@ class ExpFactory(val sp: Space) {
         } else if (c === f) {
             c
         } else if (c == f.flip()) {
-            _space.mkFalse()
+            space.mkFalse()
         } else if (c.isLit) {
             mkDAnd(c.asLit(), f)
         } else if (f.isLit) {
             mkDAnd(f.asLit(), c)
         } else {
-            argBuilder(Op.DAnd).addExp(c).addExp(f).mk()
+            val b = argBuilder(Op.DAnd)
+            b.addExp(c)
+            b.addExp(f)
+            return b.mk();
         }
 
     }
@@ -437,7 +440,7 @@ class ExpFactory(val sp: Space) {
 
     fun mkBinaryOr(arg1: Exp, arg2: Exp): Exp {
         if (arg1.isTrue || arg2.isTrue) {
-            return sp.mkTrue()
+            return space.mkTrue()
         }
 
         if (arg1 === arg2) {
@@ -445,7 +448,7 @@ class ExpFactory(val sp: Space) {
         }
 
         if (arg1 === arg2.flip()) {
-            return sp.mkTrue()
+            return space.mkTrue()
         }
 
         if (arg1.isFalse) {
@@ -486,7 +489,7 @@ class ExpFactory(val sp: Space) {
         val litSet = xor.args.map { it.asLit() }.toSet()
         for (lit in litSet) {
             val others = litSet.minus(lit)
-            val cc: DynCube = DynCube(sp, lit)
+            val cc: DynCube = DynCube(space, lit)
             for (other in others) cc.assignSafe(other.flip().asLit())
             bb.add(cc)
         }
@@ -502,7 +505,7 @@ class ExpFactory(val sp: Space) {
         }
         return if (ss != arg) {
             when {
-                ss.isFalse -> sp.mkFalse()
+                ss.isFalse -> space.mkFalse()
                 ss.isTrue -> mkCubeExp(cube)
                 ss.isLit -> mkCube(cube, ss.asLit(), Bit.TRUE)
                 else -> throw IllegalStateException()
@@ -511,6 +514,27 @@ class ExpFactory(val sp: Space) {
             argBuilder(Op.And, cube).addExp(ss).mk()
         }
 
+    }
+
+    fun mkFalse() = space.mkFalse()
+    fun mkTrue() = space.mkTrue()
+
+    fun mkDOr(arg1: Exp, arg2: Exp): Exp {
+        assert(arg1.isDnnf)
+        assert(arg2.isDnnf)
+        return if (arg1.isTrue || arg2.isTrue) {
+            space.mkTrue()
+        } else if (arg1.isFalse) {
+            arg2
+        } else if (arg2.isFalse) {
+            arg1
+        } else if (arg1 == arg2) {
+            arg1
+        } else if (arg1.flip() == arg2) {
+            space.mkTrue()
+        } else {
+            argBuilder(Op.DOr).addExp(arg1).addExp(arg2).mk()
+        }
     }
 
     fun mkCube(cube: Cube, lit: Lit, disjoint: Bit): Exp {
@@ -526,7 +550,7 @@ class ExpFactory(val sp: Space) {
 
         return if (condition != lit) {
             when {
-                condition.isFalse -> sp.mkFalse()
+                condition.isFalse -> space.mkFalse()
                 condition.isTrue -> mkCubeExp(cube)
                 else -> throw IllegalStateException()
             }
@@ -586,7 +610,7 @@ class ExpFactory(val sp: Space) {
 
 
     fun mkCsp(): Csp {
-        return Csp(_space);
+        return Csp(space);
     }
 
 
@@ -602,7 +626,7 @@ val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 //    }
 //
 //    val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
-//    val space: Space = arg1.sp
+//    val space: Space = arg1.space
 //
 //    override val isFcc: Boolean? get() = null
 //    override val size: Int get() = 2
@@ -632,6 +656,7 @@ val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 
     init {
+        println("LitPairDCubeBuilder.")
         assert(arg1.vr != arg2.vr)
     }
 
@@ -653,6 +678,7 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 
     init {
+        println("LitCubeDAndBuilder.")
         assert(!cube.containsVar(lit.vr))
     }
 
@@ -673,6 +699,7 @@ class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder {
 
     init {
+        println("CubeCubeDAndBuilder.")
         assert(cube1.isVarDisjoint(cube2.vars))
     }
 

@@ -86,8 +86,8 @@ class Parse(val space: Space) : PLConstants {
 //
 //
 //        fun isComment(constraintLine: String): Boolean {
-//            val t = constraintLine.trim()
-//            return t.isEmpty() || t.startsWith("#")
+//            val tCon = constraintLine.trim()
+//            return tCon.isEmpty() || tCon.startsWith("#")
 //        }
 //
 //

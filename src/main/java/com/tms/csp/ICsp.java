@@ -25,7 +25,7 @@ public interface ICsp {
      * Examples of valid fact:
      * or(a b c)
      * and(or(x y z) or(p d q) or(h d e))
-     * xor(q w e t)
+     * xor(q w e tCon)
      * imp(a b)
      * iff(a b)
      * x

@@ -384,6 +384,12 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
         for (exp in argIt) {
             if (exp.containsVar(lit.vr)) {
+
+
+                if (exp.toString() == "or(!QD and(R7 SE SR))") {
+                    println(5555)
+                }
+
                 val take = take(exp.expId)
                 checkNotNull(take)
                 if (a == null) {
