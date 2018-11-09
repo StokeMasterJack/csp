@@ -11,6 +11,8 @@ import com.tms.csp.fm.dnnf.Dnnf
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.transforms.Transformer
 import com.tms.csp.util.*
+import com.tms.csp.util.BoolMath.permCount
+import com.tms.csp.util.BoolMath.pow
 import com.tms.csp.util.varSets.VarSet
 import com.tms.csp.util.varSets.VarSetBuilder
 import java.util.*
@@ -70,31 +72,9 @@ class Csp @JvmOverloads constructor(
 
 
     init {
-        if (add != null) {
-            add.addConstraints(this)
-        }
+        add?.addConstraints(this)
     }
 
-    private fun addConstraintsExpSeq(expSeq: Sequence<Exp>, ctx: ConditionOn? = null): Boolean {
-        var anyChange = false
-
-        expSeq.forEach {
-            if (isFailed) return true
-
-
-            if (it.toString() == "or(!QD and(R7 SE SR))" && ctx != null) {
-                println(888)
-            }
-
-            val ch = addConstraint(it, ctx)
-            if (isFailed) return true
-            if (ch) anyChange = true
-        }
-
-        propagate()
-
-        return anyChange
-    }
 
     //initial:
     constructor(space: Space, constraints: Sequence<Exp>) : this(space = space) {
@@ -104,21 +84,10 @@ class Csp @JvmOverloads constructor(
     //simple decision: formula and condition are disjoint
     constructor(formula: KFormula, condition: ConditionOn) : this(space = formula.space) {
         addConstraintsExpSeq(formula.argSeq, condition)
-        condition.assignSafe(this)
+        _assignSafe(condition)
         assert(isSimpleComplexDisjoint)
     }
 
-    //simple decision: or and condition are disjoint
-    constructor(or: Or, condition: ConditionOn) : this(space = or.space) {
-        addConstraint(or, condition)
-        condition.assignSafe(this)
-        assert(isSimpleComplexDisjoint)
-    }
-
-//    //simple decision: formula and condition are disjoint
-//    constructor(or: Or, condition: ConditionOn) : this(space = or.space) {
-//        val conditionThat = condition.conditionThat(or)
-//    }
 
     //    constructor(parent = null, space, mixed) : this(mixed.space, add = Action(c = mixed.complex, cc = mixed.simple))
 //
@@ -143,6 +112,22 @@ class Csp @JvmOverloads constructor(
             )
 
     //constructor(mixed: And) : this(mixed.space, add = Add(c = mixed.complex, cc = mixed.simple))
+
+    private fun addConstraintsExpSeq(expSeq: Sequence<Exp>, ctx: ConditionOn? = null): Boolean {
+        var anyChange = false
+
+        expSeq.forEach {
+            if (isFailed) return true
+
+            val ch = addConstraint(it, ctx)
+            if (isFailed) return true
+            if (ch) anyChange = true
+        }
+
+        propagate()
+
+        return anyChange
+    }
 
 
     fun copySimple(): DynCube? {
@@ -225,9 +210,7 @@ class Csp @JvmOverloads constructor(
             throw AlreadyFailedException(_failure.toString())
         }
 
-        if(constraint.toString() == "or(!QD and(R7 SE SR))" && ctx != null){
-            println(444)
-        }
+
         return if (ctx != null) {
             val conditioned = ctx.conditionThat(constraint)
 
@@ -253,7 +236,7 @@ class Csp @JvmOverloads constructor(
         }
 
 
-        if(constraint.toString() == "or(!QD and(R7 SE SR))" && condition != null){
+        if (constraint.toString() == "or(!QD and(R7 SE SR))" && condition != null) {
             println(999)
         }
 
@@ -352,21 +335,25 @@ class Csp @JvmOverloads constructor(
             return dontCares!!
         }
 
+//    fun satCountPL(): Long {
+//        return satCountPL(vars.plusVarSet(dontCares))
+//    }
+
+
     fun satCountPL(): Long {
-        return satCountPL(vars.plusVarSet(dontCares))
-    }
-
-
-    fun satCountPL(parentVars: VarSet): Long {
 
         propagate()
 
         return when {
             isFailed -> 0
-            isSolved -> computeDcVars(1, parentVars.minus(simpleVars), vars)
+            isSolved -> 1
             else -> {
-                val pVars = parentVars.minus(simpleVars);
-                return mkFormula().satCountPL(pVars)
+                val baseSatCount = mkFormula().satCountPL()
+                if (hasDontCares) {
+                    baseSatCount * permCount(dontCares!!.size)
+                } else {
+                    baseSatCount
+                }
             }
         }
 
@@ -1271,6 +1258,9 @@ class Csp @JvmOverloads constructor(
         return csp.toPLExp()
     }
 
+    fun _assignSafe(ctx: ConditionOn) {
+        mkSimple.assignSafe(ctx)
+    }
 
     fun _assignSafe(lit: Lit) {
         mkSimple.assignSafe(lit)
@@ -1523,7 +1513,7 @@ class Csp @JvmOverloads constructor(
 //        System.err.println("Transforming " + tmp.size() + " sentences!");
         var current = 0;
         for (e: Exp in ff.argIt()) {
-            if (space.config.logTranforms) {
+            if (space.config.logTransforms) {
                 Space.log.info("  Transforming [" + current + "] of " + ff.size())
             }
             if (isFailed) {
@@ -1799,14 +1789,6 @@ class Csp @JvmOverloads constructor(
     companion object {
 
         @JvmStatic
-        fun computeDcVars(baseSatCount: Long, parentVars: VarSet, myVars: VarSet): Long {
-            val dcVars = parentVars.minus(myVars)
-            val pow = Math.pow(2.0, dcVars.size.toDouble()).toLong()
-            return baseSatCount * pow
-        }
-
-
-        @JvmStatic
         fun toString(vararg constraints: Exp): String {
             return serializeConstraints(*constraints)
         }
@@ -1945,16 +1927,17 @@ class Csp @JvmOverloads constructor(
 
         @JvmStatic
         @JvmOverloads
-        fun parse2(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp(clob, tiny);
-
-        @JvmStatic
-        @JvmOverloads
-        fun parse(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp2(clob, tiny);
+        fun parse(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp(clob, tiny);
 
         @JvmStatic
         @JvmOverloads
         fun parse(cspSample: CspSample, tiny: Boolean = false): Csp {
             return parse(cspSample.loadText(), tiny);
+        }
+
+        fun computeDcVars(satCountPL: Long, parentVars: VarSet, childVars: VarSet): Long {
+            val dcVars = parentVars.minus(childVars)
+            return satCountPL * pow(dcVars.size)
         }
 
     }//end companion

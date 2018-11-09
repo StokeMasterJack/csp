@@ -87,7 +87,7 @@ public class False extends Constant {
         return this;
     }
 
-    public long satCountPL(VarSet parentVars) {
+    public long satCountPL() {
         return 0L;
     }
 

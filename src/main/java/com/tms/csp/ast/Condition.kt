@@ -32,7 +32,6 @@ class Condition(val on: Any) {
 
     fun condition(constraint: Exp, log: Boolean = true, depth: Int = 0): Exp {
 
-
         val conditioned: Exp = when {
             isIdentity -> constraint
             isXorCube -> constraint.condition(asXorCube)
@@ -42,16 +41,10 @@ class Condition(val on: Any) {
             else -> throw IllegalStateException()
         }
 
-
         if (conditioned != constraint && constraint.space.config.logCondition2) {
-            if (constraint.toString() == "or(!QD and(R7 SE SR))") {
-                println("aaa $on")
-
-                println("Conditioned: $constraint")
-                println("     on: $on")
-                println("     to: $conditioned")
-
-            }
+            println("Conditioned: $constraint")
+            println("     on: $on")
+            println("     to: $conditioned")
         }
 
         return conditioned

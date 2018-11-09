@@ -59,9 +59,9 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
 
     fun plSatCount(): Long {
         val t = mkCsp(true)
-        val pSatCount = t.satCountPL(formula.vars)
+        val pSatCount = Csp.computeDcVars(t.satCountPL(), formula.vars, t.vars)
         val f = mkCsp(false)
-        val nSatCount = f.satCountPL(formula.vars)
+        val nSatCount = Csp.computeDcVars(f.satCountPL(), formula.vars, f.vars)
         return pSatCount + nSatCount
     }
 

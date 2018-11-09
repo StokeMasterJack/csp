@@ -236,8 +236,7 @@ class CspTest : CspBaseTest2() {
         val clob = CspSample.EfcOriginal.loadText()
         val t1 = System.currentTimeMillis()
 
-        val csp = Csp.parse2(clob)  //parse rules: 1782, 1495, 1499,1614
-//        val csp = Csp.parse(clob)  //parse rules: 1446, 1410,1600
+        val csp = Csp.parse(clob)  //parse rules: 1446, 1410,1600
 
         val t2 = System.currentTimeMillis()
 

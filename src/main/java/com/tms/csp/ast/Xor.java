@@ -453,8 +453,8 @@ public class Xor extends PosComplexMultiVar implements IXor {
     }
 
 
-    public long satCountPL(VarSet parentVars) {
-        return KExp.satCountPL(this, parentVars);
+    public long satCountPL() {
+        return getArgCount();
     }
 
 

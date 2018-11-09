@@ -8,7 +8,6 @@ import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.fm.dnnf.products.CubesK;
 import com.tms.csp.parse.Head;
 import com.tms.csp.util.Bit;
-import com.tms.csp.util.DynComplex;
 import com.tms.csp.util.HasVarId;
 import com.tms.csp.util.XorCube;
 import com.tms.csp.util.varSets.VarSet;
@@ -464,6 +463,16 @@ public class DynCube extends AbstractCube {
 //
 //
 //    }
+
+    public void assignSafe(ConditionOn ctx) {
+        if (ctx instanceof Lit) {
+            assignSafe((Lit) ctx);
+        } else if (ctx instanceof Cube) {
+            assignSafe((Cube) ctx);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
 
     public void assignSafe(Lit lit) {
         try {

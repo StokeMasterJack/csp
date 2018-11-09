@@ -1334,10 +1334,9 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     public abstract void notNew();
 
-    public long satCountPL(VarSet parentVars) {
+    public long satCountPL() {
         throw new UnsupportedOperationException(this.getSimpleName() + ": " + toString());
     }
-
 
     public boolean sameSign(@NotNull Lit that) {
         return asLit().sign == that.sign;

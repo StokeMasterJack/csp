@@ -55,47 +55,7 @@ class KExp(val e: Exp) {
         @JvmStatic
         val selector: (Exp) -> Int = { it.expId }
 
-        @JvmStatic
-        fun Or.satCountPL(parentVars: VarSet): Long {
-            val decisionVar: Var = decide()
-//
-//            val split = FormulaSplit(this, decide())
-//            val baseSatCount = split.plSatCount()
-//            return Csp.computeDcVars(baseSatCount, parentVars, vars);
 
-
-//            val decisionVar: Var = decide()
-//            val split = FormulaSplit(this, decisionVar)
-//            val baseSatCount = split.plSatCount()
-//            return Csp.computeDcVars(baseSatCount, parentVars, vars);
-
-
-            val t = Csp(this, decisionVar.pLit());
-            val tSatCount = t.satCountPL(vars)
-
-
-            val f = Csp(this, decisionVar.nLit());
-            val fSatCount = f.satCountPL(vars)
-
-
-//                val pSatCount = t.satCountPL(formula.vars)
-//                val f = mkCsp(false)
-//                val nSatCount = f.satCountPL(formula.vars)
-
-            val baseSatCount = tSatCount + fSatCount
-
-            return Csp.computeDcVars(baseSatCount, parentVars, vars);
-
-
-        }
-
-        @JvmStatic
-        fun Xor.satCountPL(parentVars: VarSet): Long {
-            val baseSatCount = this.argCount.toLong()
-            return Csp.computeDcVars(baseSatCount, parentVars, vars);
-
-
-        }
 
         @JvmStatic
         fun Exp.conditionThat(that: Exp): Exp {

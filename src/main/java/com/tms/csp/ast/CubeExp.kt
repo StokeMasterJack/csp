@@ -105,8 +105,8 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
 
     override fun isNary(): Boolean = argCount() > 2
 
-    override fun satCountPL(parentVars: VarSet): Long {
-        return Csp.computeDcVars(1, parentVars, vars)
+    override fun satCountPL(): Long {
+        return 1
     }
 }
 

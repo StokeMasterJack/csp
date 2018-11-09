@@ -468,13 +468,8 @@ public class Lit extends Exp implements ConditionOn {
         return that.condition(this);
     }
 
-    @Override
-    public void assignSafe(@NotNull Csp csp) {
-        csp._assignSafe(this);
-    }
-
-    public long satCountPL(VarSet parentVars) {
-        return Csp.computeDcVars(1, parentVars, getVars());
+    public long satCountPL() {
+        return 1;
     }
 
 

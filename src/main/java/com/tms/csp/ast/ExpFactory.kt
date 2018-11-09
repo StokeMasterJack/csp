@@ -195,37 +195,28 @@ class ExpFactory(val space: Space) {
     }
 
 
-    @JvmOverloads
     fun orBuilder(): ArgBuilder {
         return argBuilder(Op.Or)
     }
 
-    @JvmOverloads
     fun cubeBuilder(): ArgBuilder {
         return argBuilder(Op.Cube)
     }
 
-    @JvmOverloads
     fun xorBuilder(): ArgBuilder {
         return argBuilder(Op.Xor)
     }
 
-
-    @JvmOverloads
     fun argBuilder(op: Op): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
         return ArgBuilder(space, op)
     }
 
-
-    @JvmOverloads
     fun argBuilder(op: Op, args: ExpIt): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
         return ArgBuilder(space, op, args)
     }
 
-
-    @JvmOverloads
     fun argBuilder(op: Op, cube: Cube): ArgBuilder {
         require(op.isAndLike || op.isOrLike || op.isXor)
         return ArgBuilder(space, op, cube.argIt())
@@ -656,7 +647,6 @@ val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 
     init {
-        println("LitPairDCubeBuilder.")
         assert(arg1.vr != arg2.vr)
     }
 
@@ -678,7 +668,6 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 
     init {
-        println("LitCubeDAndBuilder.")
         assert(!cube.containsVar(lit.vr))
     }
 
@@ -699,7 +688,6 @@ class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder {
 
     init {
-        println("CubeCubeDAndBuilder.")
         assert(cube1.isVarDisjoint(cube2.vars))
     }
 

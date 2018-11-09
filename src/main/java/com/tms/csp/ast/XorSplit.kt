@@ -1,7 +1,6 @@
 package com.tms.csp.ast
 
 import com.tms.csp.argBuilder.ArgBuilder
-import com.tms.csp.ast.formula.Formula
 import com.tms.csp.ast.formula.KFormula
 
 /**
@@ -19,8 +18,6 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
 
     val isSat: Boolean
         get() {
-
-
 
 
             for (trueVar in xorVars) {
@@ -95,14 +92,13 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
     fun plSatCount(): Long {
 
 
-
         var t: Long = 0
         for (trueVar: Var in xorVars) {
 
 
             try {
                 val rr = mkCsp(trueVar)
-                val satCount = rr.satCountPL(formulaVars)
+                val satCount = Csp.computeDcVars(rr.satCountPL(), formulaVars, rr.vars)
                 t += satCount
             } catch (e: ConflictingAssignmentException) {
                 throw UnsupportedOperationException()

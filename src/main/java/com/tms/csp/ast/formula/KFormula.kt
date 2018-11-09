@@ -74,7 +74,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
-    override fun satCountPL(parentVars: VarSet): Long {
+    override fun satCountPL(): Long {
 
         fun topXorSplitSatCount(): Long? {
 
@@ -121,9 +121,8 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         }
 
 
-        val baseSatCount = satCount()
+        return satCount()
 
-        return Csp.computeDcVars(baseSatCount, parentVars, vars);
 //
 //        val satCountWithDc = if (parentVars.isNullOrEmpty()) {
 //            baseSatCount
@@ -218,14 +217,20 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
     override fun toDnnf(): Exp {
         if (dnnf == null) {
-            dnnf = toDnnfInternal1()
+            dnnf = toDnnfInternal()
         }
         assert(dnnf != null)
         assert(dnnf!!.isDnnf) { dnnf!! }
         return dnnf!!
     }
 
-    private fun toDnnfInternal1(): Exp {
+    private fun toDnnfInternal(): Exp {
+//        return toDnnfInternalNoFccNoXorSplits();
+//        return toDnnfInternalNoFcc();
+        return toDnnfInternalWithFccAndXorSplits();
+    }
+
+    private fun toDnnfInternalWithFccAndXorSplits(): Exp {
 
         val topXorSplit = toDnnfTopXorSplit()
         if (topXorSplit != null) {
@@ -266,6 +271,30 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         }
 
 
+    }
+
+    private fun toDnnfInternalNoFcc(): Exp {
+
+        val topXorSplit = toDnnfTopXorSplit()
+        if (topXorSplit != null) {
+            return topXorSplit
+        }
+
+        val bestXorSplit = toDnnfBestXorSplit()
+        if (bestXorSplit != null) {
+            return bestXorSplit
+        }
+
+        val vr = decide()
+        return decisionSplit(vr)
+
+
+    }
+
+
+    private fun toDnnfInternalNoFccNoXorSplits(): Exp {
+        val vr = decide()
+        return decisionSplit(vr)
     }
 
 

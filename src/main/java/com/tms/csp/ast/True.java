@@ -71,8 +71,8 @@ public class True extends Constant {
         a.constantTrue();
     }
 
-    public long satCountPL(VarSet parentVars) {
-        return Csp.computeDcVars(1, parentVars, getVars());
+    public long satCountPL() {
+        return 1;
     }
 
 }

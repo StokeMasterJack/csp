@@ -408,13 +408,6 @@ class Parser(val space: Space) {
         }
 
         val csp: Csp by lazy {
-            val add = Add(expSeq, space)
-            add.mkCsp()
-
-
-        }
-
-        val csp2: Csp by lazy {
             Csp(space = space, constraints = expSeq)
         }
 
@@ -431,13 +424,6 @@ class Parser(val space: Space) {
             val raw: Raw = parsePL(clob, tiny)
             return raw.csp
         }
-
-        @JvmStatic
-        fun parseCsp2(clob: String, tiny: Boolean = false): Csp {
-            val raw: Raw = parsePL(clob, tiny)
-            return raw.csp2
-        }
-
 
         @JvmStatic
         fun parsePL(clob: String, tiny: Boolean): Raw {

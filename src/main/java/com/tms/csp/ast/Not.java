@@ -248,9 +248,8 @@ public class Not extends Complex {
         return pos.equals(that.pos);
     }
 
-    public long satCountPL(VarSet parentVars) {
-
-        return toNnf().satCountPL(parentVars);
+    public long satCountPL() {
+        return toNnf().satCountPL();
     }
 
 }

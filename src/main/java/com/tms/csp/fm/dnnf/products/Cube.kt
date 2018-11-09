@@ -100,9 +100,6 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
     fun varCodesSorted(): SortedSet<String> = vars.toVarCodeSetSorted()
 
 
-    override fun assignSafe(csp: Csp) {
-        csp._assignSafe(this)
-    }
 
     companion object {
 
