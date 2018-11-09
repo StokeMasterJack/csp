@@ -518,7 +518,7 @@ public class DynCube extends AbstractCube {
     }
 
     public DynCube copy() {
-        return new DynCube(space, v.mutableCopy(), t.mutableCopy());
+        return new DynCube(space, v == null ? null : v.mutableCopy(), t == null ? null : t.mutableCopy());
     }
 
     @NotNull

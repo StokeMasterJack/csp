@@ -1350,6 +1350,11 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         System.err.println(toXml());
     }
 
+    @NotNull
+    public Var getVar(@NotNull String code) {
+        return _space.getVar(code);
+    }
+
     public static class LitArg {
 
         public static final LitArg NONE = new LitArg(false, false);
@@ -1367,12 +1372,13 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
 
-    public Exp condition(String sLit) {
-        Exp exp = _space.parseExp(sLit);
-        if (exp.isLit()) return condition(exp.asLit());
-        if (exp.isCube()) return condition(exp.asCube());
-        Lit lit = _space.mkLit(sLit);
-        return condition(lit);
+    /**
+     * @param sLits
+     * @return
+     */
+    public Exp condition(String sLits) {
+        ConditionOn conditionOn = _space.parser.parseLitsToConditionOn(sLits);
+        return conditionOn.conditionThat(this);
     }
 
     public Cube asCube() {
@@ -3062,9 +3068,14 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     @Nonnull
     public Exp conditionVV(Exp vv) {
+        return conditionVV(vv, false);
+    }
+
+    @Nonnull
+    public Exp conditionVV(Exp vv, boolean keepXors) {
 
         if (!vv.isNnf()) {
-            vv = vv.toNnf();
+            vv = vv.toNnf(keepXors);
         }
 
         if (!vv.isOr()) {
@@ -3074,7 +3085,11 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public Exp conditionVVs(List<Exp> vvs) {
-        Exp nnf = toNnf();
+        return conditionVVs(vvs, false);
+    }
+
+    public Exp conditionVVs(List<Exp> vvs, boolean keepXors) {
+        Exp nnf = toNnf(keepXors);
         for (Exp vv : vvs) {
 
             nnf = nnf.conditionVV(vv);
@@ -3383,13 +3398,17 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return false;
     }
 
-    public Exp toNnf() {
-        Exp bnf = toBnf();
+    public Exp toNnf(boolean keepXors) {
+        Exp bnf = toBnf(keepXors);
         return bnf.transform(Transformer.BNF_TO_NNF);
     }
 
-    public Exp toBnf() {
-        return transform(Transformer.BNF);
+    public Exp toBnf(boolean keepXors) {
+        if (keepXors) {
+            return transform(Transformer.BNF_KEEP_XORS);
+        } else {
+            return transform(Transformer.BNF);
+        }
     }
 
     public Exp toBnfKeepXors() {
@@ -3578,9 +3597,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public static Exp parseTinyDnnf(String tinyDnnfClob) {
-        Space sp = new Space();
-        return sp.parseTinyDnnf(tinyDnnfClob);
-
+        return Parser.parseTinyDnnf(tinyDnnfClob);
     }
 
 
@@ -3746,6 +3763,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         if (satCount == null) {
             satCount = computeSatCount();
         }
+//        if (satCount < 0) throw new IllegalStateException();
         return satCount;
     }
 

@@ -574,7 +574,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Exp mkCube(String sLits) {
-        Exp exp = parser.parseLits(sLits);
+        Exp exp = parser.parseLitsToExp(sLits);
         assert exp.isCube();
         return exp;
     }
@@ -2233,7 +2233,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Exp parseTinyDnnf(String tinyDnnfClob) {
-        return parser.parseTinyDnnf(tinyDnnfClob);
+        return Parser.parseTinyDnnf(tinyDnnfClob);
     }
 
 //    public Csp parseCsp(String clob) {

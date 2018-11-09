@@ -69,9 +69,9 @@ class CnfTest : CspBaseTest2() {
     private fun buildEfc2013MinusTundraPL(): Csp {
         val clob = CspSample.EfcOriginal.loadText()
         var csp1 = Csp.parse(clob)
-        csp1 = csp1.refine("YR_2013", "!YR_2014")
+        csp1 = csp1.condition("YR_2013 !YR_2014")
         csp1.simplifySeriesModelAnds()
-        csp1 = csp1.refine("!SER_tundra")
+        csp1 = csp1.condition("!SER_tundra")
         csp1.simple!!.clear()
         return csp1
     }

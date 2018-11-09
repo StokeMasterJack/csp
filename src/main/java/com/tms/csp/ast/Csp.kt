@@ -1009,46 +1009,23 @@ class Csp @JvmOverloads constructor(
         return Csp(this)
     }
 
-    fun refine(vararg sLits: String): Csp {
-        val copy = copy()
-        for (sLit in sLits) {
-            val r = space.mkLit(sLit)
-            copy.assign(r)
-            copy.propagate()
+    fun condition(sLits: String): Csp {
+        val conditionOn = parser.parseLitsToConditionOn(sLits)
+        return when (conditionOn) {
+            is Lit -> condition(conditionOn)
+            is Cube -> condition(conditionOn)
+            else -> throw IllegalStateException()
         }
-        return copy
     }
 
-    fun refine(lit: Lit): Csp {
+    fun condition(cube: Cube): Csp {
         val copy = copy()
-        copy.assign(lit)
-        copy.propagate()
-        return copy
-    }
-
-    fun refine(lits: Iterable<Lit>): Csp {
-        val copy = copy()
-        for (lit in lits) {
-            copy.assign(lit)
-            copy.propagate()
-        }
+        copy.assignAll(cube)
         return copy
     }
 
 
-    fun refine1(sLits: String): Csp {
-        val parser = space.parser
-        val exp = parser.parseExp("and($sLits)")
-        return when {
-            exp.isCube -> refine(exp.litItFromExpArray())
-            exp.isLit -> refine(exp.asLit())
-            else -> throw IllegalArgumentException()
-        }
-
-
-    }
-
-    fun refine1(lit: Lit): Csp {
+    fun condition(lit: Lit): Csp {
         propagate()
         val copy = copy()
         copy.assign(lit)
@@ -1588,9 +1565,10 @@ class Csp @JvmOverloads constructor(
     }
  */
 
-    fun toNnf() {
+    fun toNnf(keepXors: Boolean = false) {
         println("Csp.toNnf")
         propagate();
+        assertDisjointSimpleComplex()
 
         if (!hasComplex) return;
 
@@ -1599,7 +1577,7 @@ class Csp @JvmOverloads constructor(
         complex = space.mkComplex()
 
         for (e in tmp) {
-            val bnf = e.toBnf()
+            val bnf = e.toBnf(keepXors)
             val nnf = bnf.transform(Transformer.BNF_TO_NNF);
             addConstraint(nnf);
         }
@@ -1608,6 +1586,8 @@ class Csp @JvmOverloads constructor(
 
 
     fun toNnf2() {
+        propagate()
+        assertDisjointSimpleComplex()
         toBnf();
         bnfToNnf();
     }
@@ -1710,7 +1690,7 @@ class Csp @JvmOverloads constructor(
         for (yearExp in yearXor!!.argIt()) {
             val yearVarCode = yearExp.varCode
 
-            val yearCsp = refine1(yearVarCode)
+            val yearCsp = condition(yearVarCode)
             val map = computeSeriesModelMultiMap()
 
             val keys = map.keySet()
@@ -2045,7 +2025,7 @@ fun String.toCubes(sp: Space): Set<Cube> = sp.parser.parseCubes(this)
 fun String?.toCube(sp: Space): Cube {
     return if (this == null || this.trim().isEmpty()) sp.mkEmptyCube()
 //    else space.expFactory.parseDynCube(this)
-    else sp.parser.parseDynCube(this)
+    else sp.parser.parseLitsToDynCube(this)
 }
 
 fun String.toCubes(hasSpace: HasSpace): Set<Cube> = toCubes(hasSpace.space)

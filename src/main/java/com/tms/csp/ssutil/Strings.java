@@ -83,6 +83,10 @@ public class Strings {
         System.out.println(indent(tabCount) + thingToPrint);
     }
 
+    public static String lpad(int unpaddedString, char padChar, int desiredFinalLength) {
+        return lpad(unpaddedString + "",padChar,desiredFinalLength);
+    }
+
     public static String lpad(String unpaddedString, char padChar, int desiredFinalLength) {
         int padCount = desiredFinalLength - unpaddedString.length();
         StringBuilder sb = new StringBuilder();

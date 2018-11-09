@@ -16,7 +16,7 @@ public class SimplifySeriesModelAndsTest extends CspBaseTest2 {
         Csp csp1 = Csp.parse(clob1);
 
 
-        csp1 = csp1.refine("YR_2013", "!YR_2014");
+        csp1 = csp1.condition("YR_2013 !YR_2014");
 
         int size1 = csp1.serialize().length();
         long count1 = csp1.toDnnf().getSmooth().getSatCount();

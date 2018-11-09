@@ -247,6 +247,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return ImmutableSortedSet.copyOf(elements);
     }
 
+    public List<String> getCodes() {
+        Set<String> elements = toVarCodeSet();
+        return ImmutableList.copyOf(elements);
+    }
+
     public VarSet minus(int v1, int v2) {
         throw new UnsupportedOperationException();
     }

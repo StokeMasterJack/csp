@@ -2,8 +2,6 @@ package com.tms.csp.dnnf
 
 import com.tms.csp.ast.Csp
 import com.tms.csp.ast.Exp
-import com.tms.csp.ast.Parser
-import com.tms.csp.ast.Space
 import com.tms.csp.data.CspSample
 import com.tms.csp.util.CspBaseTest2
 import org.junit.Assert.assertEquals
@@ -105,7 +103,6 @@ class CubesTest : CspBaseTest2() {
     }
 
     @Test
-    @Throws(Exception::class)
     fun efcSatCount() {
 
         val expectedSatCount = 3460501125462739908
@@ -115,7 +112,7 @@ class CubesTest : CspBaseTest2() {
 
         val sp1 = csp1.space
 
-        val d1 = csp1.toDnnf().smooth
+        val d1 = csp1.toDnnfSmooth()
 
         assertEquals(expectedSatCount, d1.satCount)
 
@@ -129,7 +126,9 @@ class CubesTest : CspBaseTest2() {
 
         val d3: Exp = Exp.parseTinyDnnf(tinyDnnf)
 
-
+        val sp3 = d3.space
+        assert(sp3 != sp1)
+        assert(sp3 != sp2)
 
         assertEquals(expectedSatCount, d3.satCount)
 

@@ -89,23 +89,11 @@ class Parser(val space: Space) {
         return retVal
     }
 
-
-//    fun parseLines(clob: String): Sequence<String?> {
-//        val lines: Sequence<String?> = clob.trim().lineSequence()
-//        return maybeAddVarsLines(lines)
-//    }
-
-
-    fun parseTinyDnnf(clob: String): Exp {
-        val lines = parseLines(clob.trim())
+    fun parseTinyDnnf(lines: Sequence<String>): Exp {
 
         var lastExp: Exp? = null
 
         for (line in lines) {
-            println("L: [$line]")
-            if (line == null) {
-                continue
-            }
             if (line.isBlank()) {
                 continue
             }
@@ -258,7 +246,7 @@ class Parser(val space: Space) {
 
 
     fun mkCubeSeq(sCubes: String): Sequence<Cube> {
-        return sCubes.lineSequence().map { it.trim() }.map { parseCube(it) }
+        return sCubes.lineSequence().map { it.trim() }.map { parseLitsToDynCube(it) }
     }
 
     fun mkCubeSet(sCubes: String) = mkCubeSeq(sCubes).toSet()
@@ -270,7 +258,7 @@ class Parser(val space: Space) {
 
 
     fun parsePL(clob: String): Sequence<Exp> {
-        val lines1: Sequence<String?> = parseLines(clob)
+        val lines1: Sequence<String?> = clobToLines(clob)
         return parsePL(lines1)
     }
 
@@ -341,7 +329,7 @@ class Parser(val space: Space) {
         return if (sLits.isNullOrBlank()) {
             emptySet()
         } else {
-            val lits = Space.MY_SPLITTER.split(sLits.trim().run {
+            val split: Iterable<String> = Space.MY_SPLITTER.split(sLits.trim().run {
                 if (this.startsWith("and")) {
                     //cube
                     this.replace("and(", "").replace(")", "")
@@ -352,18 +340,22 @@ class Parser(val space: Space) {
 
             val b = ImmutableSet.builder<Lit>()
 
-            for (lit in lits) {
-                val code = Head.getVarCode(lit)
-                val sign = Head.getSign(lit)
-                val dVar = space.getVar(code) ?: throw IllegalStateException("Bad Var[$code]")
-                val dLit = dVar.mkLit(sign)
-                b.add(dLit)
+            for (sLit: String in split) {
+                val lit = parseLit(sLit)
+                b.add(lit)
             }
             return b.build()
 
         }
 
 
+    }
+
+    fun parseLit(sLit: String): Lit {
+        val code = Head.getVarCode(sLit)
+        val sign = Head.getSign(sLit)
+        val dVar = space.getVar(code) ?: throw IllegalStateException("Bad Var[$code]")
+        return dVar.mkLit(sign)
     }
 
     fun mkLitSet(vars: Set<Var>?): Set<Lit> {
@@ -380,23 +372,36 @@ class Parser(val space: Space) {
         return mkCubeSet(expText)
     }
 
-    fun parseDynCube(sLits: String): DynCube {
+    fun parseLitsToDynCube(sLits: String): DynCube {
         val litSet = mkLitSet(sLits)
         return DynCube(space, litSet)
     }
 
 
-    fun parseCube(sLits: String): Cube {
-        val litSet = mkLitSet(sLits)
-        return DynCube(space, litSet)
+    fun parseLitsToConditionOn(sLits: String): ConditionOn {
+        val tLits = sLits.trim()
+        val ret: ConditionOn = if (tLits.contains(" ")) {
+            //must be an sCube
+            parseLitsToDynCube(sLits)
+        } else {
+            //single lit
+            parseLit(sLits)
+        }
+        assert(ret is Cube || ret is Lit) { sLits }
+        return ret
     }
 
-    fun parseLits(sLits: String): Exp {
-
-        val exp = parseExp("and($sLits)")
-
-        assert(exp.isCube() || exp.isLit()) { sLits }
-        return exp
+    fun parseLitsToExp(sLits: String): Exp {
+        val tLits = sLits.trim()
+        val ret: Exp = if (tLits.contains(" ")) {
+            //must be an sCube
+            parseExp("and($sLits)")
+        } else {
+            //single lit
+            parseLit(sLits)
+        }
+        assert(ret is Cube || ret is Lit) { sLits }
+        return ret
     }
 
     data class Raw(val varsLine: String, val strSeq: Sequence<String>) {
@@ -411,6 +416,10 @@ class Parser(val space: Space) {
             Csp(space = space, constraints = expSeq)
         }
 
+        val dnnf: Exp by lazy {
+            space.parser.parseTinyDnnf(strSeq)
+        }
+
 
     }
 
@@ -421,13 +430,19 @@ class Parser(val space: Space) {
 
         @JvmStatic
         fun parseCsp(clob: String, tiny: Boolean = false): Csp {
-            val raw: Raw = parsePL(clob, tiny)
+            val raw: Raw = clobToRaw(clob, tiny)
             return raw.csp
         }
 
         @JvmStatic
-        fun parsePL(clob: String, tiny: Boolean): Raw {
-            val lines = parseLines(clob)
+        fun parseTinyDnnf(clob: String): Exp {
+            val raw: Raw = clobToRaw(clob)
+            return raw.dnnf
+        }
+
+        @JvmStatic
+        fun clobToRaw(clob: String, tiny: Boolean = false): Raw {
+            val lines = clobToLines(clob)
             val firstLine = lines.first()
             return if (Vars.isVarsLine(firstLine)) {
                 val varsLine: String = lines.take(1).single()
@@ -443,7 +458,7 @@ class Parser(val space: Space) {
 
         @JvmStatic
         fun extractVarCodes(clob: String, tiny: Boolean = false): Set<String> {
-            val lines = parseLines(clob)
+            val lines = clobToLines(clob)
             return extractVarCodes(lines, tiny)
         }
 
@@ -452,7 +467,7 @@ class Parser(val space: Space) {
         @JvmOverloads
         fun compareVarsLineToExtract(clob: String, tiny: Boolean = false) {
             val extract = extractVarCodes(clob, tiny = false)
-            val lines = parseLines(clob)
+            val lines = clobToLines(clob)
             val firstLine = lines.first()
             val varsLine = if (Vars.isVarsLine(firstLine)) {
                 val varsLine: String = lines.take(1).single()
@@ -473,7 +488,7 @@ class Parser(val space: Space) {
 
 
         @JvmStatic
-        fun parseLines(clob: String): Sequence<String> = clob.lineSequence().map { preProcessLine(it) }.filterNotNull()
+        fun clobToLines(clob: String): Sequence<String> = clob.lineSequence().map { preProcessLine(it) }.filterNotNull()
 
         fun preProcessLine(line: String?): String? {
             if (line.isNullOrBlank()) {
@@ -486,7 +501,7 @@ class Parser(val space: Space) {
         }
 
 
-        fun parseLines1(clob: String): List<String> = parseLines(clob).toList();
+        fun parseLines1(clob: String): List<String> = clobToLines(clob).toList();
 
         @JvmStatic
         @JvmOverloads

@@ -197,7 +197,7 @@ public class Not extends Complex {
 
     public Exp toNnf() {
         assert !isXorOrContainsXor();
-        Exp pNnf = pos.toNnf();
+        Exp pNnf = pos.toNnf(false);
         assert pNnf.isOr() || pNnf.isAnd();
 
         Op newOp;
