@@ -346,7 +346,9 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
     private fun addInternal(arg: Exp) {
-        if (isShortCircuit) return
+        if (isShortCircuit) {
+            return
+        }
 
         if (arg.isConstant) {
             if (isShortCircuitCondition(arg)) {

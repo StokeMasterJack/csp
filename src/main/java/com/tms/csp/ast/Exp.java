@@ -1371,6 +1371,10 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return _space.getVar(code);
     }
 
+    public VarSet getMsrpVars() {
+        return getVars().filter("DLR");
+    }
+
     public static class LitArg {
 
         public static final LitArg NONE = new LitArg(false, false);

@@ -69,6 +69,8 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public Dnnf dnnf;
 
+    public VarSet invVars;
+
 
     private VarMeta varMeta;  //EFC Callback (aka VarInfo)
     private MetaVar metaVar;  //from vr-meta xml file (ui meta)

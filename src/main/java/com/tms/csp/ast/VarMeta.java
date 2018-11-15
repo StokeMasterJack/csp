@@ -9,7 +9,7 @@ public class VarMeta implements VarInfo, VarConstants {
     private final static String FIO_SUFFIX = ".type=FIO";
 
 
-    private VarInfo varInfo;
+    public VarInfo varInfo;
 
     public VarMeta(String varInfoClob) {
         this(VarInf.parse(varInfoClob));
@@ -194,5 +194,6 @@ public class VarMeta implements VarInfo, VarConstants {
         checkVarInfo();
         return varInfo.getFeaturesByType(context, type);
     }
+
 
 }

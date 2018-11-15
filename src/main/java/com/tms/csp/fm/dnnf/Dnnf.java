@@ -239,7 +239,7 @@ public class Dnnf implements PLConstants, HasSpace {
 
 
     public VarSet getInvVars() {
-        throw new UnsupportedOperationException();
+        return space.invVars;
     }
 
     public int getCubeCount(String var) {
@@ -602,8 +602,6 @@ public class Dnnf implements PLConstants, HasSpace {
     }
 
 
-
-
     final public boolean hasDealers() {
         return getBaseConstraint().hasDealers();
     }
@@ -703,9 +701,50 @@ public class Dnnf implements PLConstants, HasSpace {
         return codes;
     }
 
-    public Collection<Cube> computeInventory() {
-        throw new UnsupportedOperationException();
+//    public Collection<Cube> computeInventory() {
+//        throw new UnsupportedOperationException();
+//
+//
+//    }
 
+    /**
+     * Maybe adds msrp
+     */
+    public VarSet computeInventoryOutVars() {
+
+        VarSet vars = baseConstraint.getVars();
+
+        VarSetBuilder b = space.newMutableVarSet();
+
+        VarSet invVars = getInvVars();
+        assert invVars != null;
+
+        b.addVars(invVars);
+
+        assert !invVars.containsPrefix(MSRP_PREFIX);
+        assert !invVars.containsPrefix(DLR_PREFIX);
+
+        if (vars.containsPrefix(MSRP_PREFIX)) {
+            VarSet msrpVars = baseConstraint.getMsrpVars();
+            assert msrpVars != null && !msrpVars.isEmpty();
+            b.addVars(msrpVars);
+        }
+
+        return b.build();
+
+    }
+
+
+    public Collection<Cube> computeInventory() {
+
+        VarSet outVars = computeInventoryOutVars();
+//        VarSet outVars = getInvVars();
+
+        ForEach forEach = new ForEach(baseConstraint);
+        forEach.setPics(this.getPicsSet());
+        forEach.setOutVars(outVars);
+
+        return forEach.execute();
     }
 
 

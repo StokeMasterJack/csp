@@ -31,14 +31,12 @@ public class VarInf implements VarInfo {
 
     @Override
     public boolean isFio(String varCode) {
-        System.err.println("VarInf.isFio");
         String type = getType(varCode);
         return type != null && type.equalsIgnoreCase(FIO);
     }
 
     @Override
     public boolean isPio(String varCode) {
-        System.err.println("VarInf.isPio");
         String type = getType(varCode);
         return type != null && type.equalsIgnoreCase(PIO);
     }
@@ -49,7 +47,6 @@ public class VarInf implements VarInfo {
     }
 
     public boolean isAlaCarte(String varCode) {
-        System.err.println("VarInf.isAlaCarte");
         return is(null, varCode, ALACARTE);
     }
 
@@ -63,7 +60,7 @@ public class VarInf implements VarInfo {
 
     @Override
     public String getAttribute(Set<String> context, String varCode, String attName) {
-        System.err.println("VarInf.getAttribute[" + varCode + "-" + attName + "]");
+//        System.err.println("VarInf.getAttribute[" + varCode + "-" + attName + "]");
         Context ctx = Context.parse(context);
         return getAttribute(ctx, varCode, attName);
     }
@@ -86,7 +83,6 @@ public class VarInf implements VarInfo {
     }
 
     public String getType(String varCode) {
-        System.err.println("VarInf.getType[" + varCode + "]");
         Set<String> context = ImmutableSet.of();
         return getAttribute(context, varCode, TYPE);
     }
@@ -176,19 +172,16 @@ public class VarInf implements VarInfo {
 
     @Override
     public boolean isInvAcy(String varCode) {
-        System.err.println("VarInf.isInvAcy");
         return isFio(varCode);
     }
 
     @Override
     public String getImpliedVarCode(Set<String> context, String featureType) {
-        System.err.println("VarInf.getImpliedVarCode");
         return series;
     }
 
     @Override
     public boolean isAssociated(Set<String> context, String varCode) {
-        System.err.println("VarInf.isAssociated");
         return true;
     }
 

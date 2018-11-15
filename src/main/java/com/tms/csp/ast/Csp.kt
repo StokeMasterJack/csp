@@ -79,6 +79,13 @@ class Csp @JvmOverloads constructor(
         addConstraintsExpSeq(constraints)
     }
 
+    //initial:
+    constructor(space: Space, constraintsClob: String) : this(space = space) {
+        val expSeq = space.parsePL(constraintsClob)
+        addConstraintsExpSeq(expSeq)
+        assert(isSimpleComplexDisjoint)
+    }
+
     //simple decision: formula and condition are disjoint
     constructor(formula: KFormula, condition: ConditionOn) : this(space = formula.space) {
         addConstraintsExpSeq(formula.argSeq, condition)
@@ -119,6 +126,22 @@ class Csp @JvmOverloads constructor(
             if (isFailed) return true
 
             val ch = addConstraint(it, ctx)
+            if (isFailed) return true
+            if (ch) anyChange = true
+        }
+
+        propagate()
+
+        return anyChange
+    }
+
+    fun addConstraintsExpIt(argIt: Iterable<Exp>): Boolean {
+        var anyChange = false
+
+        argIt.forEach {
+            if (isFailed) return true
+
+            val ch = addConstraint(it)
             if (isFailed) return true
             if (ch) anyChange = true
         }
@@ -258,10 +281,9 @@ class Csp @JvmOverloads constructor(
 */
         else if (constraint.isDcOr) {
             addDontCare(constraint.asDcOr())
-        } else if (constraint.isAnd) {
-            val posComplex = constraint.asPosComplex()
+        } else if (constraint.isAndLike) {
             var ch = false
-            for (arg: Exp in posComplex.args) {
+            for (arg: Exp in constraint.args) {
                 val ch1 = addConstraint(arg)
                 if (ch1) ch = true
                 if (isFailed) break
@@ -1064,6 +1086,11 @@ class Csp @JvmOverloads constructor(
             return if (complex == null) emptySequence() else complex.asSeq()
         }
 
+    val complexList: List<Exp>
+        get() {
+            return if (complex == null) emptyList() else complex!!.toList()
+        }
+
     val complexConstraintsSer: Sequence<String>
         get() {
             return complexSeq.map { it.serialize() }
@@ -1235,11 +1262,15 @@ class Csp @JvmOverloads constructor(
         if (!hasComplex) {
             return space.mkTrue()
         }
-        val a = Add(c = copyComplex()!!, cc = space.mkLit(sLit))
-        val csp = Csp(space, add = a)
-        csp.propagate()
-        csp.propagateIntersection()
-        return csp.toPLExp()
+
+        return mkFormula().condition(sLit)
+
+
+//        val a = Add(c = copyComplex()!!, cc = space.mkLit(sLit))
+//        val csp = Csp(space, add = a)
+//        csp.propagate()
+//        csp.propagateIntersection()
+//        return csp.toPLExp()
     }
 
     fun _assignSafe(ctx: ConditionOn) {
@@ -1482,6 +1513,28 @@ class Csp @JvmOverloads constructor(
         }
     }
 
+
+    fun getModelCodesForSeries(seriesName: String): Set<String> {
+        var seriesName = seriesName
+        if (!seriesName.startsWith("SER")) {
+            seriesName = "SER_$seriesName"
+        }
+        val fCon = refineFormulaOnly(seriesName)
+        val n = fCon.toDnnf()
+        val nn = n.copyToOtherSpace()
+
+        val outVars = nn.space.getVars(Prefix.MDL)
+
+        val projection = nn.project(outVars)
+        val cubes = projection.cubesSmooth
+
+        val s = HashSet<String>()
+        for (cube in cubes) {
+            val firstTrueVar = cube.trueVars.firstVar
+            s.add(firstTrueVar.varCode)
+        }
+        return s
+    }
 
     fun litIt(): Iterable<Lit> {
         return DynCube.litIt(simple)
@@ -1763,6 +1816,8 @@ class Csp @JvmOverloads constructor(
             }
             return true;
         }
+
+    val isOpen: Boolean get() = !isSolved && !isFailed
 
 
     fun toCnfSortedSet(): TreeSet<TreeSet<String>> {
@@ -2087,6 +2142,60 @@ class Csp @JvmOverloads constructor(
         result = 31 * result + (dontCares?.hashCode() ?: 0)
         return result
     }
+
+    fun removeComplexConstraints(factoryConstraintsToRelax: Set<Exp>) {
+        complex!!.removeConstraints(factoryConstraintsToRelax)
+    }
+
+
+    fun getInvAcyVars(): VarSet {
+        space.checkVarInfo();
+
+        val varMeta: VarMeta = space.varMeta
+        val formulaVars = mkFormula().vars;
+        val b = space.varSetBuilder();
+        for (vr in formulaVars.varIt()) {
+            if (varMeta.isInvAcyVar(vr)) {
+                b.addVar(vr);
+            }
+        }
+        return b.build();
+    }
+
+    /**
+     * Combines Space.getCoreXorsFromSpace() with Csp.getXorConstraints
+     */
+    fun getAllXorConstraints(): Set<Exp> {
+        val xors = mutableSetOf<Exp>()
+        val xors1 = space.coreXorsFromSpace;
+        val xors2 = getXorConstraints();
+        xors.addAll(xors1);
+        xors.addAll(xors2);
+        return xors1.union(xors2)
+    }
+
+    fun getAllConstraints(): List<Exp> {
+        val b = mutableListOf<Exp>()
+        b.addAll(complexIt)
+        b.addAll(simpleIt)
+        return b
+    }
+
+    fun getAllNonXorConstraints(): Set<Exp> {
+        val b = mutableSetOf<Exp>()
+        if (complex != null) {
+            for (exp in complex!!) {
+                if (!exp.isXor) {
+                    b.add(exp);
+                }
+            }
+        }
+        if (simple != null) {
+            b.addAll(simple!!.litIt());
+        }
+        return b
+    }
+
 
 }//end csp
 

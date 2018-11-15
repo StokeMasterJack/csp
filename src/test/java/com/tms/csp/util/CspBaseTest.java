@@ -166,8 +166,6 @@ public abstract class CspBaseTest extends SpaceJvm implements PLConstants {
     }
 
     public static String loadResource(Class contextClass, String localResourceName) {
-        System.err.println("contextClass[" + contextClass + "]");
-        System.err.println("localResourceName[" + localResourceName + "]");
 
         URL url = Resources.getResource(contextClass, localResourceName);
         try {

@@ -318,7 +318,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     }
 
     override fun mk(): Exp {
-                return when {
+        return when {
             isEmpty -> space.mkConstantTrue()
             size == 1 -> firstArg
             else -> space.mkPosComplex(this)
@@ -411,6 +411,16 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         if (other == null) return false;
         if (other !is DynComplex) return false;
         return this.args == other.args;
+    }
+
+    fun removeConstraints(constraintsToRemove: Set<Exp>): Boolean {
+        if (args === null) return false;
+        var anyChange = false;
+        for (exp in constraintsToRemove) {
+            val old = args!!.remove(exp.expId)
+            if (old != null) anyChange = true
+        }
+        return anyChange
     }
 }
 

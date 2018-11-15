@@ -21,11 +21,10 @@ class PosComplexSpace(val space: Space) {
 
 
     fun mkExp(b: IArgBuilder): Exp {
-
         val contentHash = computeContentHash(b)
         val htHash = computeHtHash(contentHash)
         val bucket = computeBucketIndex(htHash)
-        return mkExp(b, bucket);
+        return mkExp(b, bucket)
     }
 
     private fun createPosComplex(b: IArgBuilder, expId: Int, args: Array<Exp>): PosComplexMultiVar {

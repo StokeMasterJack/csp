@@ -341,7 +341,7 @@ class ExpFactory(val space: Space) {
         } else if (arg2.isTrue) {
             arg1
         } else {
-            argBuilder(Op.DAnd).addExp(arg1).addExp(arg2).mk()
+            argBuilder(Op.And).addExp(arg1).addExp(arg2).mk()
         }
 
     }
