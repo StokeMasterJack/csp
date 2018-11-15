@@ -37,9 +37,6 @@ public class XorCounts {
 
 
     public static Xor getMax(KFormula formula) {
-        for (Exp arg : formula.argIt()) {
-            System.err.println(arg);
-        }
         return getBestXor(formula.argIt());
     }
 
@@ -59,10 +56,6 @@ public class XorCounts {
     }
 
     private static Map<String, XorCount> initMap(List<Exp> xors) {
-        System.err.println("xors:");
-        for (Exp xor : xors) {
-            System.err.println(xor);
-        }
         ImmutableMap.Builder<String, XorCount> b2 = ImmutableMap.builder();
         for (Exp xor : xors) {
             b2.put(xor.getPrefix(), new XorCount(xor));
