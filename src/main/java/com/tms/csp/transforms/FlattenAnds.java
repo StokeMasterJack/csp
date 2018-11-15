@@ -23,8 +23,7 @@ public class FlattenAnds extends BaseTransformer {
     }
 
     private Exp flattenAnd(And in) {
-        assert !in.isNestedAnd();
-        return in;
+        return in.flatten();
     }
 
 

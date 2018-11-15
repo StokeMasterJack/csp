@@ -8,15 +8,25 @@ import com.tms.csp.util.varSets.VarSet
 import java.util.*
 
 
-//interface FF {
-//
-//
-//    val topXorSplit: Xor?
-//    val bestXorSplit: Xor?
-//    val decide: Var
-//}
-
+/**
+ * represents a set of complex fact
+ * <p>
+ * A formula is an and with all complex args
+ * <p>
+ * if may be an fcc, or not
+ *
+ */
 class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : And(space, expId, args), FConstraintSet {
+
+
+    //cache computed values
+
+    /*
+     fcc = null:  fcc and complexFccs have not been computed yet
+     fcc != null: fcc and complexFccs have been computed
+     fcc = true:  means this *is* an fcc, complexFccs set to null
+     fcc = false: means this is not an fcc, complexFccs should be non-null, size >= 2
+     */
 
     var _complexFccs: Exp? = null
 
@@ -27,16 +37,16 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     private var bb: DynCube? = null
 
     fun getBestXorSplit(): Xor? {
-                if (_space.hasPrefixes()) {
-            return XorCounts.getMax(this)
+        return if (_space.hasPrefixes()) {
+            XorCounts.getMax(this)
         } else {
             val xors = getXorConstraints()
-            return if (xors.isEmpty()) null else xors.get(0).asXor()
+            if (xors.isEmpty()) null else xors.get(0).asXor()
         }
     }
 
     override fun getComplexFccs(): Exp? {
-                if (fcc == null) {
+        if (fcc == null) {
             _complexFccs = computeComplexFccs()
         }
         return _complexFccs
@@ -44,7 +54,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getTopXorSplit(): Xor? {
-                var x: Xor?
+        var x: Xor?
 
         x = getYearXor()
         if (x != null) return x
@@ -55,7 +65,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     fun getFVars(): FVars {
-                if (fVars == null) {
+        if (fVars == null) {
             fVars = FVars(this)
             if (fVars!!.sortedList.isEmpty()) {
                 throw IllegalStateException()
@@ -70,7 +80,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getXorConstraints(): List<Exp> {
-                return Csp.getXorConstraints(argIt())
+        return Csp.getXorConstraints(argIt())
     }
 
 
@@ -140,7 +150,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     override fun computeIsSat(): Boolean {
-                val xor = getBestXorSplit()
+        val xor = getBestXorSplit()
         if (xor != null) {
             val split = XorSplit(this, xor)
             return split.isSat
@@ -158,7 +168,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun toDnnfTopXorSplit(): Exp? {
-                val xor = getTopXorSplit()
+        val xor = getTopXorSplit()
         return if (xor != null) {
             xorSplitToDnnf(xor)
         } else {
@@ -168,7 +178,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun toDnnfBestXorSplit(): Exp? {
-                val xor = getBestXorSplit()
+        val xor = getBestXorSplit()
         return if (xor != null) {
             xorSplitToDnnf(xor)
         } else {
@@ -177,30 +187,30 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun xorSplitToDnnf(xor: Exp): Exp {
-                val split = XorSplit(this, xor.asXor())
+        val split = XorSplit(this, xor.asXor())
         return split.toDnnf()
     }
 
     private fun decisionSplit(decisionVar: Var): Exp {
-                val split = FormulaSplit(this, decisionVar)
+        val split = FormulaSplit(this, decisionVar)
         return split.toDnnf()
     }
 
 
     fun getYearXor(): Xor? {
-                return getXor(PLConstants.YR_PREFIX)
+        return getXor(PLConstants.YR_PREFIX)
     }
 
     fun getSeriesXor(): Xor? {
-                return getXor(PLConstants.SER_PREFIX)
+        return getXor(PLConstants.SER_PREFIX)
     }
 
     fun getModelXor(): Xor? {
-                return getXor(PLConstants.MDL_PREFIX)
+        return getXor(PLConstants.MDL_PREFIX)
     }
 
     fun getXColXor(): Xor? {
-                return getXor(PLConstants.XCOL_PREFIX)
+        return getXor(PLConstants.XCOL_PREFIX)
     }
 
     fun getDealerXor(): Xor? {
@@ -232,49 +242,49 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun toDnnfInternalWithFccAndXorSplits(): Exp {
-                val topXorSplit = toDnnfTopXorSplit()
+        val topXorSplit = toDnnfTopXorSplit()
         if (topXorSplit != null) {
-                        return topXorSplit
+            return topXorSplit
         }
 
         if (fcc == null) {
-                        assert(_complexFccs == null)
+            assert(_complexFccs == null)
 
             val fccs = complexFccs //returns null if *this* is an fcc
             if (fccs == null) {
-                                fcc = true
+                fcc = true
                 _complexFccs = null
                 return fccSplitDnnf()
             } else {
-                                fcc = false
+                fcc = false
                 _complexFccs = fccs
                 return fccs.toDnnf() ?: error(fccs.javaClass.toString() + " returned null from toDnnf()")
             }
 
         } else if (fcc != null && fcc!!) {
 
-                        val bestXorSplit = toDnnfBestXorSplit()
+            val bestXorSplit = toDnnfBestXorSplit()
             if (bestXorSplit != null) {
-                                return bestXorSplit
+                return bestXorSplit
             } else {
-                                val vr = decide()
+                val vr = decide()
                 val decisionSplit = decisionSplit(vr)
                 return decisionSplit
             }
 
         } else if (fcc != null && !fcc!!) {
-                        System.err.println("complexFccs: $complexFccs")
+            System.err.println("complexFccs: $complexFccs")
             assert(complexFccs != null)  //boom
             return complexFccs!!.toDnnf()!!
         } else {
-                        throw IllegalStateException()
+            throw IllegalStateException()
         }
 
 
     }
 
     private fun toDnnfInternalNoFcc(): Exp {
-                val topXorSplit = toDnnfTopXorSplit()
+        val topXorSplit = toDnnfTopXorSplit()
         if (topXorSplit != null) {
             return topXorSplit
         }
@@ -292,13 +302,13 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun toDnnfInternalNoFccNoXorSplits(): Exp {
-                val vr = decide()
+        val vr = decide()
         return decisionSplit(vr)
     }
 
 
     fun decide(): Var {
-                val fVars = getFVars()
+        val fVars = getFVars()
         try {
             val d = fVars.decide()
             return d.vr
@@ -311,7 +321,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getXor(xorPrefix: String): Xor? {
-                for (exp in argIt()) {
+        for (exp in argIt()) {
             if (exp.isXor && exp.asXor().prefix.equals(xorPrefix, ignoreCase = true)) {
                 return exp.asXor()
             }
@@ -321,7 +331,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun fccSplitDnnf3(): Exp {
-                val xor = getBestXorSplit()
+        val xor = getBestXorSplit()
         if (xor != null) {
             return xorSplitToDnnf(xor)
         } else {
@@ -344,7 +354,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     override fun isDirectlyRelated(index1: Int, index2: Int): Boolean {
-                val complex1 = args[index1]
+        val complex1 = args[index1]
         val complex2 = args[index2]
 
         assert(complex1.isComplex)
@@ -358,12 +368,12 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun fccSplitDnnf(): Exp {
-                return fccSplitDnnf3()
+        return fccSplitDnnf3()
     }
 
 
     override fun computeBB(): DynCube {
-                val vrs = vars
+        val vrs = vars
 
         val aa = DynCube(space)
 
@@ -380,7 +390,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun computeBbForXorPrefix(xorPrefix: String, bb: DynCube) {
-                //        System.err.println("testing xor prefix[" + xorPrefix + "] for dead _vars: ");
+        //        System.err.println("testing xor prefix[" + xorPrefix + "] for dead _vars: ");
 
         val xorVars: VarSet
         var xor = getXor(xorPrefix)
@@ -435,7 +445,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun computeBbForNonXorPrefix(prefix: String, bb: DynCube) {
-                //        System.err.println("testing prefix[" + prefix + "] for dead _vars");
+        //        System.err.println("testing prefix[" + prefix + "] for dead _vars");
 
 
         val vars = vars.filter(prefix)
@@ -470,7 +480,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 //    }
 
     override fun varIt(): Iterable<Var> {
-                return vars.varIt()
+        return vars.varIt()
     }
 
 
@@ -478,7 +488,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
      * return null if this *is* an fcc
      */
     override fun computeComplexFccs(): Exp? {
-                assert(isAllComplex) { this }
+        assert(isAllComplex) { this }
         assert(isFormula)
         assert(!isDnnf)
 
@@ -490,7 +500,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         val fccCount = uf.fccCount
 
         if (fccCount == 1) {
-                        this.fcc = true
+            this.fcc = true
             return null
         }
 
@@ -537,14 +547,14 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     override fun getBB(): DynCube {
-                if (bb == null) {
+        if (bb == null) {
             bb = computeBB()
         }
         return bb!!
     }
 
     private fun proposeBothWays(vr: Var): Lit? {
-                val split = FormulaSplit(this, vr)
+        val split = FormulaSplit(this, vr)
         val tt = split.mkCsp(true)
         if (!tt.isSat()) {
             //must be fCon
@@ -565,7 +575,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun isXorPrefix(prefix: String): Boolean {
-                if (Prefix.isXor(prefix)) {
+        if (Prefix.isXor(prefix)) {
             return true
         }
         val vr = getFirstVarForPrefix(prefix)
@@ -609,7 +619,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     fun getFirstVarForPrefix(prefix: String): Var? {
-                return vars.getFirstVarForPrefix(prefix)
+        return vars.getFirstVarForPrefix(prefix)
     }
 
 
@@ -617,7 +627,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
      * return null if this *is* an fcc
      */
     fun computeComplexFccs2(): List<List<Exp>>? {
-                assert(isAllComplex)
+        assert(isAllComplex)
         assert(isFormula)
         assert(!isDnnf)
 

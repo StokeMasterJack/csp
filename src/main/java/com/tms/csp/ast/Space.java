@@ -639,7 +639,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Exp mkAnd(Iterable<? extends Exp> args) {
-        return expFactory.mkCubeExp(args);
+        return expFactory.mkAnd(args);
     }
 
 

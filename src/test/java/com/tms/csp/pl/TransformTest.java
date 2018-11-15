@@ -96,7 +96,7 @@ public class TransformTest extends Transforms {
     public void testRemoveConflicts1() throws Exception {
         Transformer t = new ConflictsToCnf();
         String in = "nand(6MT 6AT)";
-        String expected = "or(!6MT !6AT)";
+        String expected = "or(!6AT !6MT)";
         testTransform(t, in, expected);
     }
 
@@ -112,7 +112,7 @@ public class TransformTest extends Transforms {
     public void testFlattenOrs() throws Exception {
         Transformer t = new FlattenOrs();
         String in = "or(x y or(a b c) ee rr or(s d))";
-        String expected = "or(x y a b c ee rr s d)";
+        String expected = "or(a b c d ee rr s x y)";
         testTransform(t, in, expected);
     }
 
@@ -120,7 +120,7 @@ public class TransformTest extends Transforms {
     public void testFlattenAnds() throws Exception {
         Transformer t = new FlattenTopLevelAnds();
         String in = "and(x y and(a b c) ee rr and(s d))";
-        String expected = "and(x y a b c ee rr s d)";
+        String expected = "and(a b c d ee rr s x y)";
         testTransform(t, in, expected);
     }
 
@@ -162,7 +162,7 @@ public class TransformTest extends Transforms {
     public void testPushNotsIn3() throws Exception {
         Transformer t = new PushNotsIn();
         String in = "or(!and(SE L4 6AT) 2546)";
-        String expected = "or(or(!SE !L4 !6AT) 2546)";
+        String expected = "or(!6AT !L4 !SE 2546)";
         testTransform(t, in, expected);
     }
 
@@ -170,7 +170,7 @@ public class TransformTest extends Transforms {
     public void testPushNotsIn4() throws Exception {
         Transformer t = new PushNotsIn();
         String in = "and(or(!2546 SE) or(!2546 L4) or(!2546 6AT) or(!and(SE L4 6AT) 2546))";
-        String expected = "and(or(!2546 SE) or(!2546 L4) or(!2546 6AT) or(or(!SE !L4 !6AT) 2546))";
+        String expected = "and(or(!2546 6AT) or(!2546 L4) or(!2546 SE) or(!6AT !L4 !SE 2546))";
         testTransform(t, in, expected);
     }
 
@@ -299,11 +299,10 @@ public class TransformTest extends Transforms {
 
     public void testTransform(Transformer t, String inExp, String expectedOutExp) throws Exception {
         Exp before = f.parseExp(inExp);
-        Exp expected = f.parseExp(expectedOutExp);
-        System.err.println(expected.toString());
+        Exp expected = f.parseExp(expectedOutExp,false);
         Exp after = before.transform(t);
-//        assertEquals(expected, after);
-        assertEquals(expectedOutExp, after.toString());
+        assertEquals(expected, after);
+//        assertEquals(expectedOutExp, after.toString());
     }
 
 

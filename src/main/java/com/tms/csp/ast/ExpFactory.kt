@@ -169,8 +169,10 @@ class ExpFactory(val space: Space) {
 //    }
 
     @JvmOverloads
-    fun mkCubeExp(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity): Exp {
-        return andBuilder().addExpIt(args, condition).mk()
+    fun mkAnd(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
+        val bb = ArgBuilder(space,Op.And,flatten = flatten)
+        bb.addExpIt(args, condition)
+        return bb.mk()
     }
 
     @JvmOverloads
@@ -179,13 +181,17 @@ class ExpFactory(val space: Space) {
     }
 
     @JvmOverloads
-    fun mkOr(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity): Exp {
-        return orBuilder().addExpIt(args, condition).mk()
+    fun mkOr(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
+        val bb = ArgBuilder(space,Op.Or,flatten = flatten)
+        bb.addExpIt(args, condition)
+        return bb.mk()
     }
 
     @JvmOverloads
-    fun mkOr(vararg args: Exp, condition: Condition = Condition.identity): Exp {
-        return argBuilder(Op.Or).addExpArray(args, condition).mk()
+    fun mkOr(vararg args: Exp, condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
+        val bb = ArgBuilder(space,Op.Or,flatten = flatten)
+        bb.addExpArray(args, condition)
+        return bb.mk()
     }
 
     fun andBuilder(): ArgBuilder {
@@ -230,10 +236,11 @@ class ExpFactory(val space: Space) {
         return argBuilderPair(op = op, arg1 = arg1, arg2 = arg2).mk()
     }
 
-    fun mkPosComplex(op: PLConstants.PosOp, args: Iterable<Exp>): Exp {
+    @JvmOverloads
+    fun mkPosComplex(op: PLConstants.PosOp, args: Iterable<Exp>, flatten: Boolean = true): Exp {
         return when (op) {
-            PLConstants.PosOp.AND -> mkCubeExp(args)
-            PLConstants.PosOp.OR -> mkOr(args)
+            PLConstants.PosOp.AND -> mkAnd(args, flatten = flatten)
+            PLConstants.PosOp.OR -> mkOr(args, flatten = flatten)
             PLConstants.PosOp.XOR -> mkXor(args)
             PLConstants.PosOp.IFF -> mkIff(args)
             PLConstants.PosOp.IMP -> mkImp(args)

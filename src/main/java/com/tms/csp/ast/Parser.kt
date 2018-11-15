@@ -27,47 +27,49 @@ class Parser(val space: Space) {
     }
 
 
-    private fun parseExp(tokens: TokenStream): Exp {
+    private fun parseExp(tokens: TokenStream, flatten: Boolean = true): Exp {
         val headToken = tokens.take()
         check(headToken.isHead)
-        return mkExp(headToken, tokens)
+        return mkExp(headToken, tokens, flatten)
     }
 
-    private fun mkExp(headToken: Token, tokens: TokenStream): Exp {
-        if (headToken.isConstantTrue) {
-            return space.mkConstant(true)
-        } else if (headToken.isConstantFalse) {
-            return space.mkConstant(false)
-        } else if (headToken.isNot) {
-            val arg = parseExp(tokens)
-            return arg.flip()
-        } else if (headToken.isPosComplex) {
-            val t = headToken.toString()
-            val op = posComplexOpMap[t.toLowerCase()]
-            val args = parseExpList(tokens)
-            try {
-                checkNotNull(op)
-                val expFactory = space.getExpFactory()
-                return expFactory.mkPosComplex(op, args)
-            } catch (e: Exception) {
-                val s = headToken.toString()
-                throw RuntimeException("Problem creating new complex expression. PosOp[$s]  args$args", e)
+    private fun mkExp(headToken: Token, tokens: TokenStream, flatten: Boolean = true): Exp {
+        when {
+            headToken.isConstantTrue -> return space.mkConstant(true)
+            headToken.isConstantFalse -> return space.mkConstant(false)
+            headToken.isNot -> {
+                val arg = parseExp(tokens)
+                return arg.flip()
             }
+            headToken.isPosComplex -> {
+                val t = headToken.toString()
+                val op = posComplexOpMap[t.toLowerCase()]
+                val args = parseExpList(tokens, flatten = flatten)
+                try {
+                    checkNotNull(op)
+                    val expFactory = space.getExpFactory()
+                    return expFactory.mkPosComplex(op, args, flatten = flatten)
+                } catch (e: Exception) {
+                    val s = headToken.toString()
+                    throw RuntimeException("Problem creating new complex expression. PosOp[$s]  args$args", e)
+                }
 
-        } else {
-            //must be vr
-            val posLit = headToken.getPosLit(space)
-            //            headToken.
+            }
+            else -> {
+                //must be vr
+                val posLit = headToken.getPosLit(space)
+                //            headToken.
 
 
-            val prefix = posLit.prefix
-            parseCounter.countPrefix(prefix)
-            return posLit
+                val prefix = posLit.prefix
+                parseCounter.countPrefix(prefix)
+                return posLit
+            }
         }
     }
 
 
-    private fun parseExpList(tokens: TokenStream): List<Exp> {
+    private fun parseExpList(tokens: TokenStream, flatten: Boolean = true): List<Exp> {
         val retVal = mutableListOf<Exp>()
         tokens.consumeAndCheck(PLConstants.LPAREN)
         while (true) {
@@ -81,7 +83,7 @@ class Parser(val space: Space) {
             } else {
                 checkNotNull(tokens)
                 check(!tokens.isEmpty)
-                val exp = parseExp(tokens)
+                val exp = parseExp(tokens,flatten = flatten)
                 checkNotNull(exp)
                 retVal.add(exp)
             }
@@ -200,8 +202,9 @@ class Parser(val space: Space) {
 //    }
 
 
-    fun parseExp(expText: String): Exp {
-        val exp = parseExpOrNull(expText, false)
+    @JvmOverloads
+    fun parseExp(expText: String, flatten: Boolean = true): Exp {
+        val exp = parseExpOrNull(expText, flatten = flatten)
         checkNotNull(exp)
         return exp
     }
@@ -214,7 +217,7 @@ class Parser(val space: Space) {
         return lines.map { parseExpOrNull(it) }.filterNotNull()
     }
 
-    fun parseExpOrNull(expText: String?, cubes: Boolean): Exp? {
+    fun parseExpOrNull(expText: String?, flatten: Boolean = true): Exp? {
         return if (expText == null) {
             null
         } else {
@@ -236,7 +239,7 @@ class Parser(val space: Space) {
                 }
                 val tokenStream = GlobalTokenizer.INSTANCE.tokenize(tt)
                 try {
-                    parseExp(tokenStream)
+                    parseExp(tokenStream, flatten = flatten)
                 } catch (e: Exception) {
                     throw RuntimeException("Problem parsing exp[$expText]", e)
                 }

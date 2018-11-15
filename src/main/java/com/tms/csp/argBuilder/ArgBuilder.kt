@@ -64,7 +64,7 @@ class ShortCircuit(op: Op1, cause: Cause)
 
 class ArgBuilder
 @JvmOverloads
-constructor(val sp: Space, override var op: Op = Op.And, val flatten: Boolean = true) : IArgBuilder {
+constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = true) : IArgBuilder {
 
     init {
         require(op.isAndLike || op.isOrLike || op.isXor)

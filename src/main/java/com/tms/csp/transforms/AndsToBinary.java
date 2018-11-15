@@ -11,11 +11,6 @@ public class AndsToBinary extends BaseTransformer {
     protected Exp local(Exp in) {
         Exp first = in.arg1();
         Exp and = first.mkAnd(in.argsRest()).transform(AND_TO_BINARY);
-        System.err.println(in.arg1());
-        System.err.println(in.args());
-        System.err.println(in.argsRest());
-
-        System.err.println("and[" + and + "]");
 
         Space space = in.getSpace();
 

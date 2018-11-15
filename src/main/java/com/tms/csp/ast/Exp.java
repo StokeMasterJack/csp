@@ -548,6 +548,10 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return false;
     }
 
+    public boolean isAndLike() {
+        return isAnd() || isFormula() || isCube() || isDAnd();
+    }
+
     public boolean isXor() {
         return false;
     }
@@ -2930,9 +2934,11 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public boolean isNestedAnd() {
-        if (!isAnd()) return false;
+        if (!isAndLike()) {
+            return false;
+        }
         for (Exp e : getArgs()) {
-            if (e.isAnd()) {
+            if (e.isAndLike()) {
                 return true;
             }
         }
