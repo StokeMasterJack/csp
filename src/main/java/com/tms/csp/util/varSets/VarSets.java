@@ -7,22 +7,22 @@ import java.util.NoSuchElementException;
 public class VarSets {
 
     public static int getWordIndexForVarId(int varId) {
-        int varIndex = varId - 1;
+                int varIndex = varId - 1;
         return varIndex >>> 6;
     }
 
     public static int getMask(int varId) {
-        int varIndex = varId - 1;
+                int varIndex = varId - 1;
         return 1 << varIndex;
     }
 
     public static long getMaskForLongWord(int varId) {
-        int varIndex = varId - 1;
+                int varIndex = varId - 1;
         return 1L << varIndex;
     }
 
     public static int getMaskForIntWord(int varId) {
-        int varIndex = varId - 1;
+                int varIndex = varId - 1;
         return 1 << varIndex;
     }
 
@@ -47,7 +47,7 @@ public class VarSets {
     }
 
     public static IntIterator bitIterator(long word) {
-        return new BitIteratorLong(word);
+                return new BitIteratorLong(word);
     }
 
 
@@ -77,7 +77,7 @@ public class VarSets {
     }
 
     public static int computeVarId(int wordIndex, int bitIndex) {
-        int varIndex = (wordIndex << 6) + bitIndex;
+                int varIndex = (wordIndex << 6) + bitIndex;
         int varId = varIndex + 1;
         return varId;
     }
@@ -96,7 +96,7 @@ public class VarSets {
         }
 
         public int next() {
-            if (!hasNext()) throw new NoSuchElementException();
+                        if (!hasNext()) throw new NoSuchElementException();
             final long mask = Long.lowestOneBit(unseen);
             unseen -= mask;
             return Long.numberOfTrailingZeros(mask);
@@ -119,11 +119,11 @@ public class VarSets {
     }
 
     public static int minBit(long word) {
-        return Long.numberOfTrailingZeros(word);
+                return Long.numberOfTrailingZeros(word);
     }
 
     public static int maxBit(long word) {
-        return 63 - Long.numberOfLeadingZeros(word);
+                return 63 - Long.numberOfLeadingZeros(word);
     }
 
 }

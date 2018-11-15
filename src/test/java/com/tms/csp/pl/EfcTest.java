@@ -1,7 +1,6 @@
 package com.tms.csp.pl;
 
 import com.tms.csp.ast.Csp;
-import com.tms.csp.ast.Space;
 import com.tms.csp.data.CspSample;
 import com.tms.csp.transforms.Transformer;
 import com.tms.csp.util.CspBaseTest;
@@ -11,7 +10,7 @@ public class EfcTest extends CspBaseTest {
 
     @Test
     public void loadCamryAsPL() throws Exception {
-        Csp csp = Csp.parse(CspSample.Camry2011);
+        Csp csp = Csp.parse(CspSample.Camry2011Dc);
         csp.print();
     }
 
@@ -21,7 +20,7 @@ public class EfcTest extends CspBaseTest {
     */
     @Test
     public void loadEfcAsPL() throws Exception {
-        Csp csp = Csp.parse(CspSample.Efc);
+        Csp csp = Csp.parse(CspSample.EfcOriginal);
     }
 
 
@@ -43,13 +42,13 @@ public class EfcTest extends CspBaseTest {
     @Test
     public void loadToNnf() throws Exception {
 
-        Csp csp = Csp.parse(CspSample.Efc);
+        Csp csp = Csp.parse(CspSample.EfcOriginal);
         csp.transform(Transformer.NNF);
     }
 
     @Test
     public void loadToNnf2() throws Exception {
-        Csp csp = Csp.parse(CspSample.Efc);
+        Csp csp = Csp.parse(CspSample.EfcOriginal);
         csp.toBnf();
         csp.bnfToNnf();
 //        writeText(cspDir, "efc.nnf.csp.txt", space);

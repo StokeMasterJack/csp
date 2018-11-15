@@ -59,6 +59,8 @@ object CubesK {
                 val argArray = createExpArray();
                 val it: Iterable<Exp> = Iterable { kotlin.jvm.internal.iterator(argArray) }
                 val b = object : IArgBuilder {
+                    init {
+                                            }
                     override val argIt: Iterable<Exp> get() = it
                     override val size: Int = argArray.size
                     override val isFcc: Boolean? = null;
@@ -149,7 +151,7 @@ fun Iterable<Cube>.spaceEq(sp: Space): Boolean = this.all { it.space == sp }
 fun test() {
     val space: Space = Space();
 
-    val clob = CspSample.Tiny.loadText()
+    val clob = CspSample.TinyDc.loadText()
 
 //    Csp
 

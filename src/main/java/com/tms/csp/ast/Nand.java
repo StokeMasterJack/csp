@@ -14,7 +14,7 @@ public class Nand extends PosComplexMultiVar {
 
 
     public Exp toOr() {
-        Exp e1 = getArg1();
+                Exp e1 = getArg1();
         Exp e2 = getArg2();
         return getSpace().mkOr(e1.flip(), e2.flip());
     }
@@ -56,7 +56,7 @@ public class Nand extends PosComplexMultiVar {
     }
 
     public Exp flattenNand() {
-        Lit var;
+                Lit var;
         Or or;
         if (getArg1().isPosLit() && getArg2().isOr()) {
             var = getArg1().asLit();

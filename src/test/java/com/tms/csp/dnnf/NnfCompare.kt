@@ -19,10 +19,6 @@ class NnfCompare {
         nnfCompare(CspSample.Tundra, true)
     }
 
-    @Test
-    fun efc() {
-        nnfCompare(CspSample.Efc, true)
-    }
 
     @Test
     fun efcOriginal() {
@@ -34,25 +30,15 @@ class NnfCompare {
         nnfCompare(CspSample.EfcProdFactoryRules, true)
     }
 
-    @Test
-    fun efcComboFactoryPlusInv() {
-        nnfCompare(CspSample.ComboFactoryPlusInv, true)
-    }
 
     fun nnfCompare(sample: CspSample, keepXors: Boolean = false) {
-        return nnfCompare(sample.loadText(), keepXors)
-    }
 
-    fun nnfCompare(clob: String, keepXors: Boolean = false) {
-
-        val csp = Csp.parse(clob)
+        val csp = Csp.parse(sample)
 
         val nnf: Csp = csp.copy().apply { toNnf(keepXors) }
 
-        println("csp.toDnnf")
         val cspDnnf = csp.toDnnfSmooth()
 
-        println("nnf1.toDnnf")
         val nnfDnnf = nnf.toDnnfSmooth()
 
 

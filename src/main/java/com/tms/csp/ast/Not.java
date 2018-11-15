@@ -62,6 +62,15 @@ public class Not extends Complex {
 
     @Override
     public Exp pushNotsIn() {
+        Exp ret =  pushNotsInInternal();
+        //        System.err.println("Not.pushNotsIn: ");
+//        System.err.println("  Before: " + this);
+//        System.err.println("  After: " + ret);
+
+        return ret;
+    }
+
+    private Exp pushNotsInInternal() {
         if (pos.isAnd()) {
             pos.asAnd().createHardFlip();
             return pos.asAnd().createHardFlip();
@@ -110,9 +119,9 @@ public class Not extends Complex {
         Exp sPos = pos.condition(cube);
 
         if (sPos == pos) {
-            return this;
+                        return this;
         } else {
-            return sPos.flip();
+                        return sPos.flip();
         }
 
     }
@@ -127,20 +136,23 @@ public class Not extends Complex {
 
     @Override
     public Exp condition(Lit lit) {
+
 //        System.err.println("Not.condition(lit)");
         if (!containsVar(lit)) {
             return this;
         }
 
+
         Exp sPos = pos.condition(lit);
 
         if (sPos.isNot()) {
-            if (true) throw new IllegalStateException();
+                        if (true) throw new IllegalStateException();
             return sPos.getArg();
+        } else {
+            return sPos.flip();
         }
 
 
-        return sPos.flip();
     }
 
     @Override
@@ -214,11 +226,6 @@ public class Not extends Complex {
         return b.mk();
     }
 
-    public Exp toDnnf() {
-        Exp nnf = toNnf();
-        assert !nnf.isNot();
-        return nnf.toDnnf();
-    }
 
     @Override
     public boolean isSat() {
@@ -246,6 +253,12 @@ public class Not extends Complex {
 
     public boolean samePos(Not that) {
         return pos.equals(that.pos);
+    }
+
+    public Exp toDnnf() {
+        Exp nnf = toNnf();
+        assert !nnf.isNot();
+        return nnf.toDnnf();
     }
 
     public long satCountPL() {

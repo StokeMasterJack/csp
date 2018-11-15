@@ -192,17 +192,17 @@ public class CspBaseTest2 extends CspBaseTest {
 
     @Nonnull
     public Exp loadDnnfTrim() {
-        return Csp.compileDnnf(CspSample.Trim);
+        return Csp.compileDnnf(CspSample.TrimNoDc);
     }
 
     @Nonnull
     public Exp loadDnnfTrimColor() {
-        return Csp.compileDnnf(CspSample.TrimColor);
+        return Csp.compileDnnf(CspSample.TrimColorNoDc);
     }
 
     @Nonnull
     public Exp loadDnnfTrimColorOptions() {
-        return Csp.compileDnnf(CspSample.TrimColorOptions);
+        return Csp.compileDnnf(CspSample.TrimColorOptionsDc);
     }
 
     @Nonnull
@@ -223,7 +223,7 @@ public class CspBaseTest2 extends CspBaseTest {
 
 
     public Dnnf loadCspTiny() {
-        Csp csp = Csp.parse(CspSample.Tiny);
+        Csp csp = Csp.parse(CspSample.TinyDc);
         return csp.toDnnfCsp();
     }
 

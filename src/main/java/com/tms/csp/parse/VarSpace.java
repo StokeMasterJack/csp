@@ -46,6 +46,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     private Space space;
 
     private boolean freeze = false;
+    private Integer maxVarCount = null;
 
     public VarSpace(Space space) {
         this.space = space;
@@ -55,7 +56,11 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 //    }
 
     public int getMaxVarCount() {
-        return 1000;
+        if (maxVarCount == null) {
+            maxVarCount = map.size();
+        }
+        assert maxVarCount == map.size();
+        return maxVarCount;
     }
 
     public VarSpace() {

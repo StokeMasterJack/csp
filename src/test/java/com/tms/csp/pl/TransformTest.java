@@ -136,11 +136,8 @@ public class TransformTest extends Transforms {
 
     @Test
     public void testAndsToBinary() throws Exception {
-        if (true) return;
         Transformer t = new AndsToBinary();
         String in = "and(a b c d)";
-
-//        String expected = "and(a and(b c d))";
         String expected = "and(a and(b and(c d)))";
         testTransform(t, in, expected);
     }
@@ -296,7 +293,7 @@ public class TransformTest extends Transforms {
 
     @Test
     public void testNegationNormalSuperLarge() throws Exception {
-        Space space = TestData.loadSpaceNnf(CspSample.Efc);
+        Space space = TestData.loadSpaceNnf(CspSample.EfcOriginal);
 //        space.fact.printSummary();
     }
 
@@ -305,7 +302,8 @@ public class TransformTest extends Transforms {
         Exp expected = f.parseExp(expectedOutExp);
         System.err.println(expected.toString());
         Exp after = before.transform(t);
-        assertEquals(expected, after);
+//        assertEquals(expected, after);
+        assertEquals(expectedOutExp, after.toString());
     }
 
 

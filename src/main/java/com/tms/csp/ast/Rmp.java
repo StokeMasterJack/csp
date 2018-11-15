@@ -20,7 +20,6 @@ public class Rmp extends PosComplexMultiVar {
 
     @Override
     public Exp condition(Cube ctx) {
-
         if (isVarDisjoint(ctx)) return this;
 
         Exp e1 = getExpr1();
@@ -30,24 +29,25 @@ public class Rmp extends PosComplexMultiVar {
         Exp v2 = e2.condition(ctx);
 
         if (v2.isFalse() || v1.isTrue()) {
-            return mkTrue();
+                        return mkTrue();
         }
 
         if (v2.isTrue()) {
-            return v1;
+                        return v1;
         }
 
         if (v1.isFalse()) {
-            return v2.flip();
+                        return v2.flip();
         }
 
         if (v1 == e1 && v2 == e2) {
-            return this;
+                        return this;
         }
 
         Exp retVal = mkRmp(v1, v2);
 
         assert !anyConstants(retVal.argIt());
+
 
         return retVal;
 
@@ -55,8 +55,7 @@ public class Rmp extends PosComplexMultiVar {
 
 
     public Exp toCnf() {
-
-        if (arg2().isAnd()) {
+                if (arg2().isAnd()) {
             Exp[] a = new Exp[arg2().size()];
             Exp e1 = arg1();
             for (int i = 0; i < a.length; i++) {
@@ -96,7 +95,7 @@ public class Rmp extends PosComplexMultiVar {
 
 
     public Exp toOr() {
-        if (or == null) {
+                if (or == null) {
             this.or = _space.mkOr(getArg1(), getArg2().flip());
 //            this.or = ez().mkOr(getArg1(), getArg2().flip());
         }

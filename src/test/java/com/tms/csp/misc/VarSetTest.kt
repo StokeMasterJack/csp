@@ -3,10 +3,7 @@ package com.tms.csp.misc
 import com.tms.csp.ast.Space
 import com.tms.csp.ast.toCube
 import com.tms.csp.fm.dnnf.products.Cube
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class VarSetTest {
 
@@ -78,6 +75,33 @@ class VarSetTest {
         assertTrue(b2.containsVar("b"))
         assertTrue(b2.containsVar("c"))
         assertTrue(b2.containsVar("d"))
+
+        val b3 = b2.minus("d")
+        assertEquals(3, b3.size)
+        assertTrue(b3.containsVar("a"))
+        assertTrue(b3.containsVar("b"))
+        assertTrue(b3.containsVar("c"))
+        assertFalse(b3.containsVar("d"))
+
+        println("{a b c d} minus {a b}")
+        val b4 = b2.minus(b1)
+        assertEquals(2, b4.size)
+        assertFalse(b4.containsVar("a"))
+        assertFalse(b4.containsVar("b"))
+        assertTrue(b4.containsVar("c"))
+        assertTrue(b4.containsVar("d"))
+
+        println("{a b c d} minus {a b c g}")
+        val b5 = b2.minus(b3.plus("g"))
+        assertEquals(1, b5.size)
+        assertFalse(b5.containsVar("a"))
+        assertFalse(b5.containsVar("b"))
+        assertFalse(b5.containsVar("c"))
+        assertTrue(b5.containsVar("d"))
+        assertFalse(b5.containsVar("g"))
+
+        val vs4 = sp.mkVarSet("a b c")
+        println("vs4 = ${vs4}")
 
     }
 

@@ -55,8 +55,7 @@ public class Imp extends PosComplexMultiVar {
 
 
     public Exp toCnf() {
-
-        if (arg2().isAnd()) {
+                if (arg2().isAnd()) {
             Exp[] a = new Exp[arg2().size()];
             Exp e1 = arg1();
             for (int i = 0; i < arg2().getArgCount(); i++) {
@@ -93,7 +92,7 @@ public class Imp extends PosComplexMultiVar {
 
 
     public Exp toOr() {
-        if (or == null) {
+                if (or == null) {
 
             Exp a1 = getArg1();
             Exp a2 = getArg2();

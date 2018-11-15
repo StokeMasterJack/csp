@@ -1,50 +1,57 @@
 package com.tms.csp.ast
 
 import com.tms.csp.fm.dnnf.products.Cube
-import com.tms.csp.util.varSets.VarSet
 
 class KExp(val e: Exp) {
 
 
     fun And.condition(lit: Lit): Exp {
-        return if (!anyVarOverlap(lit)) return this
-        else {
-            val b = argBuilder(op()).addExpArray(args, lit)
+                return if (!anyVarOverlap(lit)) {
+                        this
+        } else {
+                        val b = argBuilder(op()).addExpArray(args, lit)
             b.mk()
         }
     }
 
     fun And.condition(ctx: Cube): Exp {
-        return if (!anyVarOverlap(ctx)) return this
-        else {
-            val b = argBuilder(op()).addExpArray(args, ctx)
+                return if (!anyVarOverlap(ctx)) {
+                        this
+        } else {
+                        val b = argBuilder(op()).addExpArray(args, ctx)
             b.mk()
         }
     }
 
     fun And.toDnnf(): Exp {
+                return when {
+            size == 0 -> {
+                throw IllegalStateException("PosComplex disallows empty")
+            }
+            size == 1 -> {
+                                val arg = getArg()
+                arg.toDnnf()
+            }
+            isAllLits -> {
+                                assert(size > 1)
+                space.mkCube(argIt())
+            }
+            isAllComplex -> {
+                assert(size > 1)
+                                val f = space.mkFormula(argIt())
+                f.toDnnf()
+            }
+            isAllConstants -> {
+                throw UnsupportedOperationException("all constants: " + javaClass.getName())
+            }
+            else -> {
+                                assert(!isOrContainsConstants())
+                assert(!isOrContainsConstant())
 
-        if (size == 0) {
-            throw IllegalStateException("PosComplex disllows empty")
-        } else if (size == 1) {
-            val arg = getArg()
-            return arg.toDnnf()
-        } else if (isAllLits()) {
-            assert(size > 1)
-            return space.mkCube(argIt())
-        } else if (isAllComplex()) {
-            assert(size > 1)
-            val f = space.mkFormula(argIt())
-            return f.toDnnf()
-        } else if (isAllConstants()) {
-            throw UnsupportedOperationException("all constants: " + javaClass.getName())
-        } else {
-            assert(!isOrContainsConstants())
-            assert(!isOrContainsConstant())
-
-            val csp = Add.mixed(this).mkCsp()
-            return csp.toDnnf()
-            //            throw new UnsupportedOperationException(getClass().getName() + ": " + getContentModel() + ":" + toString());
+                val csp = Add.mixed(this).mkCsp()
+                csp.toDnnf()
+                //            throw new UnsupportedOperationException(getClass().getName() + ": " + getContentModel() + ":" + toString());
+            }
         }
 
 
@@ -54,7 +61,6 @@ class KExp(val e: Exp) {
     companion object {
         @JvmStatic
         val selector: (Exp) -> Int = { it.expId }
-
 
 
         @JvmStatic

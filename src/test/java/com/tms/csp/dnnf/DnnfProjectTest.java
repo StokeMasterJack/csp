@@ -6,6 +6,8 @@ import com.tms.csp.data.CspSample;
 import com.tms.csp.util.CspBaseTest2;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.assertEquals;
 
 public class DnnfProjectTest extends CspBaseTest2 {
@@ -17,7 +19,7 @@ public class DnnfProjectTest extends CspBaseTest2 {
         Exp n1 = csp.toDnnf().getSmooth();
 
         assert (n1.isDnnf() && n1.checkDnnf());
-        assertEquals(3, n1.getSatCount());
+        assertEquals(BigInteger.valueOf(3), n1.getSatCount());
         n1.printCubes();
 
 

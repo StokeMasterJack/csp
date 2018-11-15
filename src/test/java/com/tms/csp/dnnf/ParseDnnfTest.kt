@@ -10,7 +10,7 @@ class ParseDnnfTest {
     @Test
     fun testCamry() {
 
-        val expectedSatCount: Long = 520128
+        val expectedSatCount = 520128.toBigInteger()
 
         val csp = CspSample.Camry2011NoDc.csp()
         val d1 = csp.toDnnfSmooth()

@@ -10,6 +10,7 @@ import com.tms.csp.util.varSets.VarSet;
 import com.tms.csp.varCodes.VarCode;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -139,13 +140,13 @@ public class Lit extends Exp implements ConditionOn {
     }
 
     @Override
-    public long computeSatCount() {
-        return 1L;
+    public BigInteger computeSatCount() {
+        return BigInteger.ONE;
     }
 
     @Override
-    public long getSatCount() {
-        return 1L;
+    public BigInteger getSatCount() {
+        return BigInteger.ONE;
     }
 
     @Override
@@ -191,11 +192,10 @@ public class Lit extends Exp implements ConditionOn {
         if (vr != lit.vr) {
             return this;
         }
-
-        if (sign == lit.sign) {
-            return mkConstantTrue();
+                if (sign == lit.sign) {
+                        return mkConstantTrue();
         } else {
-            return mkConstantFalse();
+                        return mkConstantFalse();
         }
 
     }

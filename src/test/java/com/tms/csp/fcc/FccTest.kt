@@ -60,7 +60,7 @@ class FccTest : CspBaseTest2() {
 
     @Test
     fun testFccsWithOnCamry() {
-        val csp = Csp.parse(CspSample.Camry2011)
+        val csp = Csp.parse(CspSample.Camry2011Dc)
         csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
@@ -79,7 +79,7 @@ class FccTest : CspBaseTest2() {
 
     @Test
     fun testFccsWithDrillDownOnCamry() {
-        val csp = Csp.parse(CspSample.Camry2011)
+        val csp = Csp.parse(CspSample.Camry2011Dc)
 
         csp.propagate()
 

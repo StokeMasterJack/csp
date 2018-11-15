@@ -9,6 +9,8 @@ import com.tms.csp.ssutil.TT;
 import com.tms.csp.util.CspBaseTest2;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.assertEquals;
 
 //efc dnnf-compile Delta: 64715
@@ -27,6 +29,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
     @Test
     public void tundra2() throws Exception {
         TT tt = new TT();
+        BigInteger expectedSatCount = CspSample.Tundra.getExpectedSatCount();
         String clob = CspSample.Tundra.loadText();
         tt.t("load text");
 
@@ -41,10 +44,11 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         tt.t("getSmooth");
 
 
-        long satCount = nSmooth.getSatCount();
-        tt.t("satCountSmooth");
+        System.err.println("satCount1[" + nSmooth.getSatCount() + "]");
+        BigInteger satCount = nSmooth.getSatCount();
+        tt.t("satCount");
 
-        assertEquals(1545337914624L, satCount);
+        assertEquals(expectedSatCount, satCount);
 
         Exp nn = nSmooth.copyToOtherSpace();
         String tiny = nn.getSpace().serializeTinyDnnf();
@@ -53,7 +57,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         System.err.println("dnnfSize[" + dnnfSize + "]");
 
         Exp nnn = Exp.parseTinyDnnf(tiny);
-        assertEquals(1545337914624L, nnn.getSatCount());
+        assertEquals(expectedSatCount, nnn.getSatCount());
 
     }
 
@@ -67,6 +71,8 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
     //   after bucket index                 2.5s no -ea
     @Test
     public void efcOriginal() throws Exception {
+
+        BigInteger expectedSatCount = CspSample.EfcOriginal.getExpectedSatCount();
 
         TT tt = new TT();
         String clob = loadResource(efcOriginal);
@@ -85,10 +91,10 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         Exp nSmooth = nRough.getSmooth();
         tt.t("getSmooth");
 
-        long satCount = nSmooth.getSatCount();
+        BigInteger satCount = nSmooth.getSatCount();
         tt.t("satCountSmooth");
 
-        assertEquals(3460501125462739908L, satCount);
+        assertEquals(expectedSatCount, satCount);
 
         Exp nn = nSmooth.copyToOtherSpace();
         tt.t("copyToOtherSpace");
@@ -105,7 +111,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         satCount = nnn.getSatCount();
         tt.t("satCount");
 
-        assertEquals(3460501125462739908L, satCount);
+        assertEquals(expectedSatCount, satCount);
 
         space.printPosComplexTableReport();
 
@@ -125,7 +131,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         csp.printVarInfo();
         Exp n = csp.toDnnf();
 
-        long satCount = n.getSatCount();
+        long satCount = n.getSatCount().longValue();
 
         System.err.println("satCount[" + satCount + "]");
 
@@ -142,14 +148,14 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         TT tt = new TT();
         Exp n = csp.toDnnf();
         tt.t("toDnnf");
-        long satCount = n.getSatCount();
+        long satCount = n.getSatCount().longValue();
         tt.t("satCount");
         System.err.println("satCount[" + satCount + "]");
 //        assertEquals(8699182891675808002L, satCount);
     }
 
 
-    private long both(CspSample sample, int expectedSatCount) {
+    private long both(CspSample sample, long expectedSatCount) {
 
         TT tt = new TT();
         Exp n = pl2dnnf(sample);
@@ -158,7 +164,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
 
 //        writeTempXml(tempXmlFile2, n);
 
-        long satCount = n.getSatCount();
+        long satCount = n.getSatCount().longValue();
 
 
         if (expectedSatCount != -1) {

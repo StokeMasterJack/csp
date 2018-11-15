@@ -317,10 +317,12 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         }
     }
 
-    override fun mk(): Exp = when {
-        isEmpty -> space.mkConstantTrue()
-        size == 1 -> firstArg
-        else -> space.mkPosComplex(this)
+    override fun mk(): Exp {
+                return when {
+            isEmpty -> space.mkConstantTrue()
+            size == 1 -> firstArg
+            else -> space.mkPosComplex(this)
+        }
     }
 
     fun mkExp(): Exp = mk()
@@ -336,6 +338,10 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
     fun containsVar(vr: Var): Boolean {
         return _vars?.containsVar(vr) ?: false
+    }
+
+    fun containsVar(varCode: String): Boolean {
+        return _vars?.containsVarCode(varCode) ?: false
     }
 
     fun anyVarOverlap(lit: Lit): Boolean {
@@ -386,7 +392,6 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
             if (exp.containsVar(lit.vr)) {
 
 
-
                 val take = take(exp.expId)
                 checkNotNull(take)
                 if (a == null) {
@@ -402,7 +407,11 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         return a;
     }
 
-
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false;
+        if (other !is DynComplex) return false;
+        return this.args == other.args;
+    }
 }
 
 fun DynComplex?.asSeq(): Sequence<Exp> {

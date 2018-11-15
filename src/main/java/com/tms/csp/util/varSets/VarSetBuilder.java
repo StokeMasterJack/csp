@@ -11,7 +11,6 @@ import com.tms.csp.util.ints.IntIterator;
 import com.tms.csp.util.ints.Ints;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class VarSetBuilder extends VarSet {
 
@@ -266,7 +265,8 @@ public class VarSetBuilder extends VarSet {
         final int varIndex = varId - 1;
         final int wordIndex = varIndex >>> 6;
         final long mask = 1L << varIndex;
-        return (words[wordIndex] & mask) != 0;
+        boolean b = (words[wordIndex] & mask) != 0;
+        return b;
     }
 
     public boolean maybeDirty() {
@@ -456,7 +456,6 @@ public class VarSetBuilder extends VarSet {
                 throw new UnsupportedOperationException();
             } else if (vs.isVarSetBuilder()) {
                 //todo fix this - use bitwise ops
-
                 boolean anyChange = false;
                 for (HasVarId var : varsToRemove) {
                     int varId = var.getVarId();
@@ -607,7 +606,6 @@ public class VarSetBuilder extends VarSet {
         } else if (_size == 1) {
             return vSpace.mkSingleton(min());
         } else if (_size == 2) {
-
             int v1 = min();
             int v2 = max();
             return vSpace.mkVarPair(v1, v2);
@@ -647,7 +645,7 @@ public class VarSetBuilder extends VarSet {
 
     @Override
     public boolean containsAllBitSet(VarSetBuilder that) {
-
+//        System.err.println("VarSetBuilder.containsAllBitSet");
         //todo use bitwise ops
         for (Var var : that) {
             int thatVarId = var.getVarId();
@@ -799,7 +797,6 @@ public class VarSetBuilder extends VarSet {
     }
 
     public static class BitSetIntIterator<T extends VarSetBuilder> implements IntIterator {
-        Logger logger = Logger.getLogger("BitSetIntIterator");
 
         protected int wordIndex = -1;
         protected long unseen = 0;

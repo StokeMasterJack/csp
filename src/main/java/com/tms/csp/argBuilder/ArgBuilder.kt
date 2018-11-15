@@ -10,7 +10,6 @@ import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.ints.IndexedEntry
 import com.tms.csp.util.ints.TreeSequence
 import com.tms.csp.util.varSets.VarSet
-import java.util.logging.Logger
 
 enum class Cause { VarConflict, TrueArg, FalseArg, TrueArgs, Empty }
 
@@ -65,7 +64,7 @@ class ShortCircuit(op: Op1, cause: Cause)
 
 class ArgBuilder
 @JvmOverloads
-constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
+constructor(val sp: Space, override var op: Op = Op.And, val flatten: Boolean = true) : IArgBuilder {
 
     init {
         require(op.isAndLike || op.isOrLike || op.isXor)
@@ -102,9 +101,6 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
         addExpIt(args, condition);
     }
 
-    companion object {
-
-    }
 
     @JvmOverloads
     constructor(sp: Space, op: Op, args: VarSet, sign: Boolean = true, condition: Condition = Condition.identity) : this(sp, op) {
@@ -189,9 +185,13 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
 
     @JvmOverloads
     fun addExp(arg: Exp): ArgBuilder {
-        if (isShortCircuit) return this
+        if (isShortCircuit) {
+            return this
+        }
         addInternal(arg)
-        if (isShortCircuit) return this
+        if (isShortCircuit) {
+            return this
+        }
         return this
     }
 
@@ -370,7 +370,7 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
 
     private fun addComplexChild(e: Exp) {
         assert(e.isComplex) { e }
-        if (isCompatible(op1, e)) {
+        if (isCompatible(op1, e) && flatten) {
             //flatten
             addExpIt(e.argIt())
         } else {
@@ -392,7 +392,7 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
                 //println("  Dup assignment: $newValue")
             }
             else -> {
-                assert(oldValue == newValue.flip())
+                assert(newValue.hasFlip() && oldValue == newValue.flip())
                 shortCircuit()
             }
         }
@@ -408,7 +408,10 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
         check(!isShortCircuit)
     }
 
-    val firstEntry: IndexedEntry<Exp> get() = if (!simple.isEmpty) simple.first() else complex.first()
+    val firstEntry: IndexedEntry<Exp>
+        get() {
+            return if (!simple.isEmpty) simple.first() else complex.first()
+        }
 
     fun lastEntry(): IndexedEntry<Exp> {
         checkNotShortCircuit()
@@ -503,10 +506,6 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
         }
     }
 
-
-    private val log = Logger.getLogger(ArgBuilder::class.java.name)
-
-
     override fun toString(): String {
         val list = newArrayList(argIt)
         val a = Ser()
@@ -538,8 +537,14 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
     }
 
 
-    val isAllLits: Boolean get() = complex.isEmpty && !simple.isEmpty
-    val isAllComplex: Boolean get() = !complex.isEmpty && simple.isEmpty
+    val isAllLits: Boolean
+        get() {
+            return complex.isEmpty && !simple.isEmpty
+        }
+    val isAllComplex: Boolean
+        get() {
+            return !complex.isEmpty && simple.isEmpty
+        }
 
 
     private fun mkXor(): Exp {
@@ -565,31 +570,6 @@ constructor(val sp: Space, override var op: Op = Op.And) : IArgBuilder {
         }
 
     }
-
-    private fun tmp(sp: Space): Exp {
-        return when {
-            isShortCircuit -> sp.mkFalse()
-            isEmpty -> sp.mkFalse()
-            trueCount == 0 -> if (isSingleton) {
-                first
-            } else {
-                assert(isAllLits)
-                sp.mkPosComplex(this)
-            }
-            trueCount == 1 -> if (isSingleton) {
-                first.flip()
-            } else {
-                val bb = ArgBuilder(sp, Op.Cube)
-                for (lit in litIt) {
-                    bb.addExp(lit.flip())
-                }
-                bb.mkAnd()
-            }
-            else -> throw IllegalStateException()
-        }
-
-    }
-
 
     private fun mkAnd(): Exp {
         assert(op1.isAnd)

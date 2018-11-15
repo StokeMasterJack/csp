@@ -12,7 +12,7 @@ class CnfTest : CspBaseTest2() {
     @Test
     fun testCamry() {
 
-        val expectedSatCount = 520128L
+        val expectedSatCount = 520128.toBigInteger()
         val csp = Csp.parse(CspSample.Camry2011NoDc)
         val satCountPL1 = csp.satCountPL()
         val d1 = csp.toDnnfSmooth()
@@ -25,9 +25,9 @@ class CnfTest : CspBaseTest2() {
         val d2 = csp.toDnnfSmooth()
         val satCount2 = d2.satCount
 
-        assertEquals(expectedSatCount, satCountPL1)
+        assertEquals(expectedSatCount.toLong(), satCountPL1)
         assertEquals(expectedSatCount, satCount1)
-        assertEquals(expectedSatCount, satCountPL2)
+        assertEquals(expectedSatCount.toLong(), satCountPL2)
         assertEquals(expectedSatCount, satCount2)
 
 
@@ -53,9 +53,9 @@ class CnfTest : CspBaseTest2() {
         val satCount2 = d2.satCount
 
         assertEquals(expectedSatCount, satCountPL1)
-        assertEquals(expectedSatCount, satCount1)
+        assertEquals(expectedSatCount.toBigInteger(), satCount1)
         assertEquals(expectedSatCount, satCountPL2)
-        assertEquals(expectedSatCount, satCount2)
+        assertEquals(expectedSatCount.toBigInteger(), satCount2)
 
 
         val dimacs = csp.serializeDimacs()

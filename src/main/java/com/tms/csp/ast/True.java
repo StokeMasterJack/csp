@@ -3,6 +3,8 @@ package com.tms.csp.ast;
 
 import com.tms.csp.util.varSets.VarSet;
 
+import java.math.BigInteger;
+
 public class True extends Constant {
 
     private Exp neg;
@@ -22,9 +24,9 @@ public class True extends Constant {
     }
 
     @Override
-    public long getSatCount() {
+    public BigInteger getSatCount() {
         System.err.println("True.getSatCount");
-        return 1L;
+        return BigInteger.ONE;
     }
 
     @Override

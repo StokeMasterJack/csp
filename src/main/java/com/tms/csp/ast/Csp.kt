@@ -15,8 +15,8 @@ import com.tms.csp.util.BoolMath.permCount
 import com.tms.csp.util.BoolMath.pow
 import com.tms.csp.util.varSets.VarSet
 import com.tms.csp.util.varSets.VarSetBuilder
+import java.math.BigInteger
 import java.util.*
-import java.util.logging.Logger
 
 
 /*
@@ -68,8 +68,6 @@ class Csp @JvmOverloads constructor(
 
     var formula: Exp? = null
 
-    var flag = false
-
 
     init {
         add?.addConstraints(this)
@@ -109,7 +107,8 @@ class Csp @JvmOverloads constructor(
                     simple = that.copySimple(),
                     complex = that.copyComplex(),
                     dontCares = that.copyDontCares()
-            )
+            ) {
+    }
 
     //constructor(mixed: And) : this(mixed.space, add = Add(c = mixed.complex, cc = mixed.simple))
 
@@ -130,25 +129,11 @@ class Csp @JvmOverloads constructor(
     }
 
 
-    fun copySimple(): DynCube? {
-        return simple?.copy()
-    }
+    fun copySimple(): DynCube? = simple?.copy()
 
-    fun copyComplex(): DynComplex? {
-        return if (complex == null) {
-            return null;
-        } else {
-            complex!!.copy();
-        }
-    }
+    fun copyComplex(): DynComplex? = complex?.copy()
 
-    fun copyDontCares(): VarSet? {
-        return if (dontCares == null) {
-            return null;
-        } else {
-            dontCares!!.copy();
-        }
-    }
+    fun copyDontCares(): VarSet? = dontCares?.copy()
 
     fun containsConstraint(e: Exp): Boolean {
         return if (e.isSimple) {
@@ -210,11 +195,10 @@ class Csp @JvmOverloads constructor(
             throw AlreadyFailedException(_failure.toString())
         }
 
-
         return if (ctx != null) {
             val conditioned = ctx.conditionThat(constraint)
 
-            if (conditioned != constraint && space.config.logCondition) {
+            if (conditioned !== constraint && space.config.logCondition) {
                 println("$depth Conditioned: $constraint")
                 println("     ctx: $ctx")
                 println("     to: $conditioned")
@@ -235,12 +219,9 @@ class Csp @JvmOverloads constructor(
             throw AlreadyFailedException(_failure.toString())
         }
 
-
-        if (constraint.toString() == "or(!QD and(R7 SE SR))" && condition != null) {
-            println(999)
-        }
-
         val simplified: Exp = condition.condition(constraint, log = false, depth = depth)
+
+
         return addConstraint(simplified)
     }
 
@@ -261,16 +242,20 @@ class Csp @JvmOverloads constructor(
         } else if (constraint.isLit) {
             assign(constraint.asLit())
         }
-//        else if (cc.isNot) {
-//            println(cc)
-//            if (true) throw IllegalStateException()
-//            val flip = cc.pushNotsIn();
-//            assert(flip.isPos)
-//            addConstraint(flip);
+/*
+        else if (constraint.isNot) {
 
 
-//        }
+            val flip = constraint.toNnf(true);
+//            val flip = constraint.pushNotsIn();
 
+            assert(flip.isPos)
+
+            addConstraint(flip);
+
+
+        }
+*/
         else if (constraint.isDcOr) {
             addDontCare(constraint.asDcOr())
         } else if (constraint.isAnd) {
@@ -345,12 +330,13 @@ class Csp @JvmOverloads constructor(
         propagate()
 
         return when {
-            isFailed -> 0
-            isSolved -> 1
+            isFailed -> 0L
+            isSolved -> 1L
             else -> {
                 val baseSatCount = mkFormula().satCountPL()
                 if (hasDontCares) {
                     baseSatCount * permCount(dontCares!!.size)
+
                 } else {
                     baseSatCount
                 }
@@ -376,7 +362,7 @@ class Csp @JvmOverloads constructor(
     val isSimpleComplexDisjoint: Boolean get() = !anyVarOverlap
 
 
-    fun getSatCount(): Long {
+    fun getSatCount(): BigInteger {
         return toDnnf().smooth.satCount
     }
 
@@ -399,32 +385,6 @@ class Csp @JvmOverloads constructor(
         return complex!!.mkFormula()
 
     }
-
-
-//    fun simpleIntersectionWith(cc: Exp?): Cube? = simple?.intersection(cc)
-//    fun simpleIntersectionWith(cc: DynComplex?): Cube? = simple?.intersection(cc)
-
-//    fun simpleComplexIntersection(): Cube? = simpleIntersectionWith(complex)
-
-//    private fun maybeSimplifyComplex(cc: Exp): Exp {
-//        assert(!cc.isAnd)
-//        assert(cc.isComplex)
-//
-//        val ci: Cube? = simpleIntersectionWith(cc)
-//        if (ci.isNullOrEmpty) return cc
-//
-//        val sz = ci!!.size
-//        return when {
-//            sz == 1 -> {
-//                val firstLit: Lit = ci.firstLit
-//                cc.condition(firstLit)
-//            }
-//            sz > 1 -> cc.condition(ci)
-//            else -> throw IllegalStateException()
-//        }
-//
-//
-//    }
 
 
     fun computeUnionFind(): UnionFind {
@@ -450,24 +410,15 @@ class Csp @JvmOverloads constructor(
 
     val isStable: Boolean get() = !isDirty
 
-    val isStableDeep: Boolean get() = !isDirtyDeep
-
-    val isDirtyDeep: Boolean
-        get() {
-            if (isDirty) return true
-
-            if (!hasSimple || !hasComplex) return false
-
-            val vars1 = simple!!.vars
-            val vars2 = complex!!.vars
-
-            return vars1.anyVarOverlap(vars2)
-        }
 
     val isAllSimple: Boolean get() = hasSimple && !hasComplex;
     val isAllComplex: Boolean get() = !hasSimple && hasComplex;
 
-    fun propagate1(): Boolean {
+    fun propagate(): Boolean {
+        return propagate2()
+    }
+
+    private fun propagate1(): Boolean {
         var anyChange = false
         while (isDirty) {
             val lit = q!!.removeAt(0)
@@ -494,7 +445,7 @@ class Csp @JvmOverloads constructor(
         return anyChange;
     }
 
-    fun propagate(): Boolean {
+    private fun propagate2(): Boolean {
         var anyChange = false
         while (isDirty) {
             val lit = q!!.removeAt(0)
@@ -591,7 +542,6 @@ class Csp @JvmOverloads constructor(
     val isEmpty: Boolean get() = !hasSimple && !hasComplex
 
     fun toDnnfInternal(): Exp {
-
         propagate()
 
         if (anyVarOverlap) {
@@ -904,8 +854,8 @@ class Csp @JvmOverloads constructor(
         return assign(lit)
     }
 
-    fun assign(`var`: Var, value: Boolean): Boolean {
-        return assign(`var`.getVarId(), value)
+    fun assign(vr: Var, value: Boolean): Boolean {
+        return assign(vr.getVarId(), value)
     }
 
     fun assign(varId: Int, value: Boolean): Boolean {
@@ -930,25 +880,43 @@ class Csp @JvmOverloads constructor(
     }
 
     @Throws(AlreadyFailedException::class, ConflictingAssignmentException::class)
+    fun assignCon(con: ConditionOn): Boolean {
+        return when (con) {
+            is Lit -> assign(con)
+            is Cube -> assignAll(con)
+            else -> throw IllegalStateException()
+        }
+    }
+
+    @Throws(AlreadyFailedException::class, ConflictingAssignmentException::class)
     fun assign(lit: Lit): Boolean {
         checkNotNull(lit)
         varsNulledOut()
         if (isFailed) {
             throw AlreadyFailedException()
         }
-        val ch: Boolean
-        try {
-            ch = mkSimple.assign(lit)
+        val ch = try {
+            mkSimple.assign(lit)
         } catch (e: ConflictingAssignmentException) {
             fail(e)
-            return false
+            false
         }
+
+
+
+        if (ch) {
+            dontCares?.removeVarId(lit.varId)
+        }
+
+        assert(dontCares?.containsVar(lit) != true)
 
 
 
         if (ch) {
             enqueue(lit)
         }
+
+
 
         return ch
     }
@@ -974,7 +942,12 @@ class Csp @JvmOverloads constructor(
 
     val hasSimple: Boolean get() = !simple.isNullOrEmpty
 
-    val cube: Cube = if (hasSimple) simple!! else space.emptyCube
+    val cube: Cube = if (hasSimple) {
+
+        simple!!
+    } else {
+        space.emptyCube
+    }
 
 
     fun addDontCare(varCode: String): Boolean {
@@ -1011,25 +984,48 @@ class Csp @JvmOverloads constructor(
 
     fun condition(sLits: String): Csp {
         val conditionOn = parser.parseLitsToConditionOn(sLits)
-        return when (conditionOn) {
-            is Lit -> condition(conditionOn)
-            is Cube -> condition(conditionOn)
-            else -> throw IllegalStateException()
-        }
+        return condition(conditionOn)
     }
 
-    fun condition(cube: Cube): Csp {
+//    fun condition(c: ConditionOn): Csp {
+//        return when (c) {
+//            is Lit -> condition(c as Lit)
+//            is Cube -> condition(c as Cube)
+//            else -> throw IllegalStateException()
+//        }
+//    }
+//
+//    fun condition(cube: Cube): Csp {
+//        //        val copy = copy()
+//        copy.assignAll(cube)
+//        return copy
+//    }
+
+    fun condition(con: ConditionOn): Csp {
+        propagate()
         val copy = copy()
-        copy.assignAll(cube)
+        val vars1 = copy.vars
+        assert(copy == this)
+        copy.assignCon(con)
+        copy.propagate()
+        val vars2 = copy.vars
+        val vars3 = vars1.minus(vars2)
+        copy.removeSimpleCon(con)
+        copy.addDontCares(vars3)
         return copy
     }
-
 
     fun condition(lit: Lit): Csp {
         propagate()
         val copy = copy()
+        val vars1 = copy.vars
+        assert(copy == this)
         copy.assign(lit)
         copy.propagate()
+        val vars2 = copy.vars
+        val vars3 = vars1.minus(vars2)
+        copy.removeSimple(lit)
+        copy.addDontCares(vars3)
         return copy
     }
 
@@ -1063,14 +1059,25 @@ class Csp @JvmOverloads constructor(
             }
         }
 
-    val complexSeq: Sequence<Exp> get() = if (complex == null) emptySequence() else complex.asSeq()
+    val complexSeq: Sequence<Exp>
+        get() {
+            return if (complex == null) emptySequence() else complex.asSeq()
+        }
 
-    val complexConstraintsSer: Sequence<String> get() = complexSeq.map { it.serialize() }
+    val complexConstraintsSer: Sequence<String>
+        get() {
+            return complexSeq.map { it.serialize() }
+        }
 
-    val complexVars: VarSet get() = complex?.vars ?: space.mkEmptyVarSet()
+    val complexVars: VarSet
+        get() {
+            return complex?.vars ?: space.mkEmptyVarSet()
+        }
     val simpleVars: VarSet get() = simple?.vars ?: space.mkEmptyVarSet()
 
     val careVars: VarSet get() = complexVars;
+
+    val simpleAndComplexVars: VarSet get() = complexVars.plusVarSet(simpleVars);
 
     fun simplifySeriesModelAnds() {
         if (!hasComplex) return;
@@ -1276,7 +1283,6 @@ class Csp @JvmOverloads constructor(
 
 
     fun simplifyBasedOnVvs(): Boolean {
-
         var masterChange = false;
         while (true) {
 
@@ -1366,24 +1372,29 @@ class Csp @JvmOverloads constructor(
     }
 
     fun toDnnf(): Exp {
-
-        val n = toDnnfInternal()
-        assert(n.isDnnf)
-
-
-        return if (hasDontCares && space.config.includeDontCaresInDnnf) {
-            addDcOrs(n, dontCares!!)
+        val dnnf = toDnnfInternal()
+        assert(dnnf.isDnnf)
+        return if (space.config.includeDontCaresInDnnf) {
+            val cspVars = this.vars
+            val dnnfVars = dnnf.vars
+            val dnnfDontCares = cspVars.minus(dnnfVars)
+            if (space.config.tmp != null) {
+                println("adding dnnfDontCares ${space.config.tmp} = ${dnnfDontCares}")
+                space.config.tmp = null
+            }
+            addDcOrs(dnnf, dnnfDontCares)
         } else {
-            n
+            dnnf
         }
-
-
     }
 
     fun getCubeVars(): VarSet = if (simple.isNullOrEmpty) space.mkEmptyVarSet() else simple!!.vars
 
 
-    val vars: VarSet get() = VarSet.union(space, simple?.vars, complex?.vars, careVars)
+    val vars: VarSet
+        get() {
+            return VarSet.union(space, simple?.vars, complex?.vars, dontCares)
+        }
 
 
     val size: Int get() = simpleConstraintCount + complexConstraintCount
@@ -1394,12 +1405,20 @@ class Csp @JvmOverloads constructor(
     fun simplifyAlwaysTrueVars() {
         maybeAddAlwaysTrueVars()
         propagate()
+        propagateIntersection()
+
+    }
+
+    fun containsVarCode(varCode: String): Boolean {
+        if (!space.containsVarCode(varCode)) return false;
+        return simple?.containsVar(varCode) ?: false || complex?.containsVar(varCode) ?: false
     }
 
     fun maybeAddAlwaysTrueVars() {
         for (atVarCode in Space.alwaysTrueVars1) {
-            if (space.containsVarCode(atVarCode)) {
-                addConstraint(expText = atVarCode, condition = Condition.identity)
+            if (containsVarCode(atVarCode)) {
+                val lit = space.getVar(atVarCode).pLit()
+                addConstraint(lit)
             }
         }
     }
@@ -1481,7 +1500,6 @@ class Csp @JvmOverloads constructor(
 
 
     fun transform(t: Transformer) {
-
         val ff = mkFormula()
 
 
@@ -1566,7 +1584,6 @@ class Csp @JvmOverloads constructor(
  */
 
     fun toNnf(keepXors: Boolean = false) {
-        println("Csp.toNnf")
         propagate();
         assertDisjointSimpleComplex()
 
@@ -1653,7 +1670,9 @@ class Csp @JvmOverloads constructor(
     }
 //
 
-    fun getXorConstraints(): List<Exp> = Csp.getXorConstraints(complexIt)
+    fun getXorConstraints(): List<Exp> {
+        return Csp.getXorConstraints(complexIt)
+    }
 
     fun getXor(prefix: String): Xor? {
         val xors: List<Exp> = getXorConstraints()
@@ -1915,10 +1934,24 @@ class Csp @JvmOverloads constructor(
             return parse(cspSample.loadText(), tiny);
         }
 
+        @JvmStatic
         fun computeDcVars(satCountPL: Long, parentVars: VarSet, childVars: VarSet): Long {
             val dcVars = parentVars.minus(childVars)
             return satCountPL * pow(dcVars.size)
         }
+
+        @JvmStatic
+        fun computeDcVars(satCount: BigInteger, parentVars: VarSet, childVars: VarSet): BigInteger {
+            val dcVars = parentVars.minus(childVars)
+            return satCount.multiply(pow(dcVars.size).toBigInteger())
+        }
+
+        @JvmStatic
+        fun computeDcVars(baseSatCount: BigInteger, dcCount: Int): BigInteger {
+            val multiplier = pow(dcCount).toBigInteger()
+            return baseSatCount.multiply(multiplier)
+        }
+
 
     }//end companion
 
@@ -1943,10 +1976,42 @@ class Csp @JvmOverloads constructor(
 //        }
 //    }
 
-    fun removeSimple(lit: Exp): Boolean {
-        if (simple.isNullOrEmpty) return false
-        assert(lit.isSimple)
-        return simple!!.removeLit(lit.asLit())
+    fun removeSimpleCon(con: ConditionOn): Boolean {
+        return when (con) {
+            is Lit -> removeSimple(con)
+            is Cube -> removeSimple(con)
+            else -> throw IllegalStateException()
+        }
+    }
+
+    fun removeSimple(cube: Cube): Boolean {
+        return if (simple.isNullOrEmpty) {
+            false
+        } else {
+            var anyChange = false
+            for (lit in cube.litIt()) {
+                val ch = simple!!.removeLit(lit)
+                if (ch) {
+                    anyChange = true
+                }
+            }
+            if (simple!!.isEmpty) {
+                simple = null
+            }
+            anyChange
+        }
+    }
+
+    fun removeSimple(lit: Lit): Boolean {
+        return if (simple.isNullOrEmpty) {
+            false
+        } else {
+            val ch = simple!!.removeLit(lit.asLit())
+            if (simple!!.isEmpty) {
+                simple = null
+            }
+            ch
+        }
     }
 
 //    fun removeComplex(exp: Exp): Boolean {
@@ -1991,6 +2056,38 @@ class Csp @JvmOverloads constructor(
 
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Csp
+
+        return when {
+            simple != other.simple -> {
+                println("Simples dont match")
+                false
+            }
+            complex != other.complex -> {
+                println("complex dont match")
+                println(this.complex)
+                println(other.complex)
+                false
+            }
+            dontCares != other.dontCares -> {
+                println("dontCares dont match")
+                false
+            }
+            else -> true
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = simple?.hashCode() ?: 0
+        result = 31 * result + (complex?.hashCode() ?: 0)
+        result = 31 * result + (dontCares?.hashCode() ?: 0)
+        return result
+    }
+
 }//end csp
 
 
@@ -2013,8 +2110,6 @@ val VarSet?.isNullOrEmpty: Boolean get() = this == null || this.empty
 
 val Exp.sp: Space get() = this.sp()
 val Cube.sp: Space get() = this.space
-
-private val log = Logger.getLogger(Csp::class.simpleName)
 
 //fun String.toCubes(space: Space): Set<Cube> = space.expFactory.parseCubesToDynCubeSet(this)
 //fun String.toCubes(space: Space): Set<Cube> = space.parser.expFactory.parseCubesToDynCubeSet(this)

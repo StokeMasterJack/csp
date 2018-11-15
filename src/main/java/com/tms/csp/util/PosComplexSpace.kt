@@ -13,7 +13,7 @@ import com.tms.csp.fm.dnnf.DOr
 
 class PosComplexSpace(val space: Space) {
 
-    private val ROW_COUNT = 10000
+    private val ROW_COUNT = 30000
 
     private val nodeCount: Int get() = space.nodeCount
 

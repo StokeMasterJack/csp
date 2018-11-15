@@ -2,6 +2,7 @@ package com.tms.csp.ast
 
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.varSets.VarSet
+import java.math.BigInteger
 
 
 /**
@@ -38,7 +39,7 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
 
 //    override fun computeSatCountSmooth(): Long = 2
 
-    override fun computeSatCount(): Long = 0
+    override fun computeSatCount(): BigInteger = BigInteger.ZERO
 
     override fun isSmooth(): Boolean = true
 
@@ -58,9 +59,21 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
         else -> throw IllegalStateException()
     }
 
-    override fun condition(c: Cube): Exp = if (c.containsVar(_vr)) mkFalse() else this
+    override fun condition(c: Cube): Exp {
+                return if (c.containsVar(_vr)) {
+                        mkFalse()
+        } else {
+                        this
+        }
+    }
 
-    override fun condition(lit: Lit): Exp = if (lit.varId == _vr.varId) mkFalse() else this
+    override fun condition(lit: Lit): Exp {
+                return if (lit.varId == _vr.varId){
+                        mkFalse()
+        } else {
+                        this
+        }
+    }
 
 
     override fun toString(): String {

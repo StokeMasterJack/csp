@@ -12,17 +12,17 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
     @Test
     public void testAssertRetractFlip() throws Exception {
 
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = Csp.parse(CspSample.Camry2011NoDc);
         Space space = csp.getSpace();
 
         Var v6 = space.getVar("V6");
         Var ash = space.getVar("Ash");
 
-        Exp root = space.getCsp().toDnnf().getSmooth();
+        Exp root = csp.toDnnfSmooth();
         root.initParentsForArgs();
 
 
-        long satCount1 = root.getSatCount();
+        long satCount1 = root.getSatCountLong();
 
         //set pics
         DynCube cube = new DynCube(space);
@@ -34,11 +34,11 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
         int satCount4 = root.computeValueAfterRetraction(v6.mkPosLit());
         int satCount5 = root.computeValueAfterFlip(v6.mkPosLit());
 
-        assertEquals(satCount1, 520128);
-        assertEquals(satCount2, 190080);
-        assertEquals(satCount3, 93824);
-        assertEquals(satCount4, 520128);
-        assertEquals(satCount5, 330048);
+        assertEquals(520128, satCount1);
+        assertEquals(190080, satCount2);
+        assertEquals(93824, satCount3);
+        assertEquals(520128, satCount4);
+        assertEquals(330048, satCount5);
 
     }
 
@@ -50,13 +50,13 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
         Space space = csp.getSpace();
         Exp root = csp.toDnnf().getSmooth();
 
-        long satCount1 = root.getSatCount();
+        long satCount1 = root.getSatCount().longValue();
 
         Exp v6 = root.condition("V6");
-        long satCount2 = v6.getSatCount();
+        long satCount2 = v6.getSatCount().longValue();
 
         Exp ash = v6.condition("Ash");
-        long satCount3 = ash.getSatCount();
+        long satCount3 = ash.getSatCount().longValue();
 
         assertEquals(satCount1, 520128);
         assertEquals(satCount2, 190080);
@@ -68,11 +68,11 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
         Csp csp = CspSample.Camry2011NoDc.csp();
         Exp root = csp.toDnnf().getSmooth();
 
-        long satCount4 = root.getSatCount();
+        long satCount4 = root.getSatCount().longValue();
         System.err.println("satCount4[" + satCount4 + "]");
 
         Exp v6 = root.condition("!V6");
-        long satCount5 = v6.getSatCount();
+        long satCount5 = v6.getSatCount().longValue();
         System.err.println("satCount5[" + satCount5 + "]");
 
 
@@ -84,18 +84,18 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
     @Test
     public void testRadioFlipUsingCalculus() throws Exception {
 
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = Csp.parse(CspSample.Camry2011NoDc);
         Space space = csp.getSpace();
 
         Var v6 = space.getVar("V6");
         Var l4 = space.getVar("L4");
         Var hy = space.getVar("Hybrid");
 
-        Exp root = space.getCsp().toDnnf().getSmooth();
+        Exp root = csp.toDnnfSmooth();
         root.initParentsForArgs();
 
 
-        long satCountAll = root.getSatCount();
+        long satCountAll = root.getSatCount().longValue();
 
         //set pics
         DynCube cube = new DynCube(space);
@@ -126,20 +126,20 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
         Exp root = csp.toDnnf().getSmooth();
 
 
-        long satCountAll = root.getSatCount();
+        long satCountAll = root.getSatCount().longValue();
         System.err.println("satCountAll[" + satCountAll + "]");
 
         Exp v6 = root.condition("V6");
-        long satCountV6 = v6.getSatCount();
+        long satCountV6 = v6.getSatCount().longValue();
         System.err.println("satCountV6[" + satCountV6 + "]");
 
 
         Exp l4 = root.condition("L4");
-        long satCountL4 = l4.getSatCount();
+        long satCountL4 = l4.getSatCount().longValue();
         System.err.println("satCountL4[" + satCountL4 + "]");
 
         Exp hyb = root.condition("Hybrid");
-        long satCountHybrid = hyb.getSatCount();
+        long satCountHybrid = hyb.getSatCount().longValue();
         System.err.println("satCountHybrid[" + satCountHybrid + "]");
 
 

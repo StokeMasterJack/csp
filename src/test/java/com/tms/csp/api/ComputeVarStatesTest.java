@@ -11,6 +11,8 @@ import com.tms.csp.util.varSets.VarSetBuilder;
 import org.dom4j.Element;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -49,8 +51,8 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
         CspSample.EfcDnnf.loadText();
         CspSample.CamryDnnf.loadText();
         CspSample.EfcOriginalDnnf.loadText();
-        CspSample.ProdFactoryRules.loadText();
-        CspSample.ComboFactoryPlusInv.loadText();
+        CspSample.EfcProdFactoryRules.loadText();
+        CspSample.ComboFactoryPlusInvDnnf.loadText();
 
 
         if (true) return;
@@ -98,10 +100,10 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
         Exp exp = root.condition("FC14");
 
 //        Exp root = space.getCsp().toDnnf().getSmooth();
-        long satCount1 = root.getSatCount();
+        BigInteger satCount1 = root.getSatCount();
         System.err.println("root.satCount1[" + satCount1 + "]");
 
-        long satCount2 = exp.getSmooth().getSatCount();
+        BigInteger satCount2 = exp.getSmooth().getSatCount();
         System.err.println("exp.satCount2[" + satCount2 + "]");
 
         boolean sat1 = root.isSat();

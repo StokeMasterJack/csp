@@ -11,6 +11,7 @@ import com.tms.csp.util.XorCube;
 import com.tms.csp.util.varSets.VarSet;
 
 import javax.annotation.Nonnull;
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -88,17 +89,14 @@ public class Xor extends PosComplexMultiVar implements IXor {
         VarSet vs1 = getVars();
         VarSet vs2 = vs1.minus(var);
         assert vs2.size() == vs1.size() - 1;
-        Exp retVal = _space.mkNCube(vs2);
-        return retVal;
+        return _space.mkNCube(vs2);
     }
 
     private Exp conditionNegLit(Var var) {
         VarSet vs1 = getVars();
         VarSet vs2 = vs1.minus(var);
         assert vs2.size() == vs1.size() - 1;
-        Exp retVal = _space.mkXor(vs2);
-
-        return retVal;
+        return _space.mkXor(vs2);
     }
 
     public Exp condition(Lit lit) {
@@ -163,14 +161,12 @@ public class Xor extends PosComplexMultiVar implements IXor {
         }
 
 
-        Exp retVal;
-
         if (tVar == null) {
             //tCount = 0
             if (oCount == 0) {
                 assert fCount == getVars().size();
                 //all false
-                retVal = mkFalse();
+                return mkFalse();
             } else {
                 //0 true, some opens
                 assert fCount > 0;
@@ -178,27 +174,24 @@ public class Xor extends PosComplexMultiVar implements IXor {
                 VarSet varsToRemove = ctx.getVars();
                 VarSet opens = thisVars.minus(varsToRemove);
                 assert opens.size() < thisVars.size();
-                retVal = getSpace().mkXor(opens);
+                return getSpace().mkXor(opens);
             }
         } else {
             //tCount = 1
             if (oCount == 0) {
                 //1 true, rest false => return true
                 assert tCount + fCount == getVars().size();
-                retVal = mkTrue();
+                return mkTrue();
             } else {
                 //1 true, some opens
                 assert oCount > 0;
                 VarSet thisVars = getVars();
                 VarSet varsToRemove = ctx.getVars();
                 VarSet opens = thisVars.minus(varsToRemove);
-                retVal = _space.mkNCube(opens);
+                return _space.mkNCube(opens);
             }
 
         }
-
-
-        return retVal;
 
 
     }
@@ -314,14 +307,14 @@ public class Xor extends PosComplexMultiVar implements IXor {
 //    }
 
     @Override
-    public long getSatCount() {
-        return getArgCount();
+    public BigInteger getSatCount() {
+        return BigInteger.valueOf(getArgCount());
     }
 
 
     @Override
-    public long computeSatCount() {
-        return getVarCount();
+    public BigInteger computeSatCount() {
+        return BigInteger.valueOf(getArgCount());
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.tms.csp.ast.*;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.util.varSets.VarSet;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +30,6 @@ public class DAnd extends And {
             if (!arg.isDnnf()) {
                 throw new IllegalStateException(arg.getSimpleName() + " " + arg.toString());
             }
-
         }
     }
 
@@ -67,45 +67,6 @@ public class DAnd extends And {
     public Op getOp() {
         return Op.DAnd;
     }
-
-//    final public Set<Cube> getCubes() {
-//        return getCubesWithCaching();
-//    }
-
-//    final public Set<Cube> getCubesNoCaching() {
-//        Set<Cube> cubes;
-//        if (!isSat()) {
-//            return ImmutableSet.of();
-//        } else {
-//            cubes = computeCubes();
-//            this.satCountSmooth = (long) cubes.size();
-//        }
-//        return cubes;
-//    }
-//
-//    final public Set<Cube> getCubesWithCaching() {
-//        if (!isSat()) {
-//            return ImmutableSet.of();
-//        } else {
-//            if (cubes == null) {
-//                cubes = computeCubes();
-//                this.satCountSmooth = (long) cubes.size();
-//            } else {
-//                return cubes;
-//            }
-//        }
-//        return cubes;
-//    }
-
-
-    public static Exp getFirstNonNull(Exp[] args) {
-        for (Exp arg : args) {
-            if (arg != null) return arg;
-        }
-
-        return null;
-    }
-
 
     @Override
     public DAnd asDAnd() {
@@ -147,44 +108,6 @@ public class DAnd extends And {
         return this;
     }
 
-
-//    @Override
-//    public Set<Lit> getLits() {
-//        ImmutableSet.Builder<Lit> b = ImmutableSet.builder();
-//        for (Exp arg : args) {
-//            b.addAll(arg.getLits());
-//        }
-//        return b.build();
-//    }
-
-
-//    public Exp flatten() {
-//
-//        if (isFlat()) {
-//            return this;
-//        }
-//
-//        ImmutableSet.Builder<Exp> b = ImmutableSet.builder();
-//        for (Exp arg : args) {
-//            arg = arg.flatten();
-//            if (arg.isAnd()) {
-//                for (Exp aa : arg.getArgs()) {
-//                    aa = aa.flatten();
-//                    b.add(aa);
-//                }
-//            } else {
-//                b.add(arg);
-//            }
-//        }
-//
-//        ImmutableSet<Exp> retVal = b.build();
-//
-//        for (Exp arg : retVal) {
-//            assert !arg.isNested(this);
-//        }
-//
-//        return space.mkAnd(retVal);
-//    }
 
     @Override
     public void checkChildCounts(ChildCounts cc) {
@@ -297,11 +220,12 @@ public class DAnd extends And {
         return c;
     }
 
-    public long computeSatCount() {
-        long c = 1L;
+    public BigInteger computeSatCount() {
+        BigInteger c = BigInteger.ONE;
         for (Exp arg : args) {
-            long satCount = arg.getSatCount();
-            c = c * satCount;
+            BigInteger satCount = arg.getSatCount();
+//            c = c * satCount;
+            c = satCount.multiply(c);
         }
         return c;
     }
@@ -403,7 +327,6 @@ public class DAnd extends And {
     }
 
     public Exp flatten() {
-
         Space space = getSpace();
 
         if (isFlat()) {

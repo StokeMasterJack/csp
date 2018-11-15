@@ -9,6 +9,7 @@ import com.tms.csp.fm.dnnf.models.Solutions;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.util.varSets.VarSet;
 
+import java.math.BigInteger;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -41,8 +42,6 @@ public class DOr extends Or {
     }
 
     private Exp computeSmooth() {
-
-
         assert smooth == null;
         if (isSmooth != null && isSmooth) {
             smooth = this;
@@ -84,7 +83,6 @@ public class DOr extends Or {
 
     @Override
     public Exp project(VarSet outVars) {
-
         checkNotNull(outVars);
 
         VarSet vars = this.getVars();
@@ -114,9 +112,7 @@ public class DOr extends Or {
         return b.mk();
     }
 
-    final public Set<Cube> getCubesSmooth() {
-        return computeCubesSmooth();
-    }
+
 
 
     public boolean isOr() {
@@ -166,7 +162,6 @@ public class DOr extends Or {
     }
 
     public Exp flatten() {
-
         if (isFlat()) {
             return this;
         }
@@ -229,10 +224,11 @@ public class DOr extends Or {
         return b.build();
     }
 
-    public long computeSatCount() {
-        long satCount = 0;
+    public BigInteger computeSatCount() {
+        BigInteger satCount = BigInteger.ZERO;
         for (Exp arg : args) {
-            satCount += arg.getSatCount();
+//            satCount += arg.getSatCount();
+            satCount = satCount.add(arg.getSatCount());
         }
         return satCount;
     }
@@ -312,7 +308,7 @@ public class DOr extends Or {
 
     @Override
     public void _setIsSmooth() {
-//        assert smooth == null;
+        //        assert smooth == null;
 //        assert isSmooth == null;
         smooth = this;
         isSmooth = true;

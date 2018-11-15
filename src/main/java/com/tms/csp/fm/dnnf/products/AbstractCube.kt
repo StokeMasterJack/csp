@@ -167,7 +167,7 @@ abstract class AbstractCube : Cube {
     }
 
     override fun isTrue(varCode: String): Boolean {
-        val vr = getVar(varCode)
+        val vr = space.getVar(varCode)
         return isTrue(vr!!)
     }
 

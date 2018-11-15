@@ -94,6 +94,19 @@ public class SpaceJvm implements PLConstants {
         return loadResource(name);
     }
 
+    public static String loadResource(Class ctxClass, String path) {
+        URL url = Resources.getResource(ctxClass, path);
+        try {
+            return Resources.toString(url, Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String loadResource(Object ctx, String path) {
+        return loadResource(ctx.getClass(), path);
+    }
+
     public static String loadResource(String path) {
         URL url = Resources.getResource(path);
         try {

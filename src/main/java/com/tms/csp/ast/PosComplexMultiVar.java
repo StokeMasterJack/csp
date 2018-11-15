@@ -31,11 +31,13 @@ public abstract class PosComplexMultiVar extends PosComplex {
         assert expId >= 0;
         assert fixedArgs != null;
         this.args = fixedArgs;
+        assert fixedArgs.length > 1;
 
         for (Exp fixedArg : fixedArgs) {
             assert fixedArg != null;
             assert fixedArg.getSpace() == space;
         }
+
 
     }
 
@@ -88,7 +90,7 @@ public abstract class PosComplexMultiVar extends PosComplex {
     }
 
     public List<Exp> argsRest() {
-        return subList(1, size() - 1);
+        return subList(1, size());
     }
 
     public Iterator<Exp> iterator() {
@@ -117,7 +119,6 @@ public abstract class PosComplexMultiVar extends PosComplex {
 
     @Override
     public boolean containsVarId(int varId) {
-        if (size() < 2) throw new IllegalStateException();
         return getVars().containsVarId(varId);
     }
 
@@ -270,7 +271,7 @@ public abstract class PosComplexMultiVar extends PosComplex {
                 b.addVarSet(vars1);
             }
         }
-        return b.immutable();
+        return b.build();
     }
 
     @NotNull
@@ -283,7 +284,6 @@ public abstract class PosComplexMultiVar extends PosComplex {
 
     @Override
     public String getCode() {
-        Op1 op1 = getOp().getOp1();
         return getSimpleName().toLowerCase();
     }
 

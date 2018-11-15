@@ -16,7 +16,6 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
     public static final PosOp OP = PosOp.AND;
 
 
-
     public And(Space space, int expId, Exp[] fixedArgs) {
         super(space, expId, fixedArgs);
         assert checkFixedArgs(fixedArgs);
@@ -41,14 +40,14 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
     }
 
     public boolean computeIsSat() {
-        if (isCube()) {
-            return true;
+                if (isCube()) {
+                        return true;
+        } else {
+
+            //convert and to csp
+
+            return Add.mixed(this).mkCsp().isSat();
         }
-
-        //convert and to csp
-
-
-        return Add.mixed(this).mkCsp().isSat();
 
     }
 
@@ -59,8 +58,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 //    and(x y z)  cond or(!x !y) => false
     @Nonnull
     public Exp conditionVV(Exp vv) {
-
-        if (!anyVarOverlap(vv)) {
+                if (!anyVarOverlap(vv)) {
             return this;
         }
 
@@ -114,18 +112,22 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
     }
 
     public UnionFind computeUnionFind() {
-        UnionFind unionFind = new UnionFind(this);
+                UnionFind unionFind = new UnionFind(this);
         unionFind.processAllUniquePairs();
         return unionFind;
     }
 
     public Exp createHardFlip() {
-        ArgBuilder argBuilder = flipArgs();
+                ArgBuilder argBuilder = flipArgs();
         return argBuilder.mk();
     }
 
     public ArgBuilder flipArgs() {
-        return new ArgBuilder(_space, Op.Or, argIt());
+                ArgBuilder b = argBuilder(Op.Or);
+        for (Exp arg : args) {
+            b.addExp(arg.flip());
+        }
+        return b;
     }
 
     public boolean canVVSimplifyLocal(PosComplexMultiVar.LL ll) {
@@ -149,12 +151,12 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     @Override
     public boolean isAndOfClauses() {
-        return isAllClauses();
+                return isAllClauses();
     }
 
     @Override
     public boolean isNegationNormalForm() {
-        for (Exp arg : args()) {
+                for (Exp arg : args()) {
             if (!arg.isNegationNormalForm()) {
                 return false;
             }
@@ -174,39 +176,8 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
         return Op.And;
     }
 
-//    @Override
-//    public Exp simplifyAfterVVPick(Exp vv) {
-//        if (vv.isVV()) {
-//            Exp a1 = vv.getArg1();
-//            Exp a2 = vv.getArg2();
-//
-//            Exp v1 = a1.getVr();
-//            Exp v2 = a2.getVr();
-//
-//            if (contains(a1) && contains(a2)) {
-//                PosOp op1 = vv.getPosOp();
-//                if (op1.isRmp()) {
-//                    if (isBinary()) {
-//                        return a2;
-//                    } else {
-//                        ArgBuilder b = new ArgBuilder(Op.And);
-//                        b.addAllBut(args, a1);
-//                        return space.mkPosComplex(b);
-//                    }
-//                } else {
-//                    System.err.println("BOOM: ");
-//                    System.err.println("\tCon and: " + this);
-//                    System.err.println("\tCon vv:  " + vv);
-//                    return this;
-//                }
-//            }
-//        }
-//        return this;
-//    }
-
-
     public Exp flatten() {
-        Space space = getSpace();
+                Space space = getSpace();
 
         if (isFlat()) {
             return this;
@@ -237,7 +208,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     @Override
     public Exp pushNotsIn() {
-        ArgBuilder b = new ArgBuilder(_space, op());
+                ArgBuilder b = new ArgBuilder(_space, op());
         for (Exp arg : args) {
             Exp s = arg.pushNotsIn();
             b.addExp(s);
@@ -252,7 +223,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     @Override
     public boolean isDirectlyRelated(int c1, int c2) {
-        Exp arg1 = getArg(c1);
+                Exp arg1 = getArg(c1);
         Exp arg2 = getArg(c2);
         return arg1.anyVarOverlap(arg2);
     }
@@ -278,7 +249,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
     }
 
     public boolean checkDisjointConjuncts(boolean logging) {
-        VarSet v = _space.newMutableVarSet();
+                VarSet v = _space.newMutableVarSet();
         for (Exp arg : args) {
             for (Var argVar : arg.varIt()) {
                 int varId = argVar.getVarId();
@@ -299,6 +270,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     @Override
     public Exp condition(Lit lit) {
+
         return k().condition(this, lit);
     }
 

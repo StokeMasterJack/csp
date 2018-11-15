@@ -1,3 +1,4 @@
 vars(a b c d)
+dc(d)
 xor(a b)
 conflict(b c)

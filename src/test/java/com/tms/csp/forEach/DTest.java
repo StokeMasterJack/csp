@@ -84,7 +84,7 @@ public class DTest {
         forEach.setOutVars(key);
 
 
-        long satCount = forEach.computeSatCount();
+        long satCount = forEach.computeSatCount().longValue();
 
         if (satCount < maxSatCountForComputeCubes) {
             Collection<Cube> cubes = forEach.execute();

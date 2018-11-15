@@ -26,7 +26,7 @@ public class UnionFindTest extends CspBaseTest2 {
 
     @Test
     public void testUFWithTiny() throws Exception {
-        Csp csp = loadCsp(CspSample.Tiny);
+        Csp csp = loadCsp(CspSample.TinyDc);
         UnionFind unionFind = csp.computeUnionFind();
         int fccCount = unionFind.getFccCount();
         assertEquals(1, fccCount);
@@ -34,7 +34,7 @@ public class UnionFindTest extends CspBaseTest2 {
 
     @Test
     public void testUFWithTrimColorOptions() throws Exception {
-        Csp csp = loadCsp(CspSample.TrimColorOptions);
+        Csp csp = loadCsp(CspSample.TrimColorOptionsDc);
         UnionFind unionFind = csp.computeUnionFind();
         int fccCount = unionFind.getFccCount();
         assertEquals(1, fccCount);
@@ -43,7 +43,7 @@ public class UnionFindTest extends CspBaseTest2 {
 
     @Test
     public void testUFWithCamry() throws Exception {
-        Csp csp = loadCsp(CspSample.Camry2011);
+        Csp csp = loadCsp(CspSample.Camry2011Dc);
         UnionFind unionFind = csp.computeUnionFind();
         int fccCount = unionFind.getFccCount();
         assertEquals(2, fccCount);

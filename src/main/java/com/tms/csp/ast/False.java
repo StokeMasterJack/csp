@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.util.varSets.VarSet;
 
+import java.math.BigInteger;
 import java.util.Set;
 
 public class False extends Constant {
@@ -27,8 +28,8 @@ public class False extends Constant {
     }
 
     @Override
-    public long getSatCount() {
-        return 0L;
+    public BigInteger getSatCount() {
+        return BigInteger.ZERO;
     }
 
     @Override

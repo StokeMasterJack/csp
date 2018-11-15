@@ -11,9 +11,15 @@ import com.tms.csp.util.CspBaseTest2
 import com.tms.csp.util.varSets.VarSet
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.math.BigInteger
 import kotlin.test.assertTrue
 
 class JoinSplitAnd : CspBaseTest2() {
+
+    @Test
+    fun testCreateEfcDnnf() {
+        val efcDnnf = createEfcDnnf()
+    }
 
     @Test
     fun testCreateYsCombos() {
@@ -43,8 +49,8 @@ class JoinSplitAnd : CspBaseTest2() {
     }
 
     private fun createEfcDnnf(): Exp {
-        val expectedSatCount = 3460501125462739789L
-        //                     3460501092663099422
+        val sample = CspSample.EfcOriginal
+        val expectedSatCount = sample.expectedSatCount
 
         val tt = TT()
         val clob = CspSample.EfcOriginal.loadText()
@@ -78,11 +84,7 @@ class JoinSplitAnd : CspBaseTest2() {
         satCount = nnn.satCount
         tt.t("satCountSmooth")
 
-        //        assertEquals(3460501125462739908L, satCountSmooth);   //no at
-
         assertEquals(expectedSatCount, satCount)   //at
-
-        //        space.printPosComplexTableReport();
 
         return nnn
 
@@ -106,6 +108,8 @@ class JoinSplitAnd : CspBaseTest2() {
         print(satCountAll.rpad(30))
         println(tinyDnnfAll.length.rpad(30))
 
+        var runningTotal = BigInteger.ZERO
+
         for (cube in ysCombos) {
             val syDnnf = efcDnnf.condition(cube).gc()
             val syTinyDnnf = syDnnf.space.serializeTinyDnnf()
@@ -116,7 +120,17 @@ class JoinSplitAnd : CspBaseTest2() {
             print(sySer.rpad(30))
             print(sySatCount.rpad(30))
             println(syTinyDnnf.length.rpad(30))
+
+            assertTrue(satCountAll > sySatCount)
+            assertTrue(tinyDnnfAll.length > sySer.length)
+
+            runningTotal = runningTotal.plus(sySatCount)
         }
+
+        print("Sat Count Sum".rpad(30))
+        print(runningTotal.toString().rpad(30))
+
+        assertEquals(satCountAll, runningTotal)
     }
 
 

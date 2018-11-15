@@ -6,9 +6,10 @@ data class SpaceConfig(
         val logCondition2: Boolean = false,
         val logVvSimplified: Boolean = false,
         val includeDontCaresInDnnf: Boolean = true,
-        val checkForSimpleOverlapWhenAddingComplexConstraint: Boolean = true
+        val checkForSimpleOverlapWhenAddingComplexConstraint: Boolean = false
 
 ) {
+    var tmp: String? = null
 
 
 }

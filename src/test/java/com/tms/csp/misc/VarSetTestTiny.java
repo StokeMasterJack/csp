@@ -31,7 +31,7 @@ public class VarSetTestTiny extends CspBaseTest2 {
     public void testRemoveVar() throws Exception {
 
 
-        Csp csp = Csp.parse(CspSample.Tiny);
+        Csp csp = Csp.parse(CspSample.TinyDc);
 
         VarSet vs1 = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vs1.size());
@@ -63,7 +63,7 @@ public class VarSetTestTiny extends CspBaseTest2 {
 
 
 
-        Csp csp = Csp.parse(CspSample.Tiny);
+        Csp csp = Csp.parse(CspSample.TinyDc);
 
         VarSet vs1 = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vs1.size());
@@ -104,7 +104,7 @@ public class VarSetTestTiny extends CspBaseTest2 {
     public void testAnyIntersection22() throws Exception {
 
 
-        Csp csp = Csp.parse(CspSample.Tiny);
+        Csp csp = Csp.parse(CspSample.TinyDc);
         Space space = csp.getSpace();
 
         VarSetBuilder b1 = space.newMutableVarSet();
@@ -164,7 +164,7 @@ public class VarSetTestTiny extends CspBaseTest2 {
 
 
 
-        Csp csp = Csp.parse(CspSample.Tiny);
+        Csp csp = Csp.parse(CspSample.TinyDc);
 
         VarSet vars = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vars.size());

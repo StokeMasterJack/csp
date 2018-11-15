@@ -163,10 +163,10 @@ class ExpFactory(val space: Space) {
         return argBuilder(op).addExpIt(args, condition).mk()
     }
 
-    @JvmOverloads
-    fun mkExp(op: Op = Op.And, vararg args: Exp, condition: Condition = Condition.identity): Exp {
-        return argBuilder(op).addExpArray(args, condition).mk()
-    }
+//    @JvmOverloads
+//    fun mkExp(op: Op = Op.And, vararg args: Exp, condition: Condition = Condition.identity): Exp {
+//        return argBuilder(op).addExpArray(args, condition).mk()
+//    }
 
     @JvmOverloads
     fun mkCubeExp(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity): Exp {
@@ -188,8 +188,6 @@ class ExpFactory(val space: Space) {
         return argBuilder(Op.Or).addExpArray(args, condition).mk()
     }
 
-
-    @JvmOverloads
     fun andBuilder(): ArgBuilder {
         return argBuilder(Op.And)
     }
@@ -271,23 +269,23 @@ class ExpFactory(val space: Space) {
         return argBuilder(Op.Cube).addCube(cube, condition).mk()
     }
 
-
-    @JvmOverloads
-    fun mkCubePair(arg1: Exp, arg2: Exp): Exp {
-        return mkPair(op = Op.Cube, arg1 = arg1, arg2 = arg2)
-    }
+//
+//    @JvmOverloads
+//    fun mkCubePair(arg1: Exp, arg2: Exp): Exp {
+//        return mkPair(op = Op.Cube, arg1 = arg1, arg2 = arg2)
+//    }
 
     @JvmOverloads
     fun mkCubeExp(args: VarSet, sign: Boolean, condition: Condition = Condition.identity): Exp {
         return argBuilder(Op.Cube).addVarSet(args, sign, condition).mk()
     }
 
-    @JvmOverloads
-    fun mkPCube(vars: VarSet): Exp = mkCubeExp(vars, true)
+//    @JvmOverloads
+//    fun mkPCube(vars: VarSet): Exp = mkCubeExp(vars, true)
 
 
     fun mkCubeExp(vars: VarSet, trueVars: VarSet): Exp {
-        val cube: DynCube = DynCube(space, vars, trueVars);
+        val cube = DynCube(space, vars, trueVars);
 
         val exp: Exp = cube.mk()
 
@@ -295,7 +293,6 @@ class ExpFactory(val space: Space) {
     }
 
     fun mkCubeExp(c: DynCube?, f: DynComplex?): Exp {
-
         return if (c.isNullOrEmpty && f.isNullOrEmpty) space.mkTrue()
         else if (c.isNullOrEmpty) f!!.mk()
         else if (f.isNullOrEmpty) c!!.mk()
@@ -365,7 +362,6 @@ class ExpFactory(val space: Space) {
      * Args are already known to be disjoint and dnnf
      */
     fun mkDAnd(cube: CubeExp, f: Exp): Exp {
-        println("ExpFactory.mkDAnd")
         return when (f) {
             is False -> space.mkFalse();
             is True -> cube
@@ -379,20 +375,26 @@ class ExpFactory(val space: Space) {
      * Args are already known to be disjoint and dnnf
      */
     @JvmOverloads
-    fun mkDAnd(cube1: CubeExp, cube2: CubeExp): Exp = CubeCubeDAndBuilder(cube1, cube2).mk()
+    fun mkDAnd(cube1: CubeExp, cube2: CubeExp): Exp {
+        return CubeCubeDAndBuilder(cube1, cube2).mk()
+    }
 
 
     /**
      * Args are already known to be disjoint
      */
     @JvmOverloads
-    fun mkDAnd(arg1: Lit, arg2: CubeExp): Exp = LitCubeDAndBuilder(arg1, arg2).mk()
+    fun mkDAnd(arg1: Lit, arg2: CubeExp): Exp {
+        return LitCubeDAndBuilder(arg1, arg2).mk()
+    }
 
     /**
      * Args are already known to be disjoint
      */
     @JvmOverloads
-    fun mkDCubeLitPair(arg1: Lit, arg2: Lit): Exp = LitPairDCubeBuilder(arg1, arg2).mk()
+    fun mkDCubeLitPair(arg1: Lit, arg2: Lit): Exp {
+        return LitPairDCubeBuilder(arg1, arg2).mk()
+    }
 
 
     /**
@@ -407,7 +409,7 @@ class ExpFactory(val space: Space) {
             c
         } else if (c === f) {
             c
-        } else if (c == f.flip()) {
+        } else if (f.hasFlip() && c == f.flip()) {
             space.mkFalse()
         } else if (c.isLit) {
             mkDAnd(c.asLit(), f)

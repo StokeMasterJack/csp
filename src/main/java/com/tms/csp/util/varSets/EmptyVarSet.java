@@ -36,12 +36,12 @@ public class EmptyVarSet extends VarSet {
 
     @Override
     public int getVarSetId() {
-        return 0;
+                return 0;
     }
 
     @Override
     public boolean containsVarId(int varId) {
-        return false;
+                return false;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class EmptyVarSet extends VarSet {
 
     @Override
     public IntIterator intIterator() {
-        return new IntIterator() {
+                return new IntIterator() {
             @Override
             public boolean hasNext() {
                 return false;
@@ -72,7 +72,7 @@ public class EmptyVarSet extends VarSet {
 
     @Override
     public boolean containsPrefix(String prefix) {
-        return false;
+                return false;
     }
 
     @Override
@@ -97,17 +97,17 @@ public class EmptyVarSet extends VarSet {
 
     @Override
     public VarSet minus(int varIdToRemove) {
-        throw new IndexOutOfBoundsException();
+                throw new IndexOutOfBoundsException();
     }
 
     @Override
     public VarSet union(Var var) {
-        return var.mkSingletonVarSet();
+                return var.mkSingletonVarSet();
     }
 
     @Override
     public VarSet minus(VarSet varsToRemove) {
-        return this;
+                return this;
     }
 
     @Override

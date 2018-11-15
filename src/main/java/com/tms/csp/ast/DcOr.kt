@@ -3,6 +3,7 @@ package com.tms.csp.ast
 import com.google.common.collect.ImmutableSet
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.varSets.VarSet
+import java.math.BigInteger
 
 /**
  * This is for the smooth transformation
@@ -56,8 +57,8 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
     override fun computeCubesSmooth(): Set<Cube> = cubes
 
-    override fun computeSatCount(): Long {
-        return 2
+    override fun computeSatCount(): BigInteger {
+        return BigInteger.TWO
     }
 
 
@@ -77,9 +78,21 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
         else -> throw IllegalStateException()
     }
 
-    override fun condition(c: Cube): Exp = if (c.containsVar(_vr)) mkTrue() else this
+    override fun condition(c: Cube): Exp {
+                return if (c.containsVar(_vr)) {
+                        mkTrue()
+        } else {
+                        this
+        }
+    }
 
-    override fun condition(lit: Lit): Exp = if (lit.varId == _vr.varId) mkTrue() else this
+    override fun condition(lit: Lit): Exp {
+                return if (lit.varId == _vr.varId) {
+                        mkTrue()
+        } else {
+                        this
+        }
+    }
 
 
     override fun toString(): String {

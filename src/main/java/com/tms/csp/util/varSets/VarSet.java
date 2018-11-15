@@ -139,7 +139,8 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public boolean containsVarCode(String varCode) throws BadVarCodeException {
         Var var = getSpace().getVar(varCode);
-        return containsVar(var);
+        boolean b = containsVar(var);
+        return b;
     }
 
     public boolean contains(String varCode) {
@@ -158,7 +159,9 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     public abstract boolean containsVarId(int varId);
 
     final public boolean containsVar(Var vr) {
-        return containsVarId(vr.getVarId());
+        int varId = vr.getVarId();
+        boolean b = containsVarId(varId);
+        return b;
     }
 
     final public boolean containsVar(Lit lit) {
@@ -574,7 +577,9 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     final public boolean anyVarOverlap(VarSet that) {
-        if (that == null || that.isEmpty() || this.isEmpty()) return false;
+        if (that == null || that.isEmpty() || this.isEmpty()) {
+            return false;
+        }
 
         if (that.isSingleton()) {
             return this.containsVarId(that.min());
@@ -607,6 +612,29 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public VarSet minus(int varIdToRemove) {
         throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    public VarSet minus(String varCode) {
+        Var vr = getSpace().getVar(varCode);
+        return minus(vr);
+    }
+
+    public VarSet plus(String varCode) {
+        Var vr = getSpace().getVar(varCode);
+        return union(vr);
+    }
+
+    public VarSet plus(Var vr) {
+        return union(vr);
+    }
+
+    public VarSet plus(VarSet varSet) {
+        return VarSet.union(getSpace(),this,varSet);
+    }
+
+    public VarSet union(String varCode) {
+        Var vr = getSpace().getVar(varCode);
+        return union(vr);
     }
 
     public VarSet minus(VarSet varsToRemove) {
@@ -678,7 +706,9 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public VarSet overlap(VarSet that) {
-        if (that == null || that.isEmpty()) return mkEmptyVarSet();
+        if (that == null || that.isEmpty()) {
+            return mkEmptyVarSet();
+        }
         if (that.isSingleton()) {
             Var v = that.getFirstVar();
             if (containsVar(v)) {
@@ -1064,6 +1094,10 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     public VarSet refreshSize() {
         recomputeSize();
         return this;
+    }
+
+    public Set<VarPair> getAllPairs() {
+        return VarSetK.getAllPairs(this);
     }
 
 }

@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.math.BigInteger;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -131,7 +132,8 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 //    public int traversalId;
 
 
-    private Long satCount; //sat count smooth
+    //    private Long satCount; //sat count smooth
+    private BigInteger satCount; //sat count smooth
 
     private HashSet<Exp> parents;  //must clear if root changes
     private Integer pd; //partial derivative - for counting graph
@@ -276,6 +278,16 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         Space space = _space;
         Cube cube = space.getCubeForInt32(int32Value, int32VarPrefix);
         return condition(cube);
+    }
+
+    public Exp condition(ConditionOn c) {
+        if (c instanceof Lit) {
+            return condition((Lit) c);
+        } else if (c instanceof Cube) {
+            return condition((Cube) c);
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public Exp condition(Cube ctx) {
@@ -1378,7 +1390,21 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
      */
     public Exp condition(String sLits) {
         ConditionOn conditionOn = _space.parser.parseLitsToConditionOn(sLits);
-        return conditionOn.conditionThat(this);
+
+        if (conditionOn instanceof Lit) {
+            return condition((Lit) conditionOn);
+        } else if (conditionOn instanceof Cube) {
+            return condition((Cube) conditionOn);
+        } else {
+            throw new IllegalStateException();
+        }
+//        return when (conditionOn) {
+//            is Lit -> condition(conditionOn)
+//            is Cube -> condition(conditionOn)
+//            else -> throw IllegalStateException()
+//        }
+
+//        return conditionOn.conditionThat(this);
     }
 
     public Cube asCube() {
@@ -3465,7 +3491,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         int varCount = getVarCount();
         int arity = getArgCount();
 
-        long satCount = getSatCount();
+        BigInteger satCount = getSatCount();
         int spaceId = getSpaceId();
 
         a.indent(depth);
@@ -3751,23 +3777,39 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public Set<Cube> getCubesSmooth() {
-        if (isConstant()) {
-            throw new UnsupportedOperationException(getSimpleName());
-        }
         return computeCubesSmooth();
-
     }
 
     //only works c smooth nodes
-    public long getSatCount() {
+    public BigInteger getSatCount(VarSet parentVars) {
+        return getSatCount(parentVars, _space.mkEmptyVarSet());
+    }
+
+    //only works c smooth nodes
+    public BigInteger getSatCount(VarSet parentVars, VarSet picVars) {
+        BigInteger baseSatCount = getSatCount();
+        VarSet dcVars = parentVars.minus(picVars).minus(getVars());
+        return Csp.computeDcVars(baseSatCount, dcVars.size());
+    }
+
+    //only works c smooth nodes
+    public BigInteger getSatCount() {
         if (satCount == null) {
             satCount = computeSatCount();
         }
-//        if (satCount < 0) throw new IllegalStateException();
+        //System.err.println("getSatCount: " + satCount + " " + getSimpleName() + " " + toString());
+        if (satCount.compareTo(BigInteger.ZERO) < 0) {
+            throw new IllegalStateException(getSimpleName() + " " + toString());
+        }
         return satCount;
     }
 
-    public long computeSatCount() {
+    //only works c smooth nodes
+    public long getSatCountLong() {
+        return getSatCount().longValue();
+    }
+
+    public BigInteger computeSatCount() {
         throw new UnsupportedOperationException(getClass().getName());
     }
 

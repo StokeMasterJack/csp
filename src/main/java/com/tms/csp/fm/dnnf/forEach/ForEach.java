@@ -12,6 +12,7 @@ import com.tms.csp.fm.dnnf.vars.VarGrp;
 import com.tms.csp.util.varSets.VarSet;
 import com.tms.csp.util.varSets.VarSetBuilder;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -151,7 +152,7 @@ public class ForEach implements PLConstants {
         }
     }
 
-    public long computeSatCount() {
+    public BigInteger computeSatCount() {
 //        printForEachParams();
         maybeCondition();
         maybeProject();
@@ -159,13 +160,14 @@ public class ForEach implements PLConstants {
         VarSet dontCareVars = getDontCareVars();
 
         long dcPermCount = Exp.computeDcPermCountLong(dontCareVars.size());
-        return projection.getSatCount() * dcPermCount;
+//        return projection.getSatCount() * dcPermCount;
+        return projection.getSatCount().multiply(BigInteger.valueOf(dcPermCount));
     }
 
     public Set<Cube> execute() throws MaxSatCountExceededException {
 
         VarSet dontCareVars = getDontCareVars();
-        long satCount = computeSatCount();
+        BigInteger satCount = computeSatCount();
 
 
         if (false) {
@@ -204,7 +206,7 @@ public class ForEach implements PLConstants {
 
         if (false) {
             //todo fix this: satCount must work after a projection
-            if (solutions.size() != satCount) {
+            if (solutions.size() != satCount.intValue()) {
                 System.err.println("cubeCount != satCount");
                 System.err.println("  cubes   [" + solutions.size() + "]");
                 System.err.println("  satCount[" + satCount + "]");
@@ -320,12 +322,12 @@ public class ForEach implements PLConstants {
                 forEach.setOutVars(outVars);
 
 
-                long satCount = forEach.computeSatCount();
+                BigInteger satCount = forEach.computeSatCount();
 
-                if (satCount > maxSatCount) {
-                    System.err.println("Early stop");
-                    return false;
-                }
+//                if (satCount > maxSatCount) {
+//                    System.err.println("Early stop");
+//                    return false;
+//                }
 
                 Set<Cube> cubes = forEach.execute();
 

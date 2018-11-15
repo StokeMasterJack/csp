@@ -61,12 +61,12 @@ public abstract class Constant extends Exp {
 
     @Override
     final public Exp condition(Lit lit) {
-        return this;
+                return this;
     }
 
     @Override
     final public Exp condition(Cube ctx) {
-        return this;
+                return this;
     }
 
     @Override

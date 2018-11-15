@@ -297,6 +297,10 @@ public class Space extends SpaceUtil implements PLConstants {
         return varSpace.getLit(varId, sign);
     }
 
+    public Lit getLit(String varCode, boolean sign) {
+        return getVar(varCode).lit(sign);
+    }
+
     public Lit mkLit(int lit) {
         return varSpace.mkLit(lit);
     }
@@ -487,6 +491,9 @@ public class Space extends SpaceUtil implements PLConstants {
         return varCode.startsWith("AND__");
     }
 
+    public VarSet mkVarSet(String varCodes) {
+        return parseVarCodes2(varCodes);
+    }
 
     public VarSet parseVarCodes2(String varCodes) {
         String[] a = parseVarCodes(varCodes);
@@ -622,7 +629,13 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public Exp mkAnd(Exp... args) {
-        return expFactory.mCube(args);
+//        return expFactory.mCube(args);
+
+        ArgBuilder b = argBuilder(Op.And);
+        for (Exp arg : args) {
+            b.addExp(arg);
+        }
+        return b.mk();
     }
 
     public Exp mkAnd(Iterable<? extends Exp> args) {
@@ -664,26 +677,6 @@ public class Space extends SpaceUtil implements PLConstants {
         }
     }
 
-
-
-    /*
-    old
-    public Exp mkAnd(Iterable<Exp> rawArgs) {
-        return new ArgBuilder(Op.And, rawArgs).mk(this);
-    }
-     */
-
-
-
-
-    /*
-
-    public Exp mkCube(Iterable<Exp> litArgs) {
-        assert !(litArgs instanceof ArgBuilder);
-        assert Exp.isAllLits(litArgs);
-        return mkDAnd(new ArgBuilder(Op.DAnd, litArgs));
-    }
-     */
 
     public VarSet createVars(Set<Var> vars) {
         return varSpace.createVars(vars);
@@ -940,31 +933,6 @@ public class Space extends SpaceUtil implements PLConstants {
 //                Fcc fcc;
 //            }
 
-    public static class ExpId {
-        //const|lit|dand|dor|and|or
-        int varCount;
-        //const
-        //lit
-        //allVarsXor
-        //allVarsDAnd
-        //allVarsOr - clause
-        //complex-dor (complex xor)
-        //complex-dand
-        //complex-and
-        //complex-or
-
-
-    }
-
-    public static class ArgGrp {
-        VarSet vars;
-        //simple //all lits
-        //complex
-        //dAnds
-        //dOrs
-
-
-    }
 
     public Exp mkOr(String argList) {
         return parser.parseExp("or(" + argList + ")");
@@ -1220,36 +1188,6 @@ public class Space extends SpaceUtil implements PLConstants {
             "iff(2560 and(Hyb Hybrid ECVT))";
 
 
-    public static class Cfg {
-
-        public static boolean useLameIsSat;
-
-    }
-
-//    public Exp createPosComplex(PosOp op1, int expId, ImmutableList<Exp> args) {
-//        switch (op1) {
-//            case IMP:
-//                return new Imp(this, expId, args);
-//            case RMP:
-//                return new Rmp(this, expId, args);
-//            case NAND:
-//                return new Nand(this, expId, args);
-//            case IFF:
-//                throw new IllegalStateException();
-//            case AND:
-//                throw new IllegalStateException();
-//            case OR:
-//                throw new IllegalStateException();
-//            case XOR:
-//                throw new IllegalStateException();
-//            case Vars:
-//                return new Vars(this, expId, args);
-//            default:
-//                throw new IllegalArgumentException(toString());
-//        }
-//    }
-
-
     /**
      * Note: this only works c a "year" cofactor
      */
@@ -1362,6 +1300,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public static Set<String> getPotentialAlwaysTrueVars() {
+
         ImmutableSet.Builder<String> b = ImmutableSet.builder();
         b.add(alwaysTrueVars1);
         ImmutableSet<String> retVal = b.build();
@@ -1401,9 +1340,7 @@ public class Space extends SpaceUtil implements PLConstants {
      * Can this clause be deleted
      * aka is this clause subsumed by a smaller (subset) clause?
      */
-    private static boolean canClauseBeDeleted
-    (TreeSet<TreeSet<String>> cnf, TreeSet<String> clauseToMaybeDelete) {
-
+    private static boolean canClauseBeDeleted(TreeSet<TreeSet<String>> cnf, TreeSet<String> clauseToMaybeDelete) {
         for (TreeSet<String> clause : cnf) {
 
             if (clause.equals(clauseToMaybeDelete)) {
@@ -1452,38 +1389,6 @@ public class Space extends SpaceUtil implements PLConstants {
         }
         return b.build();
     }
-
-
-//    public void setVarInfo(VarInfo varInfo) {
-//        this.varInfo = varInfo;
-//    }
-//
-//    public VarInfo getVarInfo() {
-//        return varInfo;
-//    }
-
-
-//    public XorNode createXorSplit(IXor xor, String constraint) throws Exception {
-//        SpaceCsp csp = space.getSpaceCsp();
-//        csp.addConstraint(xor);
-//        csp.addConstraint(constraint);
-//
-//        ArrayList<SpaceCsp> b1 = new ArrayList<SpaceCsp>();
-//
-//        ImmutableSet<VarCode> childVars = xor.getChildVars();
-//        for (VarCode childVar : childVars) {
-//            SpaceCsp copy = csp.copy();
-//            copy.addConstraint(childVar);
-//            copy.propagate();
-//            if (copy.isSat()) {
-//                b1.add(copy);
-//            }
-//        }
-//
-//        return createXorNode(b1);
-//
-//
-//    }
 
 
     public static Logger log = createLogger(Space.class);
@@ -1715,7 +1620,6 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public VarFilter mkVarFilter(VarGrp key) {
-
         Prefix p = Prefix.getPrefix(key);
         if (p != null) {
             return VarFilter.prefix(p);
@@ -1927,6 +1831,16 @@ public class Space extends SpaceUtil implements PLConstants {
         Var var1 = getVar(varId1);
         Var var2 = getVar(varId2);
         return mkVarPair(var1, var2);
+    }
+
+    public VarSet mkVarSet(ConditionOn con) {
+        if (con instanceof Lit) {
+            return ((Lit) con).getVars();
+        } else if (con instanceof Cube) {
+            return ((Cube) con).getVars();
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public VarSet mkVarSet(int varId) {

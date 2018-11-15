@@ -137,7 +137,7 @@ class VVConditionTest : CspBaseTest2() {
         */
     @Test
     fun test_simplifyBasedOnVvs() {
-        val csp = Csp.parse(CspSample.Efc)
+        val csp = Csp.parse(CspSample.EfcOriginal)
 
         csp.toNnf()
         csp.simplifyBasedOnVvs()

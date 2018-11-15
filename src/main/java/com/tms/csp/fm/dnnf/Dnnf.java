@@ -18,6 +18,7 @@ import com.tms.csp.util.varSets.VarSet;
 import com.tms.csp.util.varSets.VarSetBuilder;
 
 import javax.annotation.Nullable;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -232,8 +233,8 @@ public class Dnnf implements PLConstants, HasSpace {
         ForEach forEach = new ForEach(baseConstraint);
         forEach.setPics(this.pics, var);
         forEach.setOutVars(invVars);
-        long satCount = forEach.computeSatCount();
-        return satCount;
+        BigInteger satCount = forEach.computeSatCount();
+        return satCount.longValue();
     }
 
 
@@ -418,7 +419,7 @@ public class Dnnf implements PLConstants, HasSpace {
         return b.build();
     }
 
-    public long getSatCount() {
+    public BigInteger getSatCount() {
         return getConditioned().getSatCount();
     }
 
@@ -434,7 +435,7 @@ public class Dnnf implements PLConstants, HasSpace {
         getConditioned().serialize(new Ser(a));
     }
 
-    public long satCount() {
+    public BigInteger satCount() {
         return getSatCount();
     }
 
@@ -505,7 +506,7 @@ public class Dnnf implements PLConstants, HasSpace {
 
         ForEach forEach = new ForEach(this);
         forEach.setOutVars(outVars);
-        return forEach.computeSatCount();
+        return forEach.computeSatCount().longValue();
 
     }
 

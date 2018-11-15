@@ -10,10 +10,9 @@ class AnyIntersectionTest : CspBaseTest2() {
 
 
     @Test
-    @Throws(Exception::class)
     fun testUFWithCamry() {
 
-        val csp = Csp.parse(CspSample.Camry2011)
+        val csp = Csp.parse(CspSample.Camry2011Dc)
 
         val formula = csp.mkFormula().asFormula()
 
@@ -62,6 +61,6 @@ class AnyIntersectionTest : CspBaseTest2() {
     }
 
     internal fun loadCamry(): Csp {
-        return CspSample.Camry2011.csp()
+        return CspSample.Camry2011Dc.csp()
     }
 }

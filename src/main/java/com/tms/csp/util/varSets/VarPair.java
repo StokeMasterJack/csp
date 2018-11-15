@@ -18,7 +18,7 @@ public class VarPair extends VarSet {
     public VarPair next;
 
     public VarPair(Var var1, Var var2) {
-        assert var1.getVarId() < var2.getVarId();
+                assert var1.getVarId() < var2.getVarId();
         this.var1 = var1;
         this.var2 = var2;
     }
@@ -49,18 +49,18 @@ public class VarPair extends VarSet {
 
     @Override
     public int min() throws NoSuchElementException {
-        return var1.getVarId();
+                return var1.getVarId();
     }
 
     @Override
     public int max() throws NoSuchElementException {
-        return var2.getVarId();
+                return var2.getVarId();
     }
 
 
     @Override
     public boolean containsVarId(int varId) {
-        return var1.getVarId() == varId || var2.getVarId() == varId;
+                return var1.getVarId() == varId || var2.getVarId() == varId;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class VarPair extends VarSet {
 
     @Override
     public IntIterator intIterator() {
-        return new PairIntIterator();
+                return new PairIntIterator();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class VarPair extends VarSet {
 
     @Override
     public int indexOf(int varId) {
-        if (varId == var1.getVarId()) return 0;
+                if (varId == var1.getVarId()) return 0;
         if (varId == var2.getVarId()) return 1;
         return -1;
     }
@@ -90,7 +90,7 @@ public class VarPair extends VarSet {
         private Var next;
 
         public PairIntIterator() {
-            next = var1;
+                        next = var1;
         }
 
         private Var computeNext(Var previous) {
@@ -119,7 +119,7 @@ public class VarPair extends VarSet {
 
     @Override
     final public int size() {
-        return 2;
+                return 2;
     }
 
     @Override
@@ -129,7 +129,7 @@ public class VarPair extends VarSet {
 
     @Override
     final public boolean containsAllVars(VarSet that) {
-        if (that == null || that.isEmpty()) return true;
+                if (that == null || that.isEmpty()) return true;
         if (that.size() == 1) {
             return containsVarId(that.min());
         }
@@ -164,7 +164,7 @@ public class VarPair extends VarSet {
 
     @Override
     public VarSet minus(int varIdToRemove) {
-        if (varIdToRemove == var1.varId) {
+                if (varIdToRemove == var1.varId) {
             return var2.mkSingletonVarSet();
         } else if (varIdToRemove == var2.varId) {
             return var1.mkSingletonVarSet();
@@ -174,7 +174,7 @@ public class VarPair extends VarSet {
 
     @Override
     public VarSet union(Var var) {
-        if (var == var1 || var == var2) return this;
+                if (var == var1 || var == var2) return this;
         VarSetBuilder b = getSpace().newMutableVarSet();
         b.addVar(var1);
         b.addVar(var2);
@@ -184,7 +184,7 @@ public class VarPair extends VarSet {
 
     @Override
     public VarSet minus(VarSet varsToRemove) {
-        if (varsToRemove == null || varsToRemove.isEmpty()) return this;
+                if (varsToRemove == null || varsToRemove.isEmpty()) return this;
 
         boolean c1 = varsToRemove.containsVar(var1);
         boolean c2 = varsToRemove.containsVar(var2);
@@ -214,7 +214,7 @@ public class VarPair extends VarSet {
 
     @Override
     public int computeContentHash() {
-        int hash = 2;
+                int hash = 2;
         hash = Ints.superFastHashIncremental(var1.getVarId(), hash);
         hash = Ints.superFastHashIncremental(var2.getVarId(), hash);
         return Ints.superFastHashAvalanche(hash);
@@ -222,7 +222,7 @@ public class VarPair extends VarSet {
 
     @Override
     final public int getVarId(int index) throws IndexOutOfBoundsException {
-        if (index == 0) return var1.getVarId();
+                if (index == 0) return var1.getVarId();
         if (index == 1) return var2.getVarId();
         throw new IndexOutOfBoundsException();
     }
@@ -234,7 +234,7 @@ public class VarPair extends VarSet {
 
     @Override
     public boolean containsAllBitSet(VarSetBuilder s) {
-        if (s.size() > 2) return false;
+                if (s.size() > 2) return false;
         for (Var var : s) {
             if (!containsVar(var)) return false;
         }
@@ -249,7 +249,7 @@ public class VarPair extends VarSet {
 //    }
 
     public int getMinVarId() {
-        assert var1.varId != var2.varId;
+                assert var1.varId != var2.varId;
         if (var1.varId < var2.varId) {
             return var1.varId;
         } else {
@@ -258,7 +258,7 @@ public class VarPair extends VarSet {
     }
 
     public int getMaxVarId() {
-        assert var1.varId != var2.varId;
+                assert var1.varId != var2.varId;
         if (var1.varId > var2.varId) {
             return var1.varId;
         } else {
