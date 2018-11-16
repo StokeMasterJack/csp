@@ -5,8 +5,8 @@ import com.tms.csp.ast.Exp
 import com.tms.csp.ast.Prefix
 import com.tms.csp.data.CspSample
 import com.tms.csp.fm.dnnf.products.Cube
-import com.tms.csp.ssutil.TT
 import com.tms.csp.ssutil.rpad
+import com.tms.csp.ssutil.tt
 import com.tms.csp.util.CspBaseTest2
 import com.tms.csp.util.varSets.VarSet
 import org.junit.Assert.assertEquals
@@ -52,37 +52,26 @@ class JoinSplitAnd : CspBaseTest2() {
         val sample = CspSample.EfcOriginal
         val expectedSatCount = sample.expectedSatCount
 
-        val tt = TT()
-        val clob = CspSample.EfcOriginal.loadText()
-        tt.t("load text")
-        val csp = Csp.parse(clob)
 
-        csp.conditionOutAtVars()   //at makes toyota-wide compile slower
-        tt.t("parse text")
+        val clob = tt("Load text"){CspSample.EfcOriginal.loadText()}
+        val csp = tt("Parse text"){Csp.parse(clob)}
 
-        val nRough = csp.toDnnf()
-        tt.t("toDnnf")
+        val nRough = tt("Compile dnnf"){csp.toDnnf()}
 
-        val nSmooth = nRough.smooth
-        tt.t("getSmooth")
+        val nSmooth = tt("Smooth"){nRough.smooth}
 
-        var satCount = nSmooth.satCount
-        tt.t("satCountSmooth")
+        var satCount = tt("SatCount"){nSmooth.satCount}
 
         //        assertEquals(3460501125462739908L, satCountSmooth);    //no at
         assertEquals(expectedSatCount, satCount)    //at
 
-        val nn = nSmooth.copyToOtherSpace()
-        tt.t("copyToOtherSpace")
+        val nn = tt("CopyToOtherSpace"){nSmooth.copyToOtherSpace()}
 
-        val tiny = nn.space.serializeTinyDnnf()
-        tt.t("serializeTinyDnnf")
+        val tiny = tt("SerializeTinyDnnf"){nn.space.serializeTinyDnnf()}
 
-        val nnn = Exp.parseTinyDnnf(tiny)
-        tt.t("parseTinyDnnf")
+        val nnn = tt("ParseTinyDnnf"){Exp.parseTinyDnnf(tiny)}
 
-        satCount = nnn.satCount
-        tt.t("satCountSmooth")
+        satCount = tt("SatCountSmooth"){nnn.satCount}
 
         assertEquals(expectedSatCount, satCount)   //at
 

@@ -15,7 +15,7 @@ import static com.tms.csp.ssutil.Strings.isEmpty;
 public class VarCode extends Mods implements Comparable<VarCode>, IVar {
 
     @Nonnull
-    public final String prefix;    //no prefix _vars use empty string
+    public final String prefix;    //no prefix _complexVars use empty string
 
     @Nonnull
     public final String localName;

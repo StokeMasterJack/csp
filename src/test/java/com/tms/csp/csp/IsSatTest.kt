@@ -1,47 +1,51 @@
 package com.tms.csp.csp
 
 import com.tms.csp.ast.Csp
+import com.tms.csp.ast.HasIsSat
 import com.tms.csp.data.CspSample
-import com.tms.csp.util.CspBaseTest2
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class IsSatTest : CspBaseTest2() {
+class IsSatTest {
+
+    fun parse(s: CspSample): HasIsSat {
+        return Csp.parse(s)
+    }
 
     @Test
     fun testTiny() {
-        val csp = loadCsp(CspSample.TinyDc)
+        val csp = parse(CspSample.TinyDc)
         assertTrue(csp.isSat())
     }
 
     @Test
     fun testTrim() {
-        val csp = loadCsp(CspSample.TrimNoDc)
+        val csp = parse(CspSample.TrimNoDc)
         assertTrue(csp.isSat())
     }
 
     @Test
     fun testTrimColor() {
-        val csp = loadCsp(CspSample.TrimColorNoDc)
+        val csp = parse(CspSample.TrimColorNoDc)
         assertTrue(csp.isSat())
     }
 
     @Test
     fun testTrimColorOptions() {
-        val csp = Csp.parse(CspSample.TrimColorOptionsDc)
+        val csp = parse(CspSample.TrimColorOptionsDc)
         assertTrue(csp.isSat())
     }
 
     @Test
     fun testCamry2011() {
-        val csp = loadCsp(CspSample.Camry2011Dc, true)
+        val csp = parse(CspSample.Camry2011Dc)
         assertTrue(csp.isSat())
     }
 
     //591 millis
     @Test
     fun testEfc1() {
-        val csp = loadCsp(efcOriginal)
+        val csp = parse(CspSample.EfcOriginal)
         val t1 = System.currentTimeMillis()
         assertTrue(csp.isSat())
         val t2 = System.currentTimeMillis()
@@ -51,7 +55,7 @@ class IsSatTest : CspBaseTest2() {
     //859 millis
     @Test
     fun testEfc2() {
-        val csp = Csp.parse(CspSample.EfcProdFactoryRules)
+        val csp = parse(CspSample.EfcProdFactoryRules)
         val t1 = System.currentTimeMillis()
         assertTrue(csp.isSat())
         val t2 = System.currentTimeMillis()

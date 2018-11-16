@@ -122,7 +122,6 @@ class VVConditionTest : CspBaseTest2() {
         csp.addConstraint("or(and(a b c) and(d e fCon))")
         csp.addConstraint("or(!a b)")
 
-        csp.propagate()
 
 
     }

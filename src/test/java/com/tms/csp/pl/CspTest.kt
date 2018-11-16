@@ -34,7 +34,6 @@ class CspTest : CspBaseTest2() {
 
         val csp = Csp.parse(tiny)
 
-
         val plSatCount = csp.satCountPL()
 
         assertEquals(satCountExpected, plSatCount.toBigInteger())

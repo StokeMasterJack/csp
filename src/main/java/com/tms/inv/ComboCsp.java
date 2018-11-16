@@ -275,7 +275,7 @@ public class ComboCsp implements PLConstants {
     public VarSet getInvAcyVarsFromFactory() {
         VarSet b = space.newMutableVarSet();
         VarMeta varMeta = getVarMeta();
-        VarSet vars = cspFactory.getFormula().getVars();
+        VarSet vars = cspFactory.mkFormula().getVars();
         for (Var var : vars) {
             if (varMeta.isInvAcyVar(var)) {
                 b.addVar(var);

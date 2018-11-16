@@ -36,7 +36,6 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     private final Set<Var> set = new HashSet<Var>();
     private final List<Var> list = new ArrayList<Var>();  //varIndex to Var
 
-    private VarSet emptyVarSet;
     private VarSet vars;
 
     private Converter<Var> varConverter;
@@ -102,7 +101,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
 //    private static Map<String, Var> initVarMap2() {
 //        HashMap<String, Var> map = new HashMap<String, Var>();
-//        for (Var var : _vars) {
+//        for (Var var : _complexVars) {
 //            map.put(var.getVarCode(), var);
 //        }
 //        return map;
@@ -226,7 +225,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
     public static void serializeCodeList(Ser a, List<VarCode> varCodes) {
-        a.append("_vars(");
+        a.append("_complexVars(");
         for (int i = 0; i < varCodes.size(); i++) {
             VarCode varCode = varCodes.get(i);
             a.append(varCode.toString());
@@ -242,7 +241,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
      * varSpace(var1 var2 var2)
      */
     public static void parseVarMap(String varMap, ImmutableList.Builder<VarCode> b) {
-        String token = "_vars";
+        String token = "_complexVars";
         varMap = varMap.replaceAll(", ", " ");
         varMap = varMap.replaceAll(",", " ");
         varMap = varMap.replaceAll("  ", " ");
@@ -263,7 +262,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
     public static void parseVarMap(String varMap, ImmutableSet.Builder<VarCode> b) {
-        String token = "_vars";
+        String token = "_complexVars";
         varMap = varMap.replaceAll(", ", " ");
         varMap = varMap.replaceAll(",", " ");
         varMap = varMap.replaceAll("  ", " ");
@@ -481,10 +480,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
     public VarSet mkEmptyVarSet() {
         setFreeze();
-        if (emptyVarSet == null) {
-            emptyVarSet = new EmptyVarSet(this);
-        }
-        return emptyVarSet;
+        return EmptyVarSet.getInstance();
     }
 
 

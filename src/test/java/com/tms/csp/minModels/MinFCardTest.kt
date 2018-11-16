@@ -369,7 +369,7 @@ class MinFCardTest {
 
         //        Set<Cube> products = n.getProducts();
         //        for (Cube p : products) {
-        //            VarSet falseVars = p.get_vars().minus(p.getTrueVars());
+        //            VarSet falseVars = p.get_complexVars().minus(p.getTrueVars());
         //            println(falseVars.size());
         //        }
     }
@@ -469,8 +469,8 @@ class MinFCardTest {
 
         n = n.reduce()
 
-        //        VarSet _vars = n.get_vars();
-        //        for (Var vr : _vars) {
+        //        VarSet _complexVars = n.get_complexVars();
+        //        for (Var vr : _complexVars) {
         //            println(vr);
         //        }
 

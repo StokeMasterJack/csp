@@ -5,9 +5,6 @@ public class AlreadyFailedException extends IllegalStateException {
     public AlreadyFailedException() {
     }
 
-    public AlreadyFailedException(String message) {
-        super(message);
-    }
 
     public AlreadyFailedException(String message, Throwable cause) {
         super(message, cause);

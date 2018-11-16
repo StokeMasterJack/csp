@@ -7,8 +7,10 @@ import com.tms.csp.util.Bit
 import com.tms.csp.util.varSets.VarSet
 import java.util.*
 
-interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
+interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> {
 
+
+    override val space: Space
 
     /**
      * get the value of a boolean feature
@@ -60,6 +62,8 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
 
     fun litIt(): Iterable<Lit>
 
+    val lits: Iterable<Lit> get() = litIt()
+
     fun argIt(): Iterable<Exp> = ItTo.it(litIt()) { it.asExp() }
     fun argIter(): Iterator<Exp> = IterTo.iter(litIterator()) { it.asExp() }
 
@@ -97,8 +101,9 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
         return that.condition(this)
     }
 
-    fun varCodesSorted(): SortedSet<String> = vars.toVarCodeSetSorted()
+    override fun iterator():Iterator<Lit> = litIterator()
 
+    fun varCodesSorted(): SortedSet<String> = vars.toVarCodeSetSorted()
 
 
     companion object {
@@ -113,7 +118,7 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn {
 
         @JvmStatic
         fun serialize(a: Ser, cube: Cube, cols: Int) {
-            for (lit in cube.litIt()) {
+            for (lit in cube) {
                 a.append(lit.toString(cols))
             }
         }

@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class VarMapTest extends PLTestBase {
 
-    String varMap = "_vars(d a b c)";
+    String varMap = "_complexVars(d a b c)";
 
 
     /*

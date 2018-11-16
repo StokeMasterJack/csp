@@ -3,14 +3,14 @@ package com.tms.csp;
 import java.util.Set;
 
 /**
- * args must be _vars and must be PickOne child _vars
+ * args must be _complexVars and must be PickOne child _complexVars
  */
 public class OrConstraint {
 
     private final Set<String> args;
 
     /**
-     * @param args must be _vars and must be PickOne child _vars
+     * @param args must be _complexVars and must be PickOne child _complexVars
      */
     public OrConstraint(Set<String> args) {
         this.args = args;

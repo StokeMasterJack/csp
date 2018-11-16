@@ -26,6 +26,10 @@ import static com.tms.csp.ssutil.Strings.getSimpleName;
 
 public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
+    public static VarSet empty() {
+        return EmptyVarSet.getInstance();
+    }
+
     abstract public VarSpace getVarSpace();
 
     public Space getSpace() {
@@ -629,7 +633,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public VarSet plus(VarSet varSet) {
-        return VarSet.union(getSpace(),this,varSet);
+        return VarSet.union(getSpace(), this, varSet);
     }
 
     public VarSet union(String varCode) {

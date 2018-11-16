@@ -11,29 +11,12 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
 
     val isSat: Boolean
         get() {
-
-
             val t = mkCsp(true)
-            if (t.isSat()) {
-                return true
+            return if (t.isSat()) {
+                true
             } else {
                 val f = mkCsp(false)
-                return f.isSat()
-            }
-        }
-
-    val isSatLite: Lit?
-        get() {
-            val t = mkCsp(true)
-            if (t.isFailed) {
-                return decisionVar.mkNegLit()
-            } else {
-                val f = mkCsp(false)
-                return if (f.isFailed) {
-                    decisionVar.mkPosLit()
-                } else {
-                    null
-                }
+                f.isSat()
             }
         }
 
@@ -51,9 +34,11 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
 
     }
 
+
+
     fun mkCsp(sign: Boolean): Csp {
         val lit = decisionVar.lit(sign)
-        return Csp(formula, lit)
+        return Csp(formula = formula.argIt, condition = lit)
     }
 
 

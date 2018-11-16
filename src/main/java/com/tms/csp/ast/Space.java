@@ -142,8 +142,8 @@ public class Space extends SpaceUtil implements PLConstants {
 //    }
 
 //    public static Space extractVars(String fact) {
-//        Set<String> _vars = extractVarCodes(fact);
-//        return new Space(_vars);
+//        Set<String> _complexVars = extractVarCodes(fact);
+//        return new Space(_complexVars);
 //    }
 
 //    public static Set<String> extractVarCodes(String fact) {
@@ -403,24 +403,14 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
 
-    public void simplify() throws FailedCspException {
-        csp.propagate();
-    }
 
-    public void processSimpleAssignmentQueue() throws FailedCspException {
-        csp.propagate();
-    }
 
 
     private void logConstraintSolved(Exp before) {
         System.err.println("Constraint Solved:" + before);
     }
 
-    public Space simplifyCopy() {
-        Space copy = copy();
-        copy.simplify();
-        return copy.copy();
-    }
+
 
 //
 //    public Set<String> getPrefixes() {
@@ -1124,8 +1114,8 @@ public class Space extends SpaceUtil implements PLConstants {
         return getExp(expId);
     }
 
-//    public static Space init(String _vars) {
-//        String[] split = _vars.split(" ");
+//    public static Space init(String _complexVars) {
+//        String[] split = _complexVars.split(" ");
 //        return new Space(split);
 //    }
 
@@ -1432,7 +1422,7 @@ public class Space extends SpaceUtil implements PLConstants {
 //        }
 //
 //        for (Exp constraint : complex) {
-//            b.addVars(constraint.get_vars());
+//            b.addVars(constraint.get_complexVars());
 //        }
 //        return b.build();
 //    }
@@ -1801,22 +1791,22 @@ public class Space extends SpaceUtil implements PLConstants {
         return b.build();
     }
 
-//    public Set<Var> get_vars(VarGrp key) {
+//    public Set<Var> get_complexVars(VarGrp key) {
 //        VarFilter varFilter = mkVarFilter(key);
-//        return get_vars(varFilter);
+//        return get_complexVars(varFilter);
 //    }
 //
 //
-//    public void _vars(VarGrp key) {
-//        Set<Var> _vars = get_vars(key);
-//        String sVars = ParseUtil.serializeVars(_vars);
+//    public void _complexVars(VarGrp key) {
+//        Set<Var> _complexVars = get_complexVars(key);
+//        String sVars = ParseUtil.serializeVars(_complexVars);
 //        System.err.println(sVars);
 //    }
 //
-//    public Set<Var> get_vars(VarFilter filter) {
-//        Set<Var> _vars = get_vars();
+//    public Set<Var> get_complexVars(VarFilter filter) {
+//        Set<Var> _complexVars = get_complexVars();
 //        ImmutableSet.Builder<Var> b = ImmutableSet.builder();
-//        for (Var vr : _vars) {
+//        for (Var vr : _complexVars) {
 //            if (filter.accept(vr)) {
 //                b.add(vr);
 //            }

@@ -201,7 +201,7 @@ public abstract class Transformer extends Transforms implements PLConstants {
 
     /**
      * Only allow:
-     * Same as BNF,but only _vars can be negated
+     * Same as BNF,but only _complexVars can be negated
      */
     public static final Transformer NNF = new UntilStableTransformer("NNF", BNF, BNF_TO_NNF);
 

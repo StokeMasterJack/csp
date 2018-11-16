@@ -170,7 +170,7 @@ class ExpFactory(val space: Space) {
 
     @JvmOverloads
     fun mkAnd(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
-        val bb = ArgBuilder(space,Op.And,flatten = flatten)
+        val bb = ArgBuilder(space, Op.And, flatten = flatten)
         bb.addExpIt(args, condition)
         return bb.mk()
     }
@@ -182,14 +182,14 @@ class ExpFactory(val space: Space) {
 
     @JvmOverloads
     fun mkOr(args: ExpIt = It.emptyIt(), condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
-        val bb = ArgBuilder(space,Op.Or,flatten = flatten)
+        val bb = ArgBuilder(space, Op.Or, flatten = flatten)
         bb.addExpIt(args, condition)
         return bb.mk()
     }
 
     @JvmOverloads
     fun mkOr(vararg args: Exp, condition: Condition = Condition.identity, flatten: Boolean = true): Exp {
-        val bb = ArgBuilder(space,Op.Or,flatten = flatten)
+        val bb = ArgBuilder(space, Op.Or, flatten = flatten)
         bb.addExpArray(args, condition)
         return bb.mk()
     }
@@ -475,10 +475,10 @@ class ExpFactory(val space: Space) {
 //    }
 
 //    fun mkDnnf(raw: Raw,extractVars: Boolean): Dnnf {
-//        val _vars = raw.buildVarSet(extractVars)
+//        val _complexVars = raw.buildVarSet(extractVars)
 //        val dLines = raw.dLines
 //        val exp = parseDNodes(dLines)
-//        val _vars = raw._vars
+//        val _complexVars = raw._complexVars
 //        raw.invVars
 //        return Dnnf(exp)
 //    }
@@ -617,6 +617,7 @@ class ExpFactory(val space: Space) {
 }
 
 val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
+val List<Exp>?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty()
 
 
 //class LitPairCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {

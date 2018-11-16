@@ -99,9 +99,9 @@ public class ForEach implements PLConstants {
         this.projection = null;
     }
 
-//    public VarSet convert(VarSet _vars) {
+//    public VarSet convert(VarSet _complexVars) {
 //        VarSetBuilder b = space.varSetBuilder();
-//        b.addVars(_vars);
+//        b.addVars(_complexVars);
 //        return b.immutable();
 //    }
 
@@ -188,10 +188,10 @@ public class ForEach implements PLConstants {
 //        }
 
 //        ImmutableAssignments picsCube = ImmutableAssignments.createFromLitSet(getSpace(), pics);
-//        Set<Var> picsVars = picsCube.get_vars();
+//        Set<Var> picsVars = picsCube.get_complexVars();
 
 
-        //cubes will not contain pics._vars
+        //cubes will not contain pics._complexVars
         //cubes will not contain any dcVars
         Set<Cube> cubes;
         if (projection.isTrue()) {
@@ -270,8 +270,8 @@ public class ForEach implements PLConstants {
     }
 
     public void test1() throws Exception {
-//        Set<Var> outDcVars = Sets.difference(outVars, Sets.union(conditioned.get_vars(), getPicsSet()));
-//        Set<Var> outCareVars = Sets.intersection(outVars, getConditioned().get_vars());
+//        Set<Var> outDcVars = Sets.difference(outVars, Sets.union(conditioned.get_complexVars(), getPicsSet()));
+//        Set<Var> outCareVars = Sets.intersection(outVars, getConditioned().get_complexVars());
 //        Exp projected = getConditioned().project(outVars);
 //        return projected.getSatCount() * Exp.computeDcPermCount(outDcVars.size());
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +23,7 @@ package com.tms.csp.util.ints;
 
 
 /**
- * An iterator over integer primitives. 
+ * An iterator over integer primitives.
  *
  * @author Emina Torlak
  */
@@ -31,6 +31,7 @@ public interface IntIterator {
 
     /**
      * Returns true if this iteration has more elements.
+     *
      * @return true if this iteration has more elements.
      */
     public abstract boolean hasNext();
@@ -38,10 +39,24 @@ public interface IntIterator {
     /**
      * Returns the next int formula the iteration, if any.
      * Otherwise throws a NoSuchElementException.
+     *
      * @return the next element formula the iteration
-     * @throws java.util.NoSuchElementException  the iteration is empty.
+     * @throws java.util.NoSuchElementException the iteration is empty.
      */
     public abstract int next();
+
+    public static IntIterator EMPTY = new IntIterator() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public int next() {
+            throw new IllegalStateException();
+        }
+
+    };
 
 
 }

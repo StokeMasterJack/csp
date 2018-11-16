@@ -83,7 +83,7 @@ class Parser(val space: Space) {
             } else {
                 checkNotNull(tokens)
                 check(!tokens.isEmpty)
-                val exp = parseExp(tokens,flatten = flatten)
+                val exp = parseExp(tokens, flatten = flatten)
                 checkNotNull(exp)
                 retVal.add(exp)
             }
@@ -216,6 +216,19 @@ class Parser(val space: Space) {
     fun parseLines(lines: Sequence<String?>): Sequence<Exp> {
         return lines.map { parseExpOrNull(it) }.filterNotNull()
     }
+
+    fun parseCleanLines(lines: Sequence<String>): Sequence<Exp> {
+        return lines.map { parseExp(it) }.filterNotNull()
+    }
+
+    fun parseLines(lines: Iterable<String?>): Iterable<Exp> {
+        return lines.map { parseExpOrNull(it) }.filterNotNull()
+    }
+
+    fun parseCleanLines(lines: Iterable<String>): Iterable<Exp> {
+        return lines.map { parseExp(it) }
+    }
+
 
     fun parseExpOrNull(expText: String?, flatten: Boolean = true): Exp? {
         return if (expText == null) {
@@ -419,6 +432,10 @@ class Parser(val space: Space) {
             Csp(space = space, constraints = expSeq)
         }
 
+        val csp1: Csp by lazy {
+            Csp(space = space, constraints = expSeq)
+        }
+
         val dnnf: Exp by lazy {
             space.parser.parseTinyDnnf(strSeq)
         }
@@ -435,6 +452,12 @@ class Parser(val space: Space) {
         fun parseCsp(clob: String, tiny: Boolean = false): Csp {
             val raw: Raw = clobToRaw(clob, tiny)
             return raw.csp
+        }
+
+        @JvmStatic
+        fun parseCsp1(clob: String): Csp {
+            val raw: Raw = clobToRaw(clob)
+            return raw.csp1
         }
 
         @JvmStatic

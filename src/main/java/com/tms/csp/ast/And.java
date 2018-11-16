@@ -7,6 +7,7 @@ import com.tms.csp.fm.dnnf.products.Cube;
 import com.tms.csp.util.UnionFind;
 import com.tms.csp.util.ints.IntIterator;
 import com.tms.csp.util.varSets.VarSet;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -28,6 +29,16 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     }
 
+    @NotNull
+    @Override
+    public Iterable<Exp> getArgIt() {
+        return argIt();
+    }
+
+    public Iterable<Exp> argIt() {
+        return this::argIter;
+    }
+
 
     @Override
     public PosComplexMultiVar asPosComplex() {
@@ -46,7 +57,7 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
             //convert and to csp
 
-            return Add.mixed(this).mkCsp().isSat();
+            return new Csp(this).isSat();
         }
 
     }

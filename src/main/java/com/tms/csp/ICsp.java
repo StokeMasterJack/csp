@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This api depends c the csp string format: changed d to _vars
+ * This api depends c the csp string format: changed d to _complexVars
  */
 public interface ICsp {
 
@@ -149,7 +149,7 @@ public interface ICsp {
     long getFacetCount(String varCode);
 
     /**
-     * Same as satCount with outVars = invClob _vars
+     * Same as satCount with outVars = invClob _complexVars
      */
     long getFacetCount();
 

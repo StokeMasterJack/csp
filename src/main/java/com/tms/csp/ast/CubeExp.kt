@@ -21,6 +21,11 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
         assert(Exp.isAllLits(args))
     }
 
+
+
+
+
+
     override val vars: VarSet
         get() {
             return c.v
@@ -104,6 +109,10 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
     override fun litIt(): Iterable<Lit> {
         return c.litIt()
     }
+
+//    override fun iterator(): MutableIterator<Exp> {
+//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//    }
 
     override fun serialize(a: Ser, sep: Char) {
         return c.serialize(a, sep)

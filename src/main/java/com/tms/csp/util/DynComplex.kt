@@ -27,7 +27,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 //            b.addVarSet(arg.vars)
         }
         this.args = t
-//        _vars = b.build()
+//        _complexVars = b.build()
     }
 
     constructor(sp: Space, args: Array<Exp>) : this(sp) {
@@ -38,7 +38,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 //            b.addVarSet(arg.vars)
         }
         this.args = t
-//        _vars = b.build()
+//        _complexVars = b.build()
     }
 
     constructor(that: DynComplex) : this(that.space) {
@@ -98,7 +98,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     }
 
     fun assertVarsMsg(vars1: VarSet, vars2: VarSet, constraintJustAdded: String): String {
-        return "\n  _vars[$vars1]\n  computed[$vars2]\n  constraint[$constraintJustAdded]"
+        return "\n  _complexVars[$vars1]\n  computed[$vars2]\n  constraint[$constraintJustAdded]"
     }
 
     private fun assertVars(constraintJustAdded: String): Boolean {
@@ -146,7 +146,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
             //            System.err.println("Dup complex constraint: " + old);
             false
         } else {
-//            if (_vars == null) {
+//            if (_complexVars == null) {
 //                if (beforeSize > 0) {
 //                    recomputeVars();
 //                }
@@ -192,7 +192,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 //            val removed: Exp? = args!!.remove(expId)
 //            val ch = removed != null
 //            if (ch) {
-//                _vars = null
+//                _complexVars = null
 //            }
 //            return ch
 //        }

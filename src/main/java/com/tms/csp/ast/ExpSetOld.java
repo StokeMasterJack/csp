@@ -112,7 +112,7 @@ public class ExpSetOld extends AbstractList<Exp> implements PLConstants {
 
     public static Exp[] fixArgs(Exp[] args) {
         checkNotNull(args);
-        Arrays.sort(args, SORT);
+        Arrays.sort(args, Exp.COMPARATOR_BY_EXP_ID);
 
         //any null array element to be removed
         //any dup array element to be set to null

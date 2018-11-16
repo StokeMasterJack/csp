@@ -4,7 +4,6 @@ import com.tms.csp.ast.Csp
 import com.tms.csp.ast.Exp
 import com.tms.csp.data.CspSample
 import com.tms.csp.ssutil.millis
-import junit.framework.Assert
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,30 +19,36 @@ import kotlin.test.assertEquals
 class SatCountTest {
 
 
+    //Csp: 19.5s
+    //Csp1: 18s
     @Test
     fun testSimple() {
         CspSample.allSimplePL.forEach {
             val name = it.name
+            println("Processing $name")
             val clob = it.loadText()
             val csp = Csp.parse(clob)
 
-
             val satCountPL = csp.satCountPL().toBigInteger()
-            val smooth1 = csp.toDnnfSmooth()
+
+            assertEquals(it.expectedSatCount, satCountPL)
+
+
+            val rough1 = csp.toDnnf()
+            val smooth1 = rough1.smooth
             val satCount1 = smooth1.satCount
             val cubeCount1 = smooth1.cubes.size.toBigInteger()
 
-            assertEquals(it.expectedSatCount, satCountPL)
             assertEquals(it.expectedSatCount, satCount1)
             assertEquals(it.expectedSatCount, cubeCount1)
 
             val tinyDnnf = smooth1.gc().space.serializeTinyDnnf()
-
             val smooth2 = Exp.parseTinyDnnf(tinyDnnf)
             val satCount2 = smooth2.getSatCount(csp.vars)
             assertEquals(it.expectedSatCount, satCount2)
 
-            println("$name satCount: $satCount1")
+            println("   $name satCount: $satCount1")
+
 
         }
     }
@@ -61,6 +66,37 @@ class SatCountTest {
   dnnf sat count: 18
    */
 
+    /*
+Processing EfcOriginal:
+  load rules:      94
+  parse rules:     1231
+  compile dnnf:    3096
+  dnnf smooth:     84
+  sat count:       15
+  ser tiny dnnf:   878
+  parse tiny dnnf: 76
+  sat count:       9
+Processing EfcProdFactoryRules:
+  load rules:      8
+  parse rules:     245
+  compile dnnf:    1117
+  dnnf smooth:     27
+  sat count:       2
+  ser tiny dnnf:   180
+  parse tiny dnnf: 47
+  sat count:       8
+Processing Tundra:
+  load rules:      1
+  parse rules:     3
+  compile dnnf:    338
+  dnnf smooth:     8
+  sat count:       1
+  ser tiny dnnf:   301
+  parse tiny dnnf: 6
+  sat count:       1
+     */
+
+    // 7.8s
     @Test
     fun testComplex() {
         CspSample.allComplexPL.forEach {
@@ -106,9 +142,8 @@ class SatCountTest {
             println("  sat count:       " + (t8 - t7))
 
 
-            assertEquals(it.expectedSatCount, satCount1,name)
-            assertEquals(it.expectedSatCount, satCount2,name)
-
+            assertEquals(it.expectedSatCount, satCount1, name)
+            assertEquals(it.expectedSatCount, satCount2, name)
 
 
         }

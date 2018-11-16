@@ -93,9 +93,9 @@ public abstract class PosComplexMultiVar extends PosComplex {
         return subList(1, size());
     }
 
-    public Iterator<Exp> iterator() {
-        return Iterators.forArray(args);
-    }
+//    public Iterator<Exp> iterator() {
+//        return Iterators.forArray(args);
+//    }
 
     @Override
     public Var getFirstVar() {
@@ -147,6 +147,7 @@ public abstract class PosComplexMultiVar extends PosComplex {
         return false;
     }
 
+    @NotNull
     @Override
     public Iterator<Exp> argIter() {
         return Iterators.forArray(args);
@@ -435,12 +436,10 @@ public abstract class PosComplexMultiVar extends PosComplex {
         return aa;
     }
 
-    public Iterable<Lit> getLits() {
-        return Exp.extractSimple(argIt());
-    }
 
     public DynCube getSimple() {
-        return new DynCube(_space, getLits());
+        Iterable<Lit> lits = Exp.extractSimple(argIt());
+        return new DynCube(_space, lits);
     }
 
 

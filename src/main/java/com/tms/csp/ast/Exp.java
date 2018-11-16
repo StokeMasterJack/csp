@@ -85,7 +85,7 @@ non-exp
 interned
     interned Y
             constants
-            _vars
+            _complexVars
                 lits
                 dcOr
             pos complex exp
@@ -548,6 +548,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return false;
     }
 
+
     public boolean isAndLike() {
         return isAnd() || isFormula() || isCube() || isDAnd();
     }
@@ -805,7 +806,8 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     @Override
     public int compareTo(@Nonnull Exp that) {
-        return COMPARATOR_BY_EXP_ID.compare(this, that);
+        int ret = COMPARATOR_BY_EXP_ID.compare(this, that);
+        return ret;
     }
 
     public Exp transform(Transformer... transformers) {
@@ -1442,7 +1444,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     public Iterable<Exp> argIt() {
-        return () -> argIter();
+        return this::argIter;
     }
 
     public ArgBuilder argBuilder(Op op) {
@@ -2144,7 +2146,8 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
             checkNotNull(e2);
             Integer expId1 = e1.getExpId();
             Integer expId2 = e2.getExpId();
-            return expId1.compareTo(expId2);
+            int ret = expId1.compareTo(expId2);
+            return ret;
         }
     };
 
@@ -2744,7 +2747,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
     /**
-     * @return true if this._vars.containsAll(that._vars)
+     * @return true if this._complexVars.containsAll(that._complexVars)
      */
     public boolean vvpSubsumesVV(Exp vv) {
         assert vv.isVv();
@@ -3134,6 +3137,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     }
 
 
+    @NotNull
     public Iterator<Exp> argIter() {
         return It.INSTANCE.emptyIter();
     }
@@ -3613,7 +3617,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
 //    public VarSet getOpenCareVars() {
 //        Exp reduced = reduce();
-//        return reduced.get_vars();
+//        return reduced.get_complexVars();
 //    }
 
     public Exp reduce() {
@@ -3666,7 +3670,7 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
     public void printHead(int depth) {
 //        prindent(depth, "op1:         " + getOp1());
 //        prindent(depth, "satCount:   " + getSatCount());
-//        prindent(depth, "careVars:   " + get_vars().size() + ": " + get_vars());
+//        prindent(depth, "careVars:   " + get_complexVars().size() + ": " + get_complexVars());
 //        System.err.println();
     }
 
@@ -4502,6 +4506,52 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
 
     public ExpFactory ef() {
         return _space.getExpFactory();
+    }
+
+    public static Exp[] fixArgs(Exp[] args) {
+        checkNotNull(args);
+        Arrays.sort(args, Exp.COMPARATOR_BY_EXP_ID);
+
+        //any null array element to be removed
+        //any dup array element to be set to null
+
+        int lenOfFinalArray = args.length;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null) {
+                lenOfFinalArray--;
+            } else if (i > 0 && args[i] == args[i - 1]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            } else if (i > 1 && args[i] == args[i - 2]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            } else if (i > 2 && args[i] == args[i - 3]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            } else if (i > 3 && args[i] == args[i - 4]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            } else if (i > 4 && args[i] == args[i - 5]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            } else if (i > 5 && args[i] == args[i - 6]) {
+                args[i] = null;
+                lenOfFinalArray--;
+            }
+        }
+
+        if (lenOfFinalArray == args.length) {
+            return args;
+        } else {
+            Exp[] a = new Exp[lenOfFinalArray];
+            int i = 0;
+            for (Exp arg : args) {
+                if (arg == null) continue;
+                a[i] = arg;
+                i++;
+            }
+            return a;
+        }
     }
 
 

@@ -44,7 +44,7 @@ object CubesK {
     fun DynCube.mk(): Exp {
 
         return when {
-            this.size == 0 -> _space.mkTrue()
+            this.size == 0 -> space.mkTrue()
             this.size == 1 -> {
                 val vr = v.firstVar
                 if (t == null || t.isEmpty()) {
@@ -66,8 +66,8 @@ object CubesK {
                     override val isFcc: Boolean? = null;
                     override val op: Op = Op.Cube
                     override fun mk(): Exp {
-                        assert(_space.posComplexSpace.checkArgs(argArray))
-                        return _space.mkPosComplex(this);
+                        assert(space.posComplexSpace.checkArgs(argArray))
+                        return space.mkPosComplex(this);
                     }
 
                     override fun createExpArray(): Array<Exp> {

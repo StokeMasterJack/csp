@@ -2,7 +2,6 @@ package com.tms.csp.util
 
 import com.tms.csp.argBuilder.IArgBuilder
 import com.tms.csp.ast.*
-import com.tms.csp.ast.formula.Formula
 import com.tms.csp.ast.formula.KFormula
 import com.tms.csp.fm.dnnf.DAnd
 import com.tms.csp.fm.dnnf.DOr
@@ -111,7 +110,7 @@ class PosComplexSpace(val space: Space) {
         val it1 = b.argIt.iterator()
         for (i in 0 until e.size) {
 
-            if(!it1.hasNext()){
+            if (!it1.hasNext()) {
                 println(b::class)
                 for (exp in b.argIt) {
                     print(exp)
@@ -284,6 +283,24 @@ class PosComplexSpace(val space: Space) {
         @JvmStatic
         fun computeContentHash(b: IArgBuilder): Int {
             return hashCode(b);
+        }
+
+        @JvmStatic
+        fun checkArgItOrder(argIt: Iterable<Exp>): Boolean {
+            var i = 0
+            var prev: Int = -1
+            for (arg in argIt) {
+                if (arg.expId <= prev) {
+                    System.err.println("arg: $arg  ${arg.expId}")
+                    System.err.println("prev: $prev")
+                    System.err.println("index: $i")
+                    System.err.flush()
+                    return false
+                }
+                prev = arg.expId
+                i++
+            }
+            return true
         }
 
 

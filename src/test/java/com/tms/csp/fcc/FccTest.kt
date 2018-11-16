@@ -11,7 +11,6 @@ class FccTest : CspBaseTest2() {
     @Test
     fun testFccsWithOnTundra1() {
         val csp = Csp.parse(CspSample.Tundra)
-        csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
         val fccs = formula.computeComplexFccs2() ?: throw IllegalStateException()
@@ -30,7 +29,6 @@ class FccTest : CspBaseTest2() {
 
 
         val csp = Csp.parse(CspSample.EfcOriginal)
-        csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
         val fccs = formula.computeComplexFccs2()
@@ -42,7 +40,6 @@ class FccTest : CspBaseTest2() {
     @Test
     fun testFccsWithOnTundra() {
         val csp = Csp.parse(CspSample.Tundra)
-        csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
         val fccs = formula.complexFccs ?: throw IllegalStateException()
@@ -61,7 +58,6 @@ class FccTest : CspBaseTest2() {
     @Test
     fun testFccsWithOnCamry() {
         val csp = Csp.parse(CspSample.Camry2011Dc)
-        csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
         val fccs = formula.complexFccs ?: throw IllegalStateException()
@@ -81,7 +77,6 @@ class FccTest : CspBaseTest2() {
     fun testFccsWithDrillDownOnCamry() {
         val csp = Csp.parse(CspSample.Camry2011Dc)
 
-        csp.propagate()
 
         val formula = csp.mkFormula().asFormula()
         val fccs = formula.complexFccs ?: throw IllegalStateException()

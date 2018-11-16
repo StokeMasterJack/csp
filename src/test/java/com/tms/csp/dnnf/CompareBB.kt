@@ -47,7 +47,6 @@ class CompareBB {
         println("    parse: ${t1 - t0}")
 
         println("  Propagate..")
-        csp.propagate()
         val t2 = millis
         println("    propagate: ${t2 - t1}")
 

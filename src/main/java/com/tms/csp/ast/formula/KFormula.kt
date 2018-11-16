@@ -66,7 +66,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
     fun getFVars(): FVars {
         if (fVars == null) {
-            fVars = FVars(this)
+            fVars = FVars(argIt)
             if (fVars!!.sortedList.isEmpty()) {
                 throw IllegalStateException()
             }
@@ -85,7 +85,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     override fun satCountPL(): Long {
-
 
         fun topXorSplitSatCount(): Long? {
 
@@ -138,7 +137,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 //        val satCountWithDc = if (parentVars.isNullOrEmpty()) {
 //            baseSatCount
 //        } else {
-//            val dcVars = parentVars.minus(this._vars)
+//            val dcVars = parentVars.minus(this._complexVars)
 //            val pow = Math.pow(2.0, dcVars.size.toDouble()).toLong()
 //            baseSatCount * pow
 //        }
@@ -155,8 +154,8 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             val split = XorSplit(this, xor)
             return split.isSat
         } else {
-            val `var` = decide()
-            val split = FormulaSplit(this, `var`)
+            val vr = decide()
+            val split = FormulaSplit(this, vr)
             return split.isSat
         }
     }
@@ -390,7 +389,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun computeBbForXorPrefix(xorPrefix: String, bb: DynCube) {
-        //        System.err.println("testing xor prefix[" + xorPrefix + "] for dead _vars: ");
+        //        System.err.println("testing xor prefix[" + xorPrefix + "] for dead _complexVars: ");
 
         val xorVars: VarSet
         var xor = getXor(xorPrefix)
@@ -445,7 +444,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     private fun computeBbForNonXorPrefix(prefix: String, bb: DynCube) {
-        //        System.err.println("testing prefix[" + prefix + "] for dead _vars");
+        //        System.err.println("testing prefix[" + prefix + "] for dead _complexVars");
 
 
         val vars = vars.filter(prefix)
@@ -466,11 +465,12 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
-    override fun getConstraintCount(): Int {
-        return argCount
-    }
+    //    fun getConstraintCount(): Int {
+//        return argCount
+//    }
+    override val constraintCount: Int get() = argCount
 
-//
+    //
 //    override fun iterator(): Iterator<Exp> {
 //        return argIter()
 //    }
@@ -667,4 +667,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     override fun asFormula(): KFormula {
         return this
     }
+
+    fun copyArray(): Array<Exp> = args.copyOf()
 }

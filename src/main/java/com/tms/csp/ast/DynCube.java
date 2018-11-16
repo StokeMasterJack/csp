@@ -40,17 +40,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DynCube extends AbstractCube {
 
-    public final Space space;
+    private final Space space;
 
     public VarSet v;
     public VarSet t;
 
-    public final Space _space;
+//    public final Space _space;
 
     public DynCube(Space space, VarSet v, VarSet t) {
         checkNotNull(space);
         this.space = space;
-        this._space = space;
         this.v = v;
         this.t = t;
     }
@@ -147,7 +146,7 @@ public class DynCube extends AbstractCube {
     private boolean assignTrue(int varId) throws ConflictingAssignmentException {
 
         if (isFalse(varId)) {
-            throw new ConflictingAssignmentException(varId, true);
+            throw new ConflictingAssignmentException();
         }
 
         if (isTrue(varId)) {
@@ -166,7 +165,7 @@ public class DynCube extends AbstractCube {
     private boolean assignFalse(int varId) throws ConflictingAssignmentException {
 
         if (isTrue(varId)) {
-            throw new ConflictingAssignmentException(varId, false);
+            throw new ConflictingAssignmentException();
         }
 
         if (isFalse(varId)) {

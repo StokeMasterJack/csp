@@ -17,8 +17,8 @@ class AnyIntersectionTest : CspBaseTest2() {
         val formula = csp.mkFormula().asFormula()
 
         val vars = formula.vars
-        System.err.println("formula _vars[" + vars.size + "]")
-        System.err.println("space _vars  [" + csp.space.vars.size + "]")
+        System.err.println("formula _complexVars[" + vars.size + "]")
+        System.err.println("space _complexVars  [" + csp.space.vars.size + "]")
 
         val cc = formula.constraintCount
         System.err.println("cc[$cc]")

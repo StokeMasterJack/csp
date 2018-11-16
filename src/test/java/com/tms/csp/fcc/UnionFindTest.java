@@ -6,6 +6,7 @@ import com.tms.csp.ast.Csp;
 import com.tms.csp.ast.Exp;
 import com.tms.csp.ast.formula.FConstraintSet;
 import com.tms.csp.util.UnionFind;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -86,11 +87,12 @@ public class UnionFindTest extends CspBaseTest2 {
             }
         }
 
-
+        @NotNull
         @Override
-        public Iterator<Exp> iterator() {
+        public Iterable<Exp> getArgIt() {
             return null;
         }
+
 
         @Override
         public int getConstraintCount() {

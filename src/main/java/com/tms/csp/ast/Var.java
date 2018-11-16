@@ -549,7 +549,7 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
 
         List<MetaVar> varMetas = meta.getParent().getChildVars();
 
-//        VarSet _vars = space.mkEmptyVarSet();
+//        VarSet _complexVars = space.mkEmptyVarSet();
         VarSetBuilder vars = space.newMutableVarSet();
         for (MetaVar varMeta : varMetas) {
             String varCode = varMeta.getCode();

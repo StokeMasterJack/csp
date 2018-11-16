@@ -128,7 +128,7 @@ public class SetUtil {
 
 //    public static Set<Integer> cubeToSet(Cube cube) {
 //        ImmutableSet.Builder<Integer> b = ImmutableSet.builder();
-//        IntList careVars = cube.get_vars();
+//        IntList careVars = cube.get_complexVars();
 //        for (int careVar : careVars) {
 //            boolean tCon = cube.isTrue(careVar);
 //            if (tCon) {

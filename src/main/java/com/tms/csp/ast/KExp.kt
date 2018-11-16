@@ -1,54 +1,57 @@
 package com.tms.csp.ast
 
+import com.tms.csp.ast.formula.KFormula
+import com.tms.csp.fm.dnnf.DAnd
 import com.tms.csp.fm.dnnf.products.Cube
 
 class KExp(val e: Exp) {
 
 
     fun And.condition(lit: Lit): Exp {
-                return if (!anyVarOverlap(lit)) {
-                        this
+        return if (!anyVarOverlap(lit)) {
+            this
         } else {
-                        val b = argBuilder(op()).addExpArray(args, lit)
+            val b = argBuilder(op()).addExpArray(args, lit)
             b.mk()
         }
     }
 
     fun And.condition(ctx: Cube): Exp {
-                return if (!anyVarOverlap(ctx)) {
-                        this
+        return if (!anyVarOverlap(ctx)) {
+            this
         } else {
-                        val b = argBuilder(op()).addExpArray(args, ctx)
+            val b = argBuilder(op()).addExpArray(args, ctx)
             b.mk()
         }
     }
 
     fun And.toDnnf(): Exp {
-                return when {
+        return when {
             size == 0 -> {
                 throw IllegalStateException("PosComplex disallows empty")
             }
             size == 1 -> {
-                                val arg = getArg()
+                val arg = getArg()
                 arg.toDnnf()
             }
             isAllLits -> {
-                                assert(size > 1)
+                assert(size > 1)
                 space.mkCube(argIt())
             }
             isAllComplex -> {
                 assert(size > 1)
-                                val f = space.mkFormula(argIt())
+                val f = space.mkFormula(argIt())
                 f.toDnnf()
             }
             isAllConstants -> {
                 throw UnsupportedOperationException("all constants: " + javaClass.getName())
             }
             else -> {
-                                assert(!isOrContainsConstants())
+                assert(!isOrContainsConstants())
                 assert(!isOrContainsConstant())
 
-                val csp = Add.mixed(this).mkCsp()
+//                val csp = Add.mixed(this).mkCsp()
+                val csp = Csp(mixed = this)
                 csp.toDnnf()
                 //            throw new UnsupportedOperationException(getClass().getName() + ": " + getContentModel() + ":" + toString());
             }
@@ -75,6 +78,29 @@ class KExp(val e: Exp) {
     }
 
 }
+
+fun Exp.isAndish(): Boolean = when (this) {
+    is Cube -> true
+    is KFormula -> true
+    is And -> true
+    is DAnd -> true
+    else -> false
+}
+
+val Exp.argsFlattened: Sequence<Exp>
+    get() {
+        if (!isAndLike) throw IllegalStateException()
+        return sequence {
+            for (arg in args) {
+
+                if (arg.isAndLike) {
+                    yieldAll(arg.argsFlattened)
+                } else {
+                    yield(arg)
+                }
+            }
+        }
+    }
 
 
 val Exp.size get() = argCount;

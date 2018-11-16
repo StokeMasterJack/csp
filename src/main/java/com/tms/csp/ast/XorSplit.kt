@@ -2,6 +2,7 @@ package com.tms.csp.ast
 
 import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.ast.formula.KFormula
+import com.tms.csp.util.XorCube
 
 /**
  * csp - formula and XorSplit  or varSplit
@@ -9,22 +10,14 @@ import com.tms.csp.ast.formula.KFormula
  */
 class XorSplit(val formula: KFormula, val xor: Xor) {
 
-
-    val argSeq = formula.argSeq
-    val space: Space = formula.space;
+    val space: Space = formula.space
     val xorVars = xor.vars
     val formulaVars = formula.vars
 
-
     val isSat: Boolean
         get() {
-
-
             for (trueVar in xorVars) {
-
-
                 try {
-
                     val rr = mkCsp(trueVar)
                     if (rr.isSat()) {
                         return true
@@ -113,10 +106,21 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
 
     }
 
+//    fun mkCsp(trueVar: Var): Csp {
+//        println("XorSplit.mkCsp")
+//        return mkCspOld(trueVar)
+//    }
+
+//    fun mkCspOld(trueVar: Var): Csp {
+//        val add = Add.xorSplit(formula = formula, xor = xor, trueVar = trueVar)
+//        return add.mkCsp()
+//    }
+
+
     //unique to split (parent level): parent, xor
     //unique tp child level:trueVar
-    fun mkCsp(trueVar: Var): Csp {
-        val add = Add.xorSplit(formula = formula, xor = xor, trueVar = trueVar)
-        return add.mkCsp()
+    internal fun mkCsp(trueVar: Var): Csp {
+        val xorCube = XorCube(xor, trueVar)
+        return Csp(formula = formula.argIt, condition = xorCube)
     }
 }

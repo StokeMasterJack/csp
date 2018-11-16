@@ -1,17 +1,24 @@
 package com.tms.csp.ssutil;
 
 
-import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 
 public class SingleLineLogFormatter extends Formatter {
-    // This method is called for every log records
+    // This method is called for every log record
     public String format(LogRecord rec) {
         StringBuffer sb = new StringBuffer(1000);
         sb.append(rec.getLevel());
+        sb.append(':');
+        sb.append(rec.getLoggerName());
+        sb.append(':');
+
+        String[] a = rec.getSourceClassName().split("\\.");
+        sb.append(a[a.length - 1]);
+        sb.append('.');
+        sb.append(rec.getSourceMethodName());
         sb.append(':');
         sb.append(' ');
         sb.append(formatMessage(rec));
@@ -35,4 +42,7 @@ public class SingleLineLogFormatter extends Formatter {
     public String getTail(Handler h) {
         return "";
     }
+
+
 }
+
