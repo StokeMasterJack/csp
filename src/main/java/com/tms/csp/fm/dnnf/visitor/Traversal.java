@@ -14,13 +14,13 @@ public class Traversal {
     }
 
     public boolean visited(Exp n) {
-        throw new UnsupportedOperationException();
-//        return n.traversalId == this.traversalId;
+//        throw new UnsupportedOperationException();
+        return n.traversalId == this.traversalId;
     }
 
     public void markAsVisited(Exp n) {
-        throw new UnsupportedOperationException();
-//        n.traversalId = this.traversalId;
+//        throw new UnsupportedOperationException();
+        n.traversalId = this.traversalId;
     }
 
 }

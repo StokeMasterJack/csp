@@ -114,14 +114,6 @@ public class And extends PosComplexMultiVar implements FConstraintSet {
 
     }
 
-
-    /**
-     * return null if this *is* an fcc
-     */
-    public Exp computeComplexFccs() {
-        throw new UnsupportedOperationException();
-    }
-
     public UnionFind computeUnionFind() {
         UnionFind unionFind = new UnionFind(this);
         unionFind.processAllUniquePairs();

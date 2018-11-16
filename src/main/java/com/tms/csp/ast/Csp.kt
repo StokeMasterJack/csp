@@ -1,7 +1,6 @@
 package com.tms.csp.ast
 
 import com.google.common.collect.HashMultimap
-import com.google.common.collect.ImmutableList
 import com.google.common.collect.Multimap
 import com.tms.csp.*
 import com.tms.csp.argBuilder.ArgBuilder
@@ -108,6 +107,7 @@ class Csp @JvmOverloads constructor(
             addConstraint(it, ctx)
             if (isFailed) return
         }
+        complex.dedup()
         propagate()
     }
 
@@ -117,6 +117,7 @@ class Csp @JvmOverloads constructor(
             addConstraint(it, ctx)
             if (isFailed) return
         }
+        complex.dedup()
         propagate()
     }
 
@@ -127,25 +128,20 @@ class Csp @JvmOverloads constructor(
 
     fun copyDontCares(): VarSet? = dontCares?.copy()
 
-    fun containsConstraint(e: Exp): Boolean {
-        return if (e.isSimple) {
-            if (simple != null) {
-                simple!!.containsLit(e.asLit())
-            } else {
-                false
-            }
-
-        } else if (e.isComplex) {
-            complex.contains(e)
-        } else {
-            throw IllegalStateException()
-        }
-    }
-
-
-    fun varsNonNull(): Boolean {
-        return simple != null && dontCares != null
-    }
+//    fun containsConstraint(e: Exp): Boolean {
+//        return if (e.isSimple) {
+//            if (simple != null) {
+//                simple!!.containsLit(e.asLit())
+//            } else {
+//                false
+//            }
+//
+//        } else if (e.isComplex) {
+//            complex.contains(e)
+//        } else {
+//            throw IllegalStateException()
+//        }
+//    }
 
 
     val isSolved: Boolean get() = !isFailed && complex.isNullOrEmpty
@@ -167,7 +163,7 @@ class Csp @JvmOverloads constructor(
 
             val conditioned = constraint.condition(ctx)
 
-            if (conditioned !== constraint && space.config.logCondition) {
+            if (conditioned !== constraint && Space.config.logCondition) {
                 println("$depth Conditioned: $constraint")
                 println("     ctx: $ctx")
                 println("     to: $conditioned")
@@ -234,24 +230,18 @@ class Csp @JvmOverloads constructor(
     private fun addComplexConstraint(cc: Exp) {
         assert(!cc.isAnd)
 
-        if (space.config.checkForSimpleOverlapWhenAddingComplexConstraint) {
-            if (this.hasSimple) {
-                val ss: Exp = ExpFactory.maybeSimplifyComplex(simple!!, cc, disjoint = Bit.OPEN)
-                if (ss != cc) {
-                    addConstraint(ss);
-                }
+        if (this.hasSimple && Space.config.checkForSimpleOverlapWhenAddingComplexConstraint) {
+            val ss: Exp = ExpFactory.maybeSimplifyComplex(simple!!, cc, disjoint = Bit.OPEN)
+            if (ss != cc) {
+                addConstraint(ss);
+            } else {
+                complex.add(cc)
             }
         } else if (cc.isFlattenableNand) {
             val and = cc.asNand().flattenNand()
             addConstraint(and)
         } else {
-
-            assert(!cc.isAndLike)
-            assert(!cc.isConstant)
-            assert(!cc.isLit)
-
             complex.add(cc)
-
         }
 
 
@@ -358,13 +348,13 @@ class Csp @JvmOverloads constructor(
         if (q == null || q!!.isEmpty() || isFailed) return
 
         val lit = q!!.removeAt(0)
-        assert(simple!!.containsLit(lit))
+//        assert(simple!!.containsLit(lit))
 
         val before = complex
+        assert(before.isDeduped)
         complex = DComplex()
 
-        addConstraintsExpIt(before, lit)
-
+        addConstraintsExpIt(before.argIt, lit)
 
     }
 
@@ -374,7 +364,7 @@ class Csp @JvmOverloads constructor(
 
 
         val simpleVars = simple!!.vars
-        val complexVars = complex!!.vars
+        val complexVars = complex.vars
 
         val overlap = simpleVars.overlap(complexVars)
         return if (overlap.isEmpty()) {
@@ -528,16 +518,16 @@ class Csp @JvmOverloads constructor(
         return b
     }
 
-    fun getConstraintsContainingXor(): List<Exp> {
-        if (complex.isNullOrEmpty) return ImmutableList.of()
-        val b = mutableListOf<Exp>()
-        for (exp in complex!!) {
-            if (exp.isXorOrContainsXor) {
-                b.add(exp)
-            }
-        }
-        return b
-    }
+//    fun getConstraintsContainingXor(): List<Exp> {
+//        if (complex.isNullOrEmpty) return ImmutableList.of()
+//        val b = mutableListOf<Exp>()
+//        for (exp in complex!!) {
+//            if (exp.isXorOrContainsXor) {
+//                b.add(exp)
+//            }
+//        }
+//        return b
+//    }
 
     val isDcDisjoint: Boolean
         get() {
@@ -920,9 +910,7 @@ class Csp @JvmOverloads constructor(
             }
         }
 
-    val complexSeq: Sequence<Exp> get() = complex.asSequence()
-
-    val complexList: List<Exp> get() = complex
+    val complexList: List<Exp> get() = complex.toList()
 
     val complexConstraintsSer: Iterable<String> get() = complex.toStringIt
 
@@ -1193,7 +1181,7 @@ class Csp @JvmOverloads constructor(
     }
 
     fun logSimplified(ctx: Any, before: Exp, after: Exp) {
-        if (!(before === after || !space.config.logVvSimplified)) {
+        if (!(before === after || !Space.config.logVvSimplified)) {
             System.err.println("Simplified from ctx: $ctx")
             System.err.println("\t before: $before")
             System.err.println("\t after:  $after")
@@ -1211,14 +1199,10 @@ class Csp @JvmOverloads constructor(
     fun toDnnf(): Exp {
         val dnnf = toDnnfInternal()
         assert(dnnf.isDnnf)
-        return if (space.config.includeDontCaresInDnnf) {
+        return if (Space.config.includeDontCaresInDnnf) {
             val cspVars = this.vars
             val dnnfVars = dnnf.vars
             val dnnfDontCares = cspVars.minus(dnnfVars)
-            if (space.config.tmp != null) {
-                println("adding dnnfDontCares ${space.config.tmp} = ${dnnfDontCares}")
-                space.config.tmp = null
-            }
             addDcOrs(dnnf, dnnfDontCares)
         } else {
             dnnf
@@ -1367,7 +1351,7 @@ class Csp @JvmOverloads constructor(
 //        System.err.println("Transforming " + tmp.size() + " sentences!");
         var current = 0;
         for (e: Exp in ff.argIt()) {
-            if (space.config.logTransforms) {
+            if (Space.config.logTransforms) {
                 Space.log.info("  Transforming [" + current + "] of " + ff.size())
             }
             if (isFailed) {
@@ -2022,6 +2006,7 @@ val VarSet.empty: Boolean get() = this.isEmpty()
 
 //val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 val DynComplex?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
+val DComplex?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
 val VarSet?.isNullOrEmpty: Boolean get() = this == null || this.empty
 
 val Exp.sp: Space get() = this.sp()

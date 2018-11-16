@@ -223,7 +223,7 @@ class Csp2 @JvmOverloads constructor(
         return if (ctx != null) {
             val conditioned = ctx.conditionThat(constraint)
 
-            if (conditioned !== constraint && space.config.logCondition) {
+            if (conditioned !== constraint && Space.config.logCondition) {
                 println("$depth Conditioned: $constraint")
                 println("     ctx: $ctx")
                 println("     to: $conditioned")
@@ -299,7 +299,7 @@ class Csp2 @JvmOverloads constructor(
     private fun addComplexConstraint(cc: Exp): Boolean {
         assert(!cc.isAnd)
 
-        if (space.config.checkForSimpleOverlapWhenAddingComplexConstraint) {
+        if (Space.config.checkForSimpleOverlapWhenAddingComplexConstraint) {
             if (this.hasSimple) {
                 val ss: Exp = ExpFactory.maybeSimplifyComplex(simple!!, cc, disjoint = Bit.OPEN)
                 if (ss != cc) {
@@ -1362,7 +1362,7 @@ class Csp2 @JvmOverloads constructor(
     }
 
     fun logSimplified(ctx: Any, before: Exp, after: Exp) {
-        if (!(before === after || !space.config.logVvSimplified)) {
+        if (!(before === after || !Space.config.logVvSimplified)) {
             System.err.println("Simplified from ctx: $ctx")
             System.err.println("\t before: $before")
             System.err.println("\t after:  $after")
@@ -1380,13 +1380,13 @@ class Csp2 @JvmOverloads constructor(
     fun toDnnf(): Exp {
         val dnnf = toDnnfInternal()
         assert(dnnf.isDnnf)
-        return if (space.config.includeDontCaresInDnnf) {
+        return if (Space.config.includeDontCaresInDnnf) {
             val cspVars = this.vars
             val dnnfVars = dnnf.vars
             val dnnfDontCares = cspVars.minus(dnnfVars)
-            if (space.config.tmp != null) {
-                println("adding dnnfDontCares ${space.config.tmp} = ${dnnfDontCares}")
-                space.config.tmp = null
+            if (Space.config.tmp != null) {
+                println("adding dnnfDontCares ${Space.config.tmp} = ${dnnfDontCares}")
+                Space.config.tmp = null
             }
             addDcOrs(dnnf, dnnfDontCares)
         } else {
@@ -1536,7 +1536,7 @@ class Csp2 @JvmOverloads constructor(
 //        System.err.println("Transforming " + tmp.size() + " sentences!");
         var current = 0;
         for (e: Exp in ff.argIt()) {
-            if (space.config.logTransforms) {
+            if (Space.config.logTransforms) {
                 Space.log.info("  Transforming [" + current + "] of " + ff.size())
             }
             if (isFailed) {

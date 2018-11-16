@@ -30,9 +30,14 @@ enum class CspSample(
 
 
     //complex PL
-    Tundra("tundra-2013",expectedSatCount = "1545337914624"),
-    EfcOriginal("efcOriginal/factory.txt",       expectedSatCount = "262420340940321044675939268"),
-    EfcProdFactoryRules("g/ProdFactoryRules.txt",expectedSatCount = "529696075773177406915015081985"),
+    Tundra("tundra-2013", expectedSatCount = "1545337914624"),
+
+    //NodeCounts: DAnd:4891  DcOr:236  CubeExp:691  DOr:1905  Lit:1564
+    //NodeCounts: DAnd:4891  DcOr:236  CubeExp:691  DOr:1905  Lit:1564
+    //NodeInfo:   DAnd:4891  DcOr:236  CubeExp:691  DOr:1905  Lit:1564
+    EfcOriginal("efcOriginal/factory.txt", expectedSatCount = "262420340940321044675939268"),
+
+    EfcProdFactoryRules("g/ProdFactoryRules.txt", expectedSatCount = "529696075773177406915015081985"),
 
 
     TinyNnf("tiny.nnf"),
@@ -188,6 +193,9 @@ enum class CspSample(
                     EfcProdFactoryRules,
                     Tundra
             )
+
+        val allPL
+            get() = allSimplePL.union(allComplexPL)
     }
 
 

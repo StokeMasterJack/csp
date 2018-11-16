@@ -1,11 +1,16 @@
 package com.tms.csp.fm.dnnf.visitor;
 
+import com.google.common.collect.HashMultiset;
 import com.tms.csp.ast.Exp;
+
+import java.util.Set;
 
 import static com.tms.csp.ssutil.Console.prindent;
 
 
 public class NodeInfo extends NodeHandler {
+
+    HashMultiset<Class> mm = HashMultiset.create();
 
     int complexNodeCount;
     int complexVarCount;
@@ -17,6 +22,8 @@ public class NodeInfo extends NodeHandler {
 
     @Override
     public void onHead(Exp n) {
+
+        mm.add(n.getClass());
 
         if (n.isComplex()) {
             complexNodeCount++;
@@ -49,10 +56,18 @@ public class NodeInfo extends NodeHandler {
 
     }
 
-//    public void print(int depth) {
-//        prindent(depth, "NodeInfo:");
-//
-//
+
+    public void print(int depth) {
+        System.err.print("NodeInfo: ");
+
+
+        Set<Class> classes = mm.elementSet();
+        for (Class cls : classes) {
+            int count = mm.count(cls);
+            System.err.print(cls.getSimpleName() + ":" + count + "  ");
+        }
+        System.err.println();
+
 //        int avgComplexVarCount = complexVarCount / complexNodeCount;
 //
 //        double percentMoreThan64 = ((double) nodesWithMoreThan64Vars / (double) complexNodeCount) * 100.00;
@@ -72,7 +87,7 @@ public class NodeInfo extends NodeHandler {
 //
 //
 //        System.err.println();
-//    }
+    }
 
 
 }

@@ -583,7 +583,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
                 if (isAllLits) {
                     op = Op.Cube
                 } else if (isAllComplex) {
-                    if (op != Op.DAnd) {
+                    if (op != Op.DAnd && op != Op.Fcc) {
                         op = Op.Formula
                     }
                 } else {

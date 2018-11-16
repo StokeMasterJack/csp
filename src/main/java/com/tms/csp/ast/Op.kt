@@ -53,6 +53,9 @@ enum class Op {
     val isFormula: Boolean
         get() = this == Formula
 
+    val isFcc: Boolean
+        get() = this == Fcc
+
     val isCube: Boolean
         get() = this == Cube
 
@@ -63,7 +66,7 @@ enum class Op {
         get() = this == Xor
 
     val isAndLike: Boolean
-        get() = isAnd || isFormula || isDAnd || isCube || isKb
+        get() = isAnd || isFormula || isDAnd || isCube || isKb || isFcc
 
     val isOrLike: Boolean
         get() = isOr || isDOr

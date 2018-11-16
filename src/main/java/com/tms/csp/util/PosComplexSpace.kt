@@ -6,10 +6,6 @@ import com.tms.csp.ast.formula.KFormula
 import com.tms.csp.fm.dnnf.DAnd
 import com.tms.csp.fm.dnnf.DOr
 
-
-//private val identityFunction: ArgFunction = fun(arg: Exp) = arg
-
-
 class PosComplexSpace(val space: Space) {
 
     private val ROW_COUNT = 30000
@@ -17,7 +13,6 @@ class PosComplexSpace(val space: Space) {
     private val nodeCount: Int get() = space.nodeCount
 
     private val table: Array<Exp?> = arrayOfNulls(ROW_COUNT)
-
 
     fun mkExp(b: IArgBuilder): Exp {
         val contentHash = computeContentHash(b)
@@ -33,7 +28,9 @@ class PosComplexSpace(val space: Space) {
             Op.Cube -> CubeExp(space, expId, args)
             Op.DAnd -> DAnd(space, expId, args)
             Op.Formula -> KFormula(space, expId, args, b.isFcc)
-            Op.Fcc -> KFormula(space, expId, args, true)
+            Op.Fcc -> {
+                KFormula(space, expId, args, true)
+            }
             Op.And -> And(space, expId, args)
             Op.DOr -> DOr(space, expId, args)
             Op.Xor -> Xor(space, expId, args)

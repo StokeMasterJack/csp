@@ -28,13 +28,17 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
      fcc = false: means this is not an fcc, complexFccs should be non-null, size >= 2
      */
 
-    var _complexFccs: Exp? = null
+    var _fccs: List<Exp>? = null
 
 
     private var fVars: FVars? = null
 
     private var dnnf: Exp? = null
     private var bb: DynCube? = null
+
+    init {
+//        println("init: $fcc")
+    }
 
     fun getBestXorSplit(): Xor? {
         return if (_space.hasPrefixes()) {
@@ -45,12 +49,12 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         }
     }
 
-    override fun getComplexFccs(): Exp? {
-        if (fcc == null) {
-            _complexFccs = computeComplexFccs()
-        }
-        return _complexFccs
-    }
+//    override fun getComplexFccs(): Exp? {
+//        if (fcc == null) {
+//            _fccs = computeComplexFccs()
+//        }
+//        return _fccs
+//    }
 
 
     fun getTopXorSplit(): Xor? {
@@ -241,40 +245,24 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun toDnnfInternalWithFccAndXorSplits(): Exp {
+
         val topXorSplit = toDnnfTopXorSplit()
         if (topXorSplit != null) {
             return topXorSplit
         }
 
         if (fcc == null) {
-            assert(_complexFccs == null)
+            computeComplexFccs()
+        }
 
-            val fccs = complexFccs //returns null if *this* is an fcc
-            if (fccs == null) {
-                fcc = true
-                _complexFccs = null
-                return fccSplitDnnf()
-            } else {
-                fcc = false
-                _complexFccs = fccs
-                return fccs.toDnnf() ?: error(fccs.javaClass.toString() + " returned null from toDnnf()")
-            }
+        assert(fcc != null)
 
-        } else if (fcc != null && fcc!!) {
-
-            val bestXorSplit = toDnnfBestXorSplit()
-            if (bestXorSplit != null) {
-                return bestXorSplit
-            } else {
-                val vr = decide()
-                val decisionSplit = decisionSplit(vr)
-                return decisionSplit
-            }
-
-        } else if (fcc != null && !fcc!!) {
-            System.err.println("complexFccs: $complexFccs")
-            assert(complexFccs != null)  //boom
-            return complexFccs!!.toDnnf()!!
+        return if (fcc!!) {
+            assert(_fccs == null)
+            fccToDnnf()
+        } else if (!fcc!!) {
+            assert(_fccs != null)
+            fccsToDnnf()
         } else {
             throw IllegalStateException()
         }
@@ -329,28 +317,28 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
-    fun fccSplitDnnf3(): Exp {
-        val xor = getBestXorSplit()
-        if (xor != null) {
-            return xorSplitToDnnf(xor)
-        } else {
-            val `var` = decide()
-            return decisionSplit(`var`)
+    fun fccToDnnf(): Exp {
+        val bestXorSplit = toDnnfBestXorSplit()
+        if (bestXorSplit != null) {
+            return bestXorSplit
         }
+
+        val vr = decide()
+        return decisionSplit(vr)
     }
 
-    fun fccSplitDnnf1(): Exp {
-        val xor = getBestXorSplit()
-        if (xor != null) {
-            System.err.println("XorSplitting c $xor")
-            val split = XorSplit(this, xor)
-            return split.toDnnf()
-        } else {
-            val `var` = decide()
-            val split = FormulaSplit(this, `var`)
-            return split.toDnnf()
+    fun fccsToDnnf(): Exp {
+        assert(_fccs != null)
+        val b = ArgBuilder(space, Op.DAnd)
+        for (fcc in _fccs!!) {
+            val d = fcc.toDnnf()
+            if (d.isFalse) return d
+            if (d.isTrue) continue
+            b.addExp(d)
         }
+        return b.mk()
     }
+
 
     override fun isDirectlyRelated(index1: Int, index2: Int): Boolean {
         val complex1 = args[index1]
@@ -363,11 +351,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         val vs2 = complex2.vars
 
         return vs1.anyVarOverlap(vs2)
-    }
-
-
-    fun fccSplitDnnf(): Exp {
-        return fccSplitDnnf3()
     }
 
 
@@ -483,67 +466,41 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         return vars.varIt()
     }
 
-
-    /**
-     * return null if this *is* an fcc
-     */
-    override fun computeComplexFccs(): Exp? {
+    private fun computeComplexFccs() {
         assert(isAllComplex) { this }
         assert(isFormula)
         assert(!isDnnf)
 
         assert(this.fcc == null)
+        assert(this._fccs == null)
 
         val uf = computeUnionFind()
         uf.processAllUniquePairs()
 
         val fccCount = uf.fccCount
-
+//        println("Compute FCCs: fccCount = ${fccCount}")
         if (fccCount == 1) {
             this.fcc = true
-            return null
-        }
-
-
-        val mm = ArrayListMultimap.create<Int, Exp>()
-
-        for (i in 0 until constraintCount) {
-            val fcc = uf.getFccFor(i)
-            val constraint = getArg(i)
-            mm.put(fcc, constraint)
-        }
-
-        val keySet = mm.keySet()
-
-        val bFccs = ArgBuilder(_space, Op.DAnd)
-        for (key in keySet) {
-            if (bFccs.isShortCircuit) {
-                break
-            }
-            val fccConstraints = mm.get(key)
-            val bFcc = ArgBuilder(_space, Op.Formula, fccConstraints)
-
-            bFcc.structure = Structure.Fcc
-
-            val fccExp = bFcc.mk()
-
-            if (fccExp.isFalse) {
-                return _space.mkFalse()
+            this._fccs = null
+        } else {
+            val mm = ArrayListMultimap.create<Int, Exp>()
+            for (i in 0 until constraintCount) {
+                val fcc = uf.getFccFor(i)
+                val constraint = getArg(i)
+                mm.put(fcc, constraint)
             }
 
-            val fccExpDnnf = fccExp.toDnnf()
-
-            if (fccExpDnnf.isFalse) {
-                return _space.mkFalse()
+            val list = mutableListOf<Exp>()
+            for (key in mm.keySet()) {
+                val fccConstraints = mm.get(key)
+                val bFcc = ArgBuilder(_space, Op.Fcc, fccConstraints)
+                bFcc.structure = Structure.Fcc
+                val fccExp = bFcc.mk()
+                list.add(fccExp)
             }
-
-            bFccs.addExp(fccExpDnnf)
+            this.fcc = false
+            this._fccs = list
         }
-
-
-        return bFccs.mk()
-
-
     }
 
     override fun getBB(): DynCube {

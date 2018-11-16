@@ -25,7 +25,7 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
 
         val t = mkCsp(true)
         val tt = t.toDnnf()
-        if (tt.isTrue) return space.mkTrue()
+        if (tt.isTrue) return tt
 
         val ff = mkCsp(false).toDnnf();
 

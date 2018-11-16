@@ -121,6 +121,7 @@ why flattening and is a bad idea -  may disjoiny-and and children
 @Immutable
 public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasVars, HasVarId {
 
+    public int traversalId;
     protected Space _space;
 
     public final int expId;
@@ -3710,11 +3711,16 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return longest + 1;
     }
 
+    public void printNodeInfo() {
+        NodeInfo nodeInfo = new NodeInfo();
+        forEachHead(nodeInfo);
+        nodeInfo.print(0);
+    }
 
     public void nodeInfo() {
         NodeInfo nodeInfo = new NodeInfo();
         forEachHead(nodeInfo);
-//        nodeInfo.print(0);
+        nodeInfo.print(0);
     }
 
     public String serializeModels() {
@@ -4508,9 +4514,15 @@ public abstract class Exp implements Comparable<Exp>, PLConstants, HasCode, HasV
         return _space.getExpFactory();
     }
 
+
     public static Exp[] fixArgs(Exp[] args) {
         checkNotNull(args);
         Arrays.sort(args, Exp.COMPARATOR_BY_EXP_ID);
+
+        if (Space.config.getLogDupCounts()) {
+            int dupCount = KExp.countDups(args);
+            System.err.println("dupCount[" + dupCount + "/" + args.length + "]");
+        }
 
         //any null array element to be removed
         //any dup array element to be set to null

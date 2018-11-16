@@ -52,7 +52,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public final Random random = new Random();
 
-    public final SpaceConfig config = new SpaceConfig();
+    public final static SpaceConfig config = new SpaceConfig();
 
 
     public VarSpace varSpace;
@@ -403,13 +403,9 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
 
-
-
-
     private void logConstraintSolved(Exp before) {
         System.err.println("Constraint Solved:" + before);
     }
-
 
 
 //

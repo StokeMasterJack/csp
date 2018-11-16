@@ -1,6 +1,5 @@
-package com.tms.ssutil
+package com.tms.csp.ssutil
 
-import com.tms.csp.ssutil.tt
 import kotlin.test.Test
 
 

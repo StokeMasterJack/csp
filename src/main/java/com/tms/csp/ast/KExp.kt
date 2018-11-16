@@ -75,6 +75,17 @@ class KExp(val e: Exp) {
             }
 
         }
+
+        @JvmStatic
+        fun countDups(sorted: Array<Exp>): Int {
+            var dupCount = 0
+            for (i in sorted.indices) {
+                if (i > 0 && sorted[i] === sorted[i - 1]) {
+                    dupCount++
+                }
+            }
+            return dupCount
+        }
     }
 
 }

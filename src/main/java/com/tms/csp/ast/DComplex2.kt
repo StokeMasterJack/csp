@@ -1,30 +1,20 @@
 package com.tms.csp.ast
 
-import com.tms.csp.argBuilder.IArgBuilder
-import com.tms.csp.util.varSets.EmptyVarSet
+import com.google.common.collect.ImmutableSortedSet
 import com.tms.csp.util.varSets.VarSet
-import java.util.*
 
-class DComplex(
-        private val a: ArrayList<Exp> = ArrayList(),
-        private var sorted: Boolean = false,
-        private var deduped: Boolean = false
-
-) : Iterable<Exp> {
+class DComplex2(val space: Space) {
 
     private var _complexVars: VarSet? = null
     var isFcc: Boolean? = null
 
     private var formula: Exp? = null
 
-    private val space: Space get() = firstArg.space
 
-    constructor(initSize: Int) : this(ArrayList(initSize))
-
-    val isSorted: Boolean get() = this.sorted
-    val isDeduped: Boolean get() = this.deduped
+    private val set = ImmutableSortedSet.naturalOrder<Exp>()
 
 
+    /*
     val vars: VarSet
         get() {
             if (_complexVars == null) {
@@ -34,12 +24,13 @@ class DComplex(
         }
 
 
+
     private fun computeVars(): VarSet {
-        return if (isEmpty) {
+        return if (isEmpty()) {
             EmptyVarSet.getInstance()
         } else {
             val vs = space.varSetBuilder()
-            a.forEach {
+            forEach {
                 vs.addVarSet(it.vars)
             }
             vs.build();
@@ -47,7 +38,7 @@ class DComplex(
     }
 
 
-    val firstArg: Exp get() = a.first()
+    val firstArg: Exp get() = first()
 
     fun toDnnf(): Exp {
         return mkFormula().toDnnf()
@@ -61,34 +52,36 @@ class DComplex(
     }
 
     private fun createFormula(): Exp {
-        if (!deduped) dedup()
-        if (!sorted) sort()
         return when {
-            isEmpty -> space.mkConstantTrue()
+            isEmpty() -> space.mkConstantTrue()
             size == 1 -> firstArg
             else -> {
-                val fixedArgs: Array<Exp> = a.toTypedArray()
-                val b = object : IArgBuilder {
-                    override val isFcc: Boolean? get() = this@DComplex.isFcc
-                    override val size: Int get() = a.size
-                    override val op: Op get() = Op.Formula
-                    override val argIt: Iterable<Exp> get() = a
-                    override fun mk(): Exp = throw UnsupportedOperationException()
-                    override fun createExpArray(): Array<Exp> = fixedArgs
-                }
+                val fixedArgs: Array<Exp> = Exp.fixArgs(a.toTypedArray())
+                if (fixedArgs.size == 1) {
+                    fixedArgs[0]
+                } else {
+                    val it = fixedArgs.asIterable()
+                    val b = object : IArgBuilder {
+                        override val isFcc: Boolean? get() = this@DComplex2.isFcc
+                        override val size: Int get() = fixedArgs.size
+                        override val op: Op get() = Op.Formula
+                        override val argIt: Iterable<Exp> get() = it
+                        override fun mk(): Exp = throw UnsupportedOperationException()
+                        override fun createExpArray(): Array<Exp> = fixedArgs
+                    }
 //                    val ok = PosComplexSpace.checkArgItOrder(it)
 //                    if (!ok) {
 //                        println(111111)
 //                    }
-                return space.mkPosComplex(b)
-
+                    return space.mkPosComplex(b)
+                }
             }
         }
     }
 
     fun mkExp(): Exp = mkFormula()
 
-    val argIt: Iterable<Exp> get() = a
+    val argIt: Iterable<Exp> get() = this
 
     override fun toString(): String {
         val a = Ser()
@@ -96,21 +89,16 @@ class DComplex(
         return a.toString()
     }
 
-    val toStringIt: List<String> get() = a.map { it.serialize() }
+    val toStringIt: List<String> get() = map { it.serialize() }
 
 
-    private fun cl() {
-        _complexVars = null
-        formula = null
-        deduped = false
-        sorted = false
+    private fun cl(ch: Boolean) {
+        if (ch) {
+            _complexVars = null
+            formula = null
+        }
     }
 
-    val isEmpty: Boolean get() = a.isEmpty()
-
-    val size: Int get() = a.size
-
-    /*
     override fun removeIf(filter: Predicate<in Exp>): Boolean {
         return a.removeIf(filter).apply { cl(this) }
     }
@@ -132,9 +120,6 @@ class DComplex(
     }
 
     override fun add(element: Exp): Boolean {
-        assert(!element.isAndLike)
-        assert(!element.isConstant)
-        assert(!element.isLit)
         return a.add(element).apply { cl(this) }
     }
 
@@ -158,10 +143,8 @@ class DComplex(
         return a.retainAll(elements).apply { cl(this) }
     }
 
-*/
-
     @Suppress("UNCHECKED_CAST")
-    fun copy(): DComplex = DComplex(a.clone() as ArrayList<Exp>)
+    fun copy(): DComplex2 = DComplex2(a.clone() as ArrayList<Exp>)
 
     fun containsVar(varCode: String): Boolean = vars.containsVarCode(varCode)
 
@@ -169,11 +152,11 @@ class DComplex(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DComplex
+        other as DComplex2
 
         if (a.size != other.size) return false
         for (i in a.indices) {
-            if (a[i].expId != other.a[i].expId) return false
+            if (a[i].expId != other[i].expId) return false
         }
 
 
@@ -188,40 +171,7 @@ class DComplex(
         return result
     }
 
-    fun dedup() {
-        if (!deduped) {
-            val set = a.toMutableSet()
-            a.clear()
-            a.addAll(set)
-            deduped = true
-        }
-    }
+*/
 
-    fun sort() {
-        a.sort()
-        sorted = true
-    }
-
-
-    fun add(complex: Exp) {
-        assert(!complex.isAndLike)
-        assert(!complex.isConstant)
-        assert(!complex.isLit)
-        a.add(complex)
-        cl()
-    }
-
-    fun toList(): List<Exp> {
-        return a
-    }
-
-    override fun iterator(): Iterator<Exp> {
-        return a.iterator()
-    }
-
-    fun removeAll(factoryConstraintsToRelax: Iterable<Exp>) {
-        a.removeAll(factoryConstraintsToRelax)
-        cl()
-    }
 }
 

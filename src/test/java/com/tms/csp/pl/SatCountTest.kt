@@ -4,6 +4,7 @@ import com.tms.csp.ast.Csp
 import com.tms.csp.ast.Exp
 import com.tms.csp.data.CspSample
 import com.tms.csp.ssutil.millis
+import com.tms.csp.ssutil.tt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -148,4 +149,47 @@ Processing Tundra:
 
         }
     }
+
+//    @Test
+//    fun testSatCountPL() {
+//        CspSample.allComplexPL.forEach {
+//
+//
+//            val name = it.name
+//            println("Processing $name:")
+//
+//
+//            val t0 = millis
+//
+//            val clob = tt("  Load text") { it.loadText() }
+//
+//            val csp = tt("  Parse rules") { Csp.parse(clob) }  //parse rules: 1446, 1410,1600
+//
+//            val satCountPL = tt("  SatCountPL") { csp.satCountPL() }
+//
+//            println("  satCountPL = ${satCountPL}")
+//
+//        }
+//    }
+
+
+    //9s
+    //8.8
+    //49 wo toDnnfTopXorSplit before fcc
+    @Test
+    fun testAllCompileAndSatCount() {
+        CspSample.allPL.forEach {
+            val name = it.name
+            System.err.println("Processing $name")
+            val clob = tt("  load rules") { it.loadText() }
+            val csp = tt("  parse rules") { Csp.parse(clob) }
+            val rough = tt("  compile dnnf") { csp.toDnnf() }
+            val smooth = tt("  smooth dnnf") { rough.smooth }
+            val satCount = tt("  sat count") { smooth.satCount }
+            assertEquals(it.expectedSatCount, satCount)
+
+            smooth.printNodeInfo()
+        }
+    }
+
 }

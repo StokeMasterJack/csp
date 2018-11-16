@@ -656,9 +656,9 @@ val List<Exp>?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty()
  */
 class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 
-    init {
-        assert(arg1.vr != arg2.vr)
-    }
+//    init {
+//        assert(arg1.vr != arg2.vr)
+//    }
 
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
     val space: Space = arg1.space
@@ -677,9 +677,9 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
  */
 class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 
-    init {
-        assert(!cube.containsVar(lit.vr))
-    }
+//    init {
+//        assert(!cube.containsVar(lit.vr))
+//    }
 
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(lit, cube)
     val space: Space = lit.space
@@ -698,7 +698,7 @@ class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder {
 
     init {
-        assert(cube1.isVarDisjoint(cube2.vars))
+//        assert(cube1.isVarDisjoint(cube2.vars))
     }
 
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(cube1, cube2)

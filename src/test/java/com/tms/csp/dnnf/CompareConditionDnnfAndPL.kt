@@ -38,9 +38,7 @@ class CompareConditionDnnfAndPL {
 
         val cube = space.parser.parseLitsToDynCube(con)
 
-        fullCsp.space.config.tmp = "cspFull"
         val fullDnnf = fullCsp.toDnnfSmooth()
-        fullCsp.space.config.tmp = null
         println("fullCsp.satCountPL: ${fullCsp.satCountPL()}")
         println("fullDnnf.satCount: ${fullDnnf.satCount}")
 
@@ -48,9 +46,7 @@ class CompareConditionDnnfAndPL {
         val cspConditioned = fullCsp.condition(con)
 //        fullCsp.print()
 //        cspConditioned.print()
-        fullCsp.space.config.tmp = "cspConditioned"
         val dnnfCspConditioned = cspConditioned.toDnnfSmooth()
-        fullCsp.space.config.tmp = null
         println("fullDnnf.vars =            ${fullDnnf.vars}")
         val dnnfDnnfConditioned = fullDnnf.condition(con)
         println("dnnfDnnfConditioned.vars = ${dnnfDnnfConditioned.vars}")
