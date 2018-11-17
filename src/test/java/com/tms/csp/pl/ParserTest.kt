@@ -120,8 +120,8 @@ class ParserTest : PLTestBase() {
 
     private fun flp(sExpIn: String, expected: String) {
         val inExp = f.parseExp(sExpIn)
-        val flip1 = inExp.flip()
-        val flip2 = flip1.flip()
+        val flip1 = inExp.flip
+        val flip2 = flip1.flip
 
         assertEquals(f.parseExp(expected), flip1)
         assertEquals(inExp, flip2)

@@ -85,7 +85,7 @@ public class SpaceJvm implements PLConstants {
 
     public Exp loadTinyDnnf(Path resource) {
         String clob = loadResource(resource);
-        return Exp.parseTinyDnnf(clob);
+        return Exp.Companion.parseTinyDnnf(clob);
     }
 
 

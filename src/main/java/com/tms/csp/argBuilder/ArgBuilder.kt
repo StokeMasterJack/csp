@@ -91,10 +91,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-    @JvmOverloads
-    constructor(sp: Space, op: Op, complex: Constraints, condition: Condition = Condition.identity) : this(sp, op) {
-        addComplex(complex, condition)
-    }
+
 
     @JvmOverloads
     constructor(sp: Space, op: Op, args: Iterable<Exp>, condition: Condition = Condition.identity) : this(sp, op) {
@@ -289,34 +286,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-    fun addComplex(complex: Constraints, condition: Condition): ArgBuilder {
-        when {
-            complex.isClob -> {
-                val constraints: Sequence<Exp> = sp.parsePL(complex.asClob)
-                addExpSeq(constraints, condition)
-            }
-            complex.isDynComplex -> {
-                val dynComplex = complex.asDynComplex
-                addExpIt(dynComplex.argIt, condition);
-            }
-            complex.isExpIt -> {
-                addExpIt(complex.asExpIt, condition);
-            }
-            complex.isExpSeq -> {
-                addExpSeq(complex.asExpSeq, condition);
-            }
-            complex.isStrSeq -> {
-                val strSeq = complex.asStrSeq
-                addStrSeq(strSeq, condition)
-            }
-            else -> {
-                throw IllegalStateException(complex::class.simpleName + " " + complex.toString())
-            }
-        }
-
-        return this;
-    }
-
 
     val simpleIt: Iterable<Exp> get() = TreeSeqTo.litIt(simple)
 
@@ -361,7 +330,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
                 trueCount++  //for xors
             }
         } else if (arg.isLit) {
-            addLitChild(arg.asLit())
+            addLitChild(arg.asLit)
         } else if (arg.isComplex) {
             addComplexChild(arg)
         } else {
@@ -374,7 +343,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
         assert(e.isComplex) { e }
         if (isCompatible(op1, e) && flatten) {
             //flatten
-            addExpIt(e.argIt())
+            addExpIt(e.argIt)
         } else {
             complex.put(e.expId, e)
             all.put(e.expId, e)
@@ -383,7 +352,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
 
     private fun addLitChild(e: Exp) {
         assert(e.isLit)
-        val newValue = e.asLit()
+        val newValue = e.asLit
         val varId = newValue.varId
         val oldValue = simple.put(varId, newValue)
         when (oldValue) {
@@ -394,7 +363,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
                 //println("  Dup assignment: $newValue")
             }
             else -> {
-                assert(newValue.hasFlip() && oldValue == newValue.flip())
+                assert(newValue.hasFlip && oldValue == newValue.flip)
                 shortCircuit()
             }
         }
@@ -501,7 +470,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
             } else if (arg.isConstantFalse) {
                 //skip
             } else if (arg.isOr) {
-                collectOrArgs(arg.argIt())
+                collectOrArgs(arg.argIt)
             } else {
                 addExp(arg)
             }
@@ -560,11 +529,11 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
                 sp.mkPosComplex(this)
             }
             trueCount == 1 -> if (isSingleton) {
-                first.flip()
+                first.flip
             } else {
                 val bb = ArgBuilder(sp, Op.Cube)
                 for (lit in litIt) {
-                    bb.addExp(lit.flip())
+                    bb.addExp(lit.flip)
                 }
                 bb.mkAnd()
             }
@@ -575,6 +544,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
 
     private fun mkAnd(): Exp {
         assert(op1.isAnd)
+
         return when {
             isShortCircuit -> sp.mkFalse()
             isEmpty -> sp.mkTrue()
@@ -587,6 +557,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
                         op = Op.Formula
                     }
                 } else {
+                    //mixed
                     Op.And
                 }
                 sp.mkPosComplex(this)

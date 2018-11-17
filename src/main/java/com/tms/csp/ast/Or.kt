@@ -2,28 +2,18 @@ package com.tms.csp.ast
 
 
 import com.tms.csp.argBuilder.ArgBuilder
+import com.tms.csp.ast.PLConstants.*
 import com.tms.csp.ast.formula.CanSplit
 import com.tms.csp.fm.dnnf.products.Cube
 
 open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs), CanSplit {
 
     init {
-        assert(fixedArgs.size > 1) { this }
-        assert(Exp.checkFixedArgs(fixedArgs))
-        assert(!isNestedOr)
-
-        if (false) {
-            if (args.size == 2) {
-                if (Exp.isFlip(args[0], args[1])) {
-                    System.err.println("DontCare[" + args[0].vr + "]")
-                }
-            }
-        }
-
+        assert(assertFixedArgs(fixedArgs))
     }
 
     override fun toDnnf(): Exp = with(space.expFactory) {
-                val decisionVar = decide()
+        val decisionVar = decide()
         val tLit = decisionVar.pLit()
         val fLit = decisionVar.nLit()
 
@@ -43,10 +33,10 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     override fun serializeGiantOr(a: Ser) {
         val token = getPosComplexOpToken(a)
         a.append(token)
-        a.append(PLConstants.LPAREN)
+        a.append(LPAREN)
         a.newLine()
 
-        val argsCopy = argIt()
+        val argsCopy = argIt
         //        argsCopy = ExpComparator.sortCopy(args);
 
         val it = argsCopy.iterator()
@@ -57,49 +47,38 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
             a.newLine()
         }
 
-        a.append(PLConstants.RPAREN)
+        a.append(RPAREN)
     }
 
     override fun decide(): Var {
-                return vars.getFirstVar()
+        return vars.getFirstVar()
     }
 
     override fun condition(lit: Lit): Exp {
-                return if (!containsVar(lit)) {
-                        this
+        return if (!containsVar(lit)) {
+            this
         } else {
-                        val after = argBuilder(op()).addExpArray(args, Condition.fromLit(lit)).mk()
+            val after = argBuilder(op()).addExpArray(_args, Condition.fromLit(lit)).mk()
             assert(this !== after)
             after
         }
     }
 
     override fun condition(cube: Cube): Exp {
-                return if (!anyVarOverlap(cube)) {
-                        this
+        return if (!anyVarOverlap(cube)) {
+            this
         } else {
-                        argBuilder(op())
-                    .addExpArray(args, Condition.fromCube(cube))
+            argBuilder(op())
+                    .addExpArray(_args, Condition.fromCube(cube))
                     .mk()
         }
     }
 
-    override fun asPosComplex(): PosComplexMultiVar {
-        return this
-    }
 
-
-    override fun asOr(): Or {
-        return this
-    }
-
-    override fun isOr(): Boolean {
-        return true
-    }
 
 
     override fun conditionVV(vv: Exp): Exp {
-                if (vv === this) return vv
+        if (vv === this) return vv
 
         if (!this.anyVarOverlap(vv)) {
             return this
@@ -120,9 +99,9 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
                     return vv
                 }
                 //                else if (ll.ft()) {
-                //                    skip = vv.arg1().flip();
+                //                    skip = vv.arg1.flip;
                 //                } else if (ll.tf()) {
-                //                    skip = vv.arg2().flip();
+                //                    skip = vv.arg2.flip;
                 //                }
             }
 
@@ -134,7 +113,7 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         //  FIXED:   2. if space is allowing dup expressions (much bigger bug)
 
         val a = ArgBuilder(_space, Op.Or)
-        val argIt = argIter()
+        val argIt = argIter
         while (argIt.hasNext() && !a.isShortCircuit) {
             val e = argIt.next()
             if (e !== skip) {
@@ -144,6 +123,27 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         }
         return a.mk()
 
+    }
+
+    override fun litImpSimple(li: LitImps) {
+        if (isPair) {
+            val a1 = if (arg1.isNotClause) arg1.notClauseToCube else if (arg1.isNotCube) arg1.notCubeToClause else arg1
+            val a2 = if (arg2.isNotClause) arg2.notClauseToCube else if (arg2.isNotCube) arg2.notCubeToClause else arg2
+            when {
+                a1 is Lit -> when {
+                    a2 is Lit -> {
+                        li.imp(a1.flipLit, a2)
+                        li.imp(a2.flipLit, a1)
+                    }
+                    a2 is Cube -> li.imp(a1.flipLit, a2)
+                    a2.isClause -> a2.args.forEach { li.imp(it.flip.asLit, a1) }
+                }
+                a2 is Lit -> when {
+                    a1 is Cube -> li.imp(a2.flipLit, a1)
+                    a1.isClause -> a1.args.forEach { li.imp(it.flip.asLit, a2) }
+                }
+            }
+        }
     }
 
 
@@ -160,43 +160,40 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     }
 
 
-    override fun getPosOp(): PLConstants.PosOp {
-        return OP
-    }
+    override val posOp: PosOp = OP
 
 
-    override fun getOp(): Op {
-        return Op.Or
-    }
+    override val op: Op = Op.Or
 
-    override fun isNegationNormalForm(): Boolean {
-                for (arg in args()) {
-            if (!arg.isNegationNormalForm) {
-                return false
+    override val isNegationNormalForm: Boolean
+        get() {
+            for (arg in args) {
+                if (!arg.isNegationNormalForm) {
+                    return false
+                }
             }
+            return true
         }
-        return true
-    }
 
 
     fun createEquivAnd(): Exp {
-                val hardFlip = createHardFlip()
-        return hardFlip.flip()
+        val hardFlip = createHardFlip()
+        return hardFlip.flip
     }
 
     override fun createHardFlip(): Exp {
-                val b = flipArgs()
+        val b = flipArgs()
         return b.mk()
         //        return getSpace().mkAnd(b);
     }
 
     override fun flipArgs(): ArgBuilder {
-                return ArgBuilder(_space, Op.And, argItFlipped())
+        return ArgBuilder(_space, Op.And, argItFlipped())
     }
 
 
     override fun computeIsSat(): Boolean {
-                val decisionVar = decide()
+        val decisionVar = decide()
         val tCon = condition(decisionVar.pLit())
 
 
@@ -209,7 +206,7 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     }
 
     override fun pushNotsIn(): Exp {
-                val b = ArgBuilder(_space, op())
+        val b = ArgBuilder(_space, op())
         for (arg in args) {
             val s = arg.pushNotsIn()
             b.addExp(s)
@@ -217,21 +214,21 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         return b.mk()
     }
 
-    override fun satCountPL(): Long {
-                val decisionVar = decide()
+    override val satCountPL: Long get(){
+        val decisionVar = decide()
 
         val tCon: Exp = condition(decisionVar.pLit())
         val fCon: Exp = condition(decisionVar.nLit())
 
-        val tSatCount = Csp.computeDcVars(tCon.satCountPL(), vars, tCon.vars.union(decisionVar))
-        val fSatCount = Csp.computeDcVars(fCon.satCountPL(), vars, fCon.vars.union(decisionVar))
+        val tSatCount = Csp.computeDcVars(tCon.satCountPL, vars, tCon.vars.union(decisionVar))
+        val fSatCount = Csp.computeDcVars(fCon.satCountPL, vars, fCon.vars.union(decisionVar))
         return tSatCount + fSatCount
 
     }
 
     companion object {
 
-        val OP: PLConstants.PosOp = PLConstants.PosOp.OR
+        val OP: PosOp = PosOp.OR
     }
 
 

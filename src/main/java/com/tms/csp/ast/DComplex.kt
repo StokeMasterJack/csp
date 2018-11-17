@@ -1,6 +1,7 @@
 package com.tms.csp.ast
 
 import com.tms.csp.argBuilder.IArgBuilder
+import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.varSets.EmptyVarSet
 import com.tms.csp.util.varSets.VarSet
 import java.util.*
@@ -18,6 +19,8 @@ class DComplex(
     private var formula: Exp? = null
 
     private val space: Space get() = firstArg.space
+
+    private val litImpHandler: LitImps = LitImpHandler()
 
     constructor(initSize: Int) : this(ArrayList(initSize))
 
@@ -207,6 +210,11 @@ class DComplex(
         assert(!complex.isAndLike)
         assert(!complex.isConstant)
         assert(!complex.isLit)
+
+        if (complex.isLitImpliesSimple) {
+            complex.litImpSimple(litImpHandler)
+        }
+
         a.add(complex)
         cl()
     }
@@ -225,3 +233,20 @@ class DComplex(
     }
 }
 
+/**
+ * Just logging for now
+ */
+class LitImpHandler : LitImps {
+
+    override fun imp(lit1: Lit, lit2: Lit) {
+        if (Space.config.log.litImps) {
+            println("lit-implies-lit: $lit1 implies $lit2")
+        }
+    }
+
+    override fun imp(lit: Lit, cube: Cube) {
+        if (Space.config.log.litImps) {
+            println("lit-implies-cube: $lit implies $cube")
+        }
+    }
+}

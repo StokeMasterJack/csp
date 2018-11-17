@@ -626,8 +626,8 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
     public Lit mkLit(int lit) {
-        int varId = Head.getVarId(lit);
-        boolean sign = Head.getSign(lit);
+        int varId = Head.Companion.getVarId(lit);
+        boolean sign = Head.Companion.getSign(lit);
         return getVar(varId).lit(sign);
     }
 
@@ -638,8 +638,8 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
     public Lit mkLit(String signedVarCode) {
-        String varCode = Head.getVarCode(signedVarCode);
-        boolean sign = Head.getSign(signedVarCode);
+        String varCode = Head.Companion.getVarCode(signedVarCode);
+        boolean sign = Head.Companion.getSign(signedVarCode);
         return getVar(varCode).lit(sign);
     }
 

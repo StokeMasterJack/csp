@@ -1,14 +1,26 @@
 package com.tms.csp.ast
 
+data class CfgAddConstraint(
+        val notOr_to_and: Boolean = true,
+        val notClause_to_cube: Boolean = true,
+        val checkComplexForSimpleOverlap: Boolean = false
+)
+
+data class CfgDnnfCompile(
+        val includeDcs: Boolean = true
+)
+
+data class CfgLog(
+        val transform: Boolean = false,
+        val condition: Boolean = false,
+        val vv: Boolean = false,
+        val complexDups: Boolean = false,
+        val litImps: Boolean = false
+)
+
 data class SpaceConfig(
-        val logTransforms: Boolean = false,
-        val logCondition: Boolean = false,
-        val logCondition2: Boolean = false,
-        val logVvSimplified: Boolean = false,
-        val logDupCounts: Boolean = false,
-        val includeDontCaresInDnnf: Boolean = true,
-        val checkForSimpleOverlapWhenAddingComplexConstraint: Boolean = true
+        val addConstraint: CfgAddConstraint = CfgAddConstraint(),
+        val log: CfgLog = CfgLog(),
+        val dnnfCompile: CfgDnnfCompile = CfgDnnfCompile()
 
-) {
-
-}
+        )

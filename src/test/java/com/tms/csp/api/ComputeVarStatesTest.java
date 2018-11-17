@@ -66,7 +66,7 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
         String camryDnnfText = loadResource(this, "camry.dnnf.txt");
         String varMetaText = loadResource(this, "camry-2011-var-meta.xml");
 
-        Exp root = Exp.parseTinyDnnf(camryDnnfText);
+        Exp root = Exp.Companion.parseTinyDnnf(camryDnnfText);
         MetaVar metaVar = MetaVarParserDom4j.parseVarMetaDataFromXmlDom4j(varMetaText);
 
         Space space = root.getSpace();
@@ -113,9 +113,9 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
         System.err.println(" exp.sat2[" + sat2 + "]");
 
 
-        DynCube bb1 = root.getBB();
+        DynCube bb1 = root.getBb();
         System.err.println("root.bb: " + bb1);
-        DynCube bb2 = exp.getBB();
+        DynCube bb2 = exp.getBb();
 
         System.err.println("  exp.bb: " + bb2);
 

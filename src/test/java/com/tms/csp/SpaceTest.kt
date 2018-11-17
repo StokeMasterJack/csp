@@ -30,22 +30,22 @@ class SpaceTest {
         val v2: Var = sp.mkVar("bbb")
 
 
-        assertEquals(1, v1.varId)
-        assertEquals(2, v2.varId)
+        assertEquals(1, v1.vrId)
+        assertEquals(2, v2.vrId)
 
-        val i1 = v1.varId
-        val i2 = v2.varId
-
-
-        val vv1 = sp.getVar(v1.varId)
-        val vv2 = sp.getVar(v2.varId)
-
-        assertEquals(v1, sp.getVar(v1.varId))
-        assertEquals(v2, sp.getVar(v2.varId))
+        val i1 = v1.vrId
+        val i2 = v2.vrId
 
 
-        assert(vv1 === sp.getVar(v1.varId))
-        assert(vv2 === sp.getVar(v2.varId))
+        val vv1 = sp.getVar(v1.vrId)
+        val vv2 = sp.getVar(v2.vrId)
+
+        assertEquals(v1, sp.getVar(v1.vrId))
+        assertEquals(v2, sp.getVar(v2.vrId))
+
+
+        assert(vv1 === sp.getVar(v1.vrId))
+        assert(vv2 === sp.getVar(v2.vrId))
 
 
         assertEquals(v1, sp.getVar(v1.varCode))

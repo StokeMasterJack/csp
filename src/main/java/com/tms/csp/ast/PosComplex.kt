@@ -2,13 +2,9 @@ package com.tms.csp.ast
 
 abstract class PosComplex(space: Space, expId: Int) : Complex(space, expId) {
 
-    override fun isPosComplex(): Boolean {
-        return true
-    }
+    override val isPosComplex: Boolean get() = true
+    override val isComplex: Boolean get() = true
 
-    override fun isComplex(): Boolean {
-        return true
-    }
 
 
 }

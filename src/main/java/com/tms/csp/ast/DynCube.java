@@ -87,7 +87,7 @@ public class DynCube extends AbstractCube {
     public static DynCube create(Space space, Iterable<Exp> lits) throws ConflictingAssignmentException {
         ArrayList<Lit> a = new ArrayList<Lit>();
         for (Exp exp : lits) {
-            a.add(exp.asLit());
+            a.add(exp.getAsLit());
         }
         return new DynCube(space, a);
     }
@@ -97,6 +97,7 @@ public class DynCube extends AbstractCube {
         assignCubes(cubes);
     }
 
+    @NotNull
     @Override
     public Space getSpace() {
         return space;
@@ -108,8 +109,8 @@ public class DynCube extends AbstractCube {
     }
 
     public boolean assign(String sLit) throws ConflictingAssignmentException {
-        String varCode = Head.getVarCode(sLit);
-        boolean sign = Head.getSign(sLit);
+        String varCode = Head.Companion.getVarCode(sLit);
+        boolean sign = Head.Companion.getSign(sLit);
         Lit lit = space.getVar(varCode).mkLit(sign);
         return assign(lit);
     }
@@ -119,8 +120,8 @@ public class DynCube extends AbstractCube {
     }
 
     public boolean assign(int lit) throws ConflictingAssignmentException {
-        boolean sign = Head.getSign(lit);
-        int varId = Head.getVarId(lit);
+        boolean sign = Head.Companion.getSign(lit);
+        int varId = Head.Companion.getVarId(lit);
         return assign(varId, sign);
     }
 
@@ -207,8 +208,8 @@ public class DynCube extends AbstractCube {
     }
 
     public boolean removeLit(int lit) {
-        boolean sign = Head.getSign(lit);
-        int varId = Head.getVarId(lit);
+        boolean sign = Head.Companion.getSign(lit);
+        int varId = Head.Companion.getVarId(lit);
         return removeLit(varId, sign);
     }
 
@@ -505,7 +506,7 @@ public class DynCube extends AbstractCube {
         if (v == null) {
             return false;
         }
-        Bit value = getValue(lit.vr);
+        Bit value = getValue(lit.getVr());
         if (value.isOpen()) {
             return false;
         } else if (value.is(lit.sign())) {

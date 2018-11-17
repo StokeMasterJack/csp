@@ -1,0 +1,94 @@
+and
+
+Raw: anything
+
+Simple: lit or cube
+    all lits
+    lits and cubes or all cubes
+        disjoint-yes ->
+            lit lit: combine
+            cube cube: combine
+            lit cube: combine
+            lit cube: combine
+        disjoint-no/unknown:
+            use csp to combine
+
+Complex (no nested ands): Formula or Non-and-complex (Or, DOr, Xor,Imp,Rmp,Iff)
+    Formula:
+        disjoint-unknown fcc-unknown: RawFormula
+        disjoint-yes dand:            DAndFormula
+        disjoint-yes fccs:            FccsFormula
+        disjoint-no fcc-yes:          FccFormula
+
+mixed
+    simple-complex-separated no/unknown -> separate
+    simple-complex-separated-yes
+        simple-complex-disjoint no -> propagate
+        simple-complex-disjoint unknown -> determine - compute simple/complex var overlap
+        simple-complex-disjoint yes ->
+            process simples and complex separately
+            never make an and until it is simple/complex disjoint
+            Element:
+                simple: lit or flat cube (disjoint and no conflicts)
+                complex:
+                    Formula:
+                        RawFormula  -> RElement
+                        FccsFormula -> RElement
+                        FccFormula -> RElement
+                        DAndFormula -> DElement
+                    Single complex:
+                        Or (iff,imp,rmp, conflict): RElement
+                        Xor: -> DElement
+                        DOr: -> DElement
+
+unknown
+    use csp or builder
+    add complex first
+
+
+Ands:
+    Cube
+    Formula
+        DFormula
+        FccsFormula
+        FccFormula
+        RFormula
+    Element
+        RElement
+        DElement
+    Element: always disjoint
+        Simple: Lit or Cube
+        Complex: Formula or Or
+
+Space:
+    RootKb: RFormula or RElement
+
+    RootFormula:
+        RFormula
+            -> XorSplit -> RElement
+                -> computeFccs -> FccsFormula
+                    XorSplit
+
+    RFormula
+        child: FccsFormula
+            child: RElement.parent = RFormula,XorCube
+
+
+Making an and:
+    init
+    decision split
+    xor split
+    interactive
+
+For any non-and:
+    Or,Xor,Iff,Imp:  is it a
+        Xor
+        LitImpliesLit
+        LitImpliesCube
+        or(!x !or(a b c)) this is really: or(!x and(!a !b !c)
+        a !or filled with lits is a really a cube
+
+
+Checkout:
+    isLitImpliesSimple
+    litImpSimple

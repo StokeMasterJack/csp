@@ -102,7 +102,7 @@ public class Dnnf implements PLConstants, HasSpace {
             int int32value = constraint.getMin();
             Set<Exp> lits = space.getLitsForInt32(int32value, int32prefix);
             for (Exp lit : lits) {
-                b.add(lit.asLit());
+                b.add(lit.getAsLit());
             }
         } else {
             throw new UnsupportedOperationException("todo"); //todo
@@ -514,7 +514,7 @@ public class Dnnf implements PLConstants, HasSpace {
     public Set<Lit> getBB() {
         assert isSat();
         Exp conditioned = getConditioned();
-        DynCube bb = conditioned.getBB();
+        DynCube bb = conditioned.getBb();
         return ImmutableSet.copyOf(bb.litIt());
     }
 

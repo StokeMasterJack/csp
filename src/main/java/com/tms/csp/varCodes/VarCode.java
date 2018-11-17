@@ -305,7 +305,6 @@ public class VarCode extends Mods implements Comparable<VarCode>, IVar {
     }
 
     public boolean hasPrefix() {
-        assert prefix != null;
         return !prefix.equals("");
     }
 }

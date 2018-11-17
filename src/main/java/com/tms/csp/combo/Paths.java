@@ -209,7 +209,7 @@ public class Paths extends SpaceJvm {
 
 
         } else {
-            dNode = Exp.parseTinyDnnf(dnnfClob);
+            dNode = Exp.Companion.parseTinyDnnf(dnnfClob);
 
             Space space = dNode.getSpace();
             space.setVarInfo(createVarInfo());

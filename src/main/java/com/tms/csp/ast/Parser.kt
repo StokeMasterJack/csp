@@ -29,7 +29,7 @@ class Parser(val space: Space) {
 
     private fun parseExp(tokens: TokenStream, flatten: Boolean = true): Exp {
         val headToken = tokens.take()
-        check(headToken.isHead)
+        check(headToken!!.isHead)
         return mkExp(headToken, tokens, flatten)
     }
 
@@ -39,7 +39,7 @@ class Parser(val space: Space) {
             headToken.isConstantFalse -> return space.mkConstant(false)
             headToken.isNot -> {
                 val arg = parseExp(tokens)
-                return arg.flip()
+                return arg.flip
             }
             headToken.isPosComplex -> {
                 val t = headToken.toString()
@@ -74,7 +74,7 @@ class Parser(val space: Space) {
         tokens.consumeAndCheck(PLConstants.LPAREN)
         while (true) {
             val next = tokens.peek()
-            if (next == null) {
+            if (next === null) {
                 check(retVal.size > 0)
                 return retVal
             } else if (next.isRParen) {
@@ -377,8 +377,8 @@ class Parser(val space: Space) {
     fun mkLitSet(vars: Set<Var>?): Set<Lit> {
         if (vars == null || vars.size == 0) return ImmutableSet.of()
         val b = ImmutableSet.builder<Lit>()
-        for (`var` in vars) {
-            val dLit = `var`.mkPosLit()
+        for (vr in vars) {
+            val dLit = vr.mkPosLit()
             b.add(dLit)
         }
         return b.build()

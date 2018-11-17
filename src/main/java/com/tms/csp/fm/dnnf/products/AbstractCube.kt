@@ -192,7 +192,7 @@ abstract class AbstractCube : Cube {
 
 
     override fun containsVar(vr: Var): Boolean {
-        return vars.containsVarId(vr.getVarId())
+        return vars.containsVarId(vr.vrId)
     }
 
     override fun containsVar(varCode: String): Boolean {
@@ -202,7 +202,7 @@ abstract class AbstractCube : Cube {
 
 
     override fun isTrue(vr: Var): Boolean {
-        return isTrue(vr.getVarId())
+        return isTrue(vr.vrId)
     }
 
     fun hashCode1(): Int {
@@ -293,7 +293,7 @@ abstract class AbstractCube : Cube {
     }
 
     override fun containsLit(vr: Var, sign: Boolean): Boolean {
-        return containsLit(vr.getVarId(), sign)
+        return containsLit(vr.vrId, sign)
     }
 
     fun isAssigned(varId: Int): Boolean {
@@ -301,7 +301,7 @@ abstract class AbstractCube : Cube {
     }
 
     fun isAssigned(vr: Var): Boolean {
-        return isAssigned(vr.getVarId())
+        return isAssigned(vr.vrId)
     }
 
     fun containsAllVars(that: VarSet?): Boolean {
@@ -324,7 +324,7 @@ abstract class AbstractCube : Cube {
 
     fun forEachVarId(h: VarIdCallback) {
         for (vr in varIt()) {
-            h.onVar(vr.getVarId())
+            h.onVar(vr.vrId)
         }
     }
 
@@ -442,7 +442,7 @@ abstract class AbstractCube : Cube {
     }
 
     override fun containsVar(lit: Lit): Boolean {
-        return vars.containsVar(lit.getVr())
+        return vars.containsVar(lit.vr)
     }
 
     override fun asLitSet(): Set<Lit> {

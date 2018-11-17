@@ -7,6 +7,7 @@ import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.data.CspSample
 import com.tms.csp.fm.dnnf.Dnnf
 import com.tms.csp.fm.dnnf.products.Cube
+import com.tms.csp.ssutil.Console.prindent
 import com.tms.csp.transforms.Transformer
 import com.tms.csp.util.*
 import com.tms.csp.util.varSets.VarSet
@@ -107,7 +108,7 @@ class Csp @JvmOverloads constructor(
             addConstraint(it, ctx)
             if (isFailed) return
         }
-        complex.dedup()
+//        complex.dedup()
         propagate()
     }
 
@@ -117,7 +118,7 @@ class Csp @JvmOverloads constructor(
             addConstraint(it, ctx)
             if (isFailed) return
         }
-        complex.dedup()
+//        complex.dedup()
         propagate()
     }
 
@@ -131,7 +132,7 @@ class Csp @JvmOverloads constructor(
 //    fun containsConstraint(e: Exp): Boolean {
 //        return if (e.isSimple) {
 //            if (simple != null) {
-//                simple!!.containsLit(e.asLit())
+//                simple!!.containsLit(e.asLit)
 //            } else {
 //                false
 //            }
@@ -159,11 +160,9 @@ class Csp @JvmOverloads constructor(
         assert(!isFailed && space === constraint.space)
 
         if (ctx != null) {
-//            val conditioned = ctx.conditionThat(constraint)
-
             val conditioned = constraint.condition(ctx)
 
-            if (conditioned !== constraint && Space.config.logCondition) {
+            if (conditioned !== constraint && Space.config.log.condition) {
                 println("$depth Conditioned: $constraint")
                 println("     ctx: $ctx")
                 println("     to: $conditioned")
@@ -196,53 +195,60 @@ class Csp @JvmOverloads constructor(
 //    }
 
     fun addConstraint(constraint: Exp) {
+
+//        if(constraint.toString().contains("xor")){
+//            println(constraint)
+//        }
         assert(!isFailed && space === constraint.space)
         when {
             constraint.isTrue -> Unit
             constraint.isFalse -> fail()
-            constraint.isLit -> assign(constraint.asLit())
-            constraint.isCube -> assignAll(constraint.asCube())
-/*
-        else if (constraint.isNot) {
-
-
-            val flip = constraint.toNnf(true);
-//            val flip = constraint.pushNotsIn();
-
-            assert(flip.isPos)
-
-            addConstraint(flip);
-
-
-        }
-*/
-            constraint.isDcOr -> addDontCare(constraint.asDcOr())
+            constraint.isLit -> assign(constraint.asLit)
+            constraint.isCube -> assignAll(constraint.asCube)
+            constraint.isDcOr -> addDontCare(constraint.asDcOr)
             constraint.isAndLike -> {
-                constraint.argsFlattened.forEach {
+                constraint.args.forEach {
+                    if (isFailed) return
                     addConstraint(it)
                     if (isFailed) return
                 }
             }
+            constraint.isNotClause -> assignAll(constraint.notClauseToCube)
+            constraint.isNotOr -> addConstraint(constraint.notOrToAnd)
             else -> addComplexConstraint(constraint)
+
+
         }
     }
 
     private fun addComplexConstraint(cc: Exp) {
         assert(!cc.isAnd)
 
-        if (this.hasSimple && Space.config.checkForSimpleOverlapWhenAddingComplexConstraint) {
+        if (this.hasSimple && Space.config.addConstraint.checkComplexForSimpleOverlap) {
             val ss: Exp = ExpFactory.maybeSimplifyComplex(simple!!, cc, disjoint = Bit.OPEN)
             if (ss != cc) {
                 addConstraint(ss);
-            } else {
-                complex.add(cc)
+                return
             }
-        } else if (cc.isFlattenableNand) {
-            val and = cc.asNand().flattenNand()
-            addConstraint(and)
-        } else {
-            complex.add(cc)
         }
+
+
+        if (false && cc.isNot) {
+            val flip = cc.toNnf(true);
+//            val flip = constraint.pushNotsIn();
+            assert(flip.isPos)
+            addConstraint(flip);
+            return
+
+        }
+
+        if (cc.isFlattenableNand) {
+            val and = cc.asNand.flattenNand()
+            addConstraint(and)
+            return
+        }
+
+        complex.add(cc)
 
 
     }
@@ -278,7 +284,7 @@ class Csp @JvmOverloads constructor(
             isFailed -> 0L
             isSolved -> 1L
             else -> {
-                val baseSatCount = mkFormula().satCountPL()
+                val baseSatCount = mkFormula().satCountPL
                 if (hasDontCares) {
                     baseSatCount * BoolMath.permCount(dontCares!!.size)
 
@@ -318,7 +324,7 @@ class Csp @JvmOverloads constructor(
 
     fun computeUnionFind(): UnionFind {
         val ff = mkFormula()
-        val f = ff.asFormula()
+        val f = ff.asFormula
         return f.computeUnionFind();
     }
 
@@ -351,7 +357,7 @@ class Csp @JvmOverloads constructor(
 //        assert(simple!!.containsLit(lit))
 
         val before = complex
-        assert(before.isDeduped)
+//        before.dedup()
         complex = DComplex()
 
         addConstraintsExpIt(before.argIt, lit)
@@ -563,14 +569,14 @@ class Csp @JvmOverloads constructor(
         System.err.println("**** addConstraint-Imp")
         val arg1 = imp.arg1
         val arg2 = imp.arg2
-        addBinaryOr(arg1.flip(), arg2)
+        addBinaryOr(arg1.flip, arg2)
     }
 
     fun addConstraint(rmp: Rmp) {
         System.err.println("**** addConstraint-Rmp")
         val arg1 = rmp.arg1
         val arg2 = rmp.arg2
-        addBinaryOr(arg1, arg2.flip())
+        addBinaryOr(arg1, arg2.flip)
     }
 
     fun addConstraint(iff: Iff) {
@@ -583,12 +589,12 @@ class Csp @JvmOverloads constructor(
 
     fun addImp(arg1: Exp, arg2: Exp) {
         System.err.println("**** addImp")
-        addBinaryOr(arg1.flip(), arg2)
+        addBinaryOr(arg1.flip, arg2)
     }
 
     fun addRmp(arg1: Exp, arg2: Exp) {
         System.err.println("**** addRmp")
-        addBinaryOr(arg1, arg2.flip())
+        addBinaryOr(arg1, arg2.flip)
     }
 
     fun addIff(arg1: Exp, arg2: Exp) {
@@ -621,12 +627,12 @@ class Csp @JvmOverloads constructor(
         }
 
         if (arg1.isFalse && arg2.isOpen) {
-            addConstraint(arg2.flip())
+            addConstraint(arg2.flip)
             return
         }
 
         if (arg1.isOpen && arg2.isFalse) {
-            addConstraint(arg1.flip())
+            addConstraint(arg1.flip)
             return
         }
 
@@ -647,7 +653,7 @@ class Csp @JvmOverloads constructor(
             return
         }
 
-        if (arg1 === arg2.flip()) {
+        if (arg1 === arg2.flip) {
             return
         }
 
@@ -699,7 +705,7 @@ class Csp @JvmOverloads constructor(
     }
 
     fun assign(vr: Var, value: Boolean): Boolean {
-        return assign(vr.getVarId(), value)
+        return assign(vr.vrId, value)
     }
 
     fun assign(varId: Int, value: Boolean): Boolean {
@@ -933,27 +939,28 @@ class Csp @JvmOverloads constructor(
         return "SpaceCsp";
     }
 
-    fun print() {
+    @JvmOverloads
+    fun print(depth:Int = 0) {
         val sDontCares = if (dontCares.isNullOrEmpty) "" else dontCares.toString()
         val sSimple = if (simple.isNullOrEmpty) "" else simple.toString()
-        println("<csp>");
-        println("  <dontCares>$sDontCares</dontCares>");
-        println("  <simple>$sSimple</simple>");
+        prindent(depth,"<csp>");
+        prindent(depth,"  <dontCares>$sDontCares</dontCares>");
+        prindent(depth,"  <simple>$sSimple</simple>");
         val cc = complexConstraintCount
         if (cc == 0) {
-            println("  <complex></complex>");
+            prindent(depth,"  <complex></complex>");
         } else if (cc == 1) {
-            println("  <complex>" + complexIt.first() + "</complex>");
+            prindent(depth,"  <complex>" + complexIt.first() + "</complex>");
         } else {
-            println("  <complex>");
+            prindent(depth,"  <complex>");
             for (exp: Exp in complexIt) {
-                println("    $exp");
+                prindent(depth,"    $exp");
             }
-            println("  </complex>");
+            prindent(depth,"  </complex>");
         }
-        println("  <vars>$vars</vars>");
-        println("  <sat>" + isSat() + "</sat>");
-        println("<csp>");
+        prindent(depth,"  <vars>$vars</vars>");
+        prindent(depth,"  <sat>" + isSat() + "</sat>");
+        prindent(depth,"<csp>");
     }
 
 
@@ -1024,13 +1031,13 @@ class Csp @JvmOverloads constructor(
 
     fun getBB(): DynCube {
         propagate()
-        val bb = mkFormula().getBB()
+        val bb = mkFormula().bb
         return DynCube.union(space, simple, bb)
     }
 
 //    fun getBBLite(): DynCube {
 //        propagate()
-//        val bb: DynCube = mkFormula().asFormula().computeBBLite()
+//        val bb: DynCube = mkFormula().asFormula.computeBBLite()
 //        return if (bb.isNullOrEmpty && simple.isNullOrEmpty) {
 //            space.mkSimple()
 //        } else if (bb.isNullOrEmpty && !simple.isNullOrEmpty) {
@@ -1181,7 +1188,7 @@ class Csp @JvmOverloads constructor(
     }
 
     fun logSimplified(ctx: Any, before: Exp, after: Exp) {
-        if (!(before === after || !Space.config.logVvSimplified)) {
+        if (!(before === after || !Space.config.log.vv)) {
             System.err.println("Simplified from ctx: $ctx")
             System.err.println("\t before: $before")
             System.err.println("\t after:  $after")
@@ -1199,7 +1206,7 @@ class Csp @JvmOverloads constructor(
     fun toDnnf(): Exp {
         val dnnf = toDnnfInternal()
         assert(dnnf.isDnnf)
-        return if (Space.config.includeDontCaresInDnnf) {
+        return if (Space.config.dnnfCompile.includeDcs) {
             val cspVars = this.vars
             val dnnfVars = dnnf.vars
             val dnnfDontCares = cspVars.minus(dnnfVars)
@@ -1287,10 +1294,10 @@ class Csp @JvmOverloads constructor(
             for (exp in complex!!) {
                 if (bestAnd == null) {
                     best = exp
-                    bestAnd = exp.getAndWithHighestLitArgCount()
+                    bestAnd = exp.andWithHighestLitArgCount
                 } else {
-                    val and = exp.getAndWithHighestLitArgCount()
-                    if (and != null && and.getAndLitArgCount() > bestAnd.andLitArgCount) {
+                    val and = exp.andWithHighestLitArgCount
+                    if (and != null && and.andLitArgCount > bestAnd.andLitArgCount) {
                         best = exp
                         bestAnd = and
                     }
@@ -1350,8 +1357,8 @@ class Csp @JvmOverloads constructor(
 
 //        System.err.println("Transforming " + tmp.size() + " sentences!");
         var current = 0;
-        for (e: Exp in ff.argIt()) {
-            if (Space.config.logTransforms) {
+        for (e: Exp in ff.argIt) {
+            if (Space.config.log.transform) {
                 Space.log.info("  Transforming [" + current + "] of " + ff.size())
             }
             if (isFailed) {
@@ -1414,7 +1421,7 @@ class Csp @JvmOverloads constructor(
 
 
 /*
- Formula tmp = this.getFormula().asFormula();
+ Formula tmp = this.getFormula().asFormula;
 
     complex = new DynFormula(space);
     for (Exp b : tmp) {
@@ -1525,7 +1532,7 @@ class Csp @JvmOverloads constructor(
             }
             val arg = xor.getArg(0)
             if (arg.isVarWithPrefix(prefix)) {
-                return xor.asXor()
+                return xor.asXor
             }
         }
         return null
@@ -1549,7 +1556,7 @@ class Csp @JvmOverloads constructor(
 
     fun printYearSeriesModels1() {
         val yearXor = yearXor
-        for (yearExp in yearXor!!.argIt()) {
+        for (yearExp in yearXor!!.argIt) {
             val yearVarCode = yearExp.varCode
 
             val yearCsp = condition(yearVarCode)
@@ -1841,7 +1848,7 @@ class Csp @JvmOverloads constructor(
         return if (simple.isNullOrEmpty) {
             false
         } else {
-            val ch = simple!!.removeLit(lit.asLit())
+            val ch = simple!!.removeLit(lit.asLit)
             if (simple!!.isEmpty) {
                 simple = null
             }
@@ -1963,13 +1970,13 @@ class Csp @JvmOverloads constructor(
 
     fun getAllNonXorConstraints(): Set<Exp> {
         val b = mutableSetOf<Exp>()
-        if (complex != null) {
-            for (exp in complex!!) {
-                if (!exp.isXor) {
-                    b.add(exp);
-                }
+
+        for (exp in complex) {
+            if (!exp.isXor) {
+                b.add(exp);
             }
         }
+
         if (simple != null) {
             b.addAll(simple!!.litIt());
         }
@@ -1980,7 +1987,7 @@ class Csp @JvmOverloads constructor(
         if (complex.isNullOrEmpty) return emptyList()
         val b = mutableListOf<Exp>()
         for (exp in complexIt) {
-            if (exp.isVVPlus()) {
+            if (exp.isVVPlus) {
                 b.add(exp);
             }
         }

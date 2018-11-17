@@ -52,11 +52,11 @@ public class TransformTest extends Transforms {
         e1 = f.parseExp("and(a b c)");
         System.err.println("e1[" + e1 + "]");
 
-        e2 = andToBinary(e1);
+        e2 = Companion.andToBinary(e1);
         System.err.println("e2[" + e2 + "]");
 
 
-        e1 = flattenAnd(e2);
+        e1 = Companion.flattenAnd(e2);
         System.err.println("e1[" + e1 + "]");
 
         System.err.println();
@@ -64,11 +64,11 @@ public class TransformTest extends Transforms {
         e1 = f.parseExp("and(a b c d e fCon g)");
         System.err.println("e1[" + e1 + "]");
 
-        e2 = andToBinary(e1);
+        e2 = Companion.andToBinary(e1);
         System.err.println("e2[" + e2 + "]");
 
 
-        e1 = flattenAnd(e2);
+        e1 = Companion.flattenAnd(e2);
         System.err.println("e1[" + e1 + "]");
 
 
@@ -220,19 +220,19 @@ public class TransformTest extends Transforms {
         e = f.parseExp("xor(6MT 6AT ECVT)");
         System.err.println(e);
 
-        e = xorToCnf(e);
+        e = Companion.xorToCnf(e);
         System.err.println(e);
 
-        e = removeConflicts(e);
+        e = Companion.removeConflicts(e);
         System.err.println(e);
 
-        e = removeIffs(e);
+        e = Companion.removeIffs(e);
         System.err.println(e);
 
-        e = removeImps(e);
+        e = Companion.removeImps(e);
         System.err.println(e);
 
-        e = pushUpAnds(e);
+        e = Companion.pushUpAnds(e);
         System.err.println(e);
     }
 
@@ -242,16 +242,16 @@ public class TransformTest extends Transforms {
         e = f.parseExp("nand(LA or(and(Ash 4T8) and(Ash 776) and(Bisque 1F7)))");
         System.err.println(e);
 
-        e = removeConflicts(e);
+        e = Companion.removeConflicts(e);
         System.err.println(e);
 
-        e = pushNotsIn(e);
+        e = Companion.pushNotsIn(e);
         System.err.println(e);
 
-        e = pushUpAnds(e);
+        e = Companion.pushUpAnds(e);
         System.err.println(e);
 
-        e = flattenOrs(e);
+        e = Companion.flattenOrs(e);
         System.err.println(e);
     }
 
@@ -265,11 +265,11 @@ public class TransformTest extends Transforms {
         System.err.println(e.toString());
 
 
-        t = Transforms.bnf();
+        t = Transforms.Companion.bnf();
         e = t.transform(e);
         System.err.println(e);
 
-        t = Transforms.pushNotsIn();
+        t = Transforms.Companion.pushNotsIn();
         e = t.transform(e);
         System.err.println(e);
 
@@ -285,7 +285,7 @@ public class TransformTest extends Transforms {
         System.err.println(e);
 
 
-        t = Transforms.nnf();
+        t = Transforms.Companion.nnf();
         e = t.transform(e);
         System.err.println(e);
 

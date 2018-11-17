@@ -6,24 +6,19 @@ import com.tms.csp.util.varSets.VarSet
 
 class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), Cube {
 
-    var dc: DynCube? = null
+    var _dc: DynCube? = null
 
     val c: DynCube
         get() {
-            if (dc == null) {
-                dc = DynCube(space, args)
+            if (_dc == null) {
+                _dc = DynCube(space, _args)
             }
-            return dc!!
+            return _dc!!
         }
 
     init {
-        assert(args.isNotEmpty())
-        assert(Exp.isAllLits(args))
+        assert(Exp.isAllLits(_args))
     }
-
-
-
-
 
 
     override val vars: VarSet
@@ -138,55 +133,12 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
         return c.getInt32Value(intVarPrefix)
     }
 
-    override fun asCube(): Cube = this
-
-    override fun asCubeExp(): CubeExp = this
-
-    override fun isCubeExp(): Boolean = true
-
-    override fun argIt(): Iterable<Exp> {
-        return super<DAnd>.argIt()
-    }
-
-    override val size: Int
-        get() {
-            return arg.size
-        }
-
-    override fun asLitSet(): Set<Lit> {
-        return litIt().toSet()
-    }
-
-    override fun getOp(): Op {
-        return Op.Cube
-    }
-
-    override fun isCube(): Boolean {
-        return true
-    }
-
-    override fun toString(): String = super<DAnd>.toString()
+    override fun asLitSet(): Set<Lit> = litIt().toSet()
 
 
-    override fun argIter(): Iterator<Exp> {
-        return super<DAnd>.argIter()
-    }
+    override val op: Op get() = Op.Cube
 
-    override fun getArgCount(): Int {
-        return args.size
-    }
-
-    override fun size(): Int {
-        return argCount
-    }
-
-    override fun isNary(): Boolean {
-        return argCount() > 2
-    }
-
-    override fun satCountPL(): Long {
-        return 1
-    }
+    override val satCountPL: Long get() = 1
 }
 
 

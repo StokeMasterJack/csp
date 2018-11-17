@@ -41,7 +41,7 @@ class Condition(val on: Any) {
             else -> throw IllegalStateException()
         }
 
-        if (conditioned !== constraint && Space.config.logCondition2) {
+        if (conditioned !== constraint && Space.config.log.condition) {
             println("Conditioned: $constraint")
             println("     on: $on")
             println("     to: $conditioned")

@@ -288,7 +288,7 @@ public class Space extends SpaceUtil implements PLConstants {
 
 
     public Exp mkNot(Exp pos) {
-        return pos.flip();
+        return pos.getFlip();
     }
 
     public Exp pushNotsIn(Not exp) {
@@ -370,7 +370,7 @@ public class Space extends SpaceUtil implements PLConstants {
         if (sign) {
             return mkTrue();
         } else {
-            return mkTrue().flip();
+            return mkTrue().getFlip();
         }
     }
 
@@ -508,7 +508,7 @@ public class Space extends SpaceUtil implements PLConstants {
      * @return
      */
     public Exp mkFormula(Iterable<Exp> args) {
-        assert Exp.isAllComplex(args);
+        assert Exp.Companion.isAllComplex(args);
         return expFactory.mkFormula(args);
     }
 
@@ -534,8 +534,11 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Exp mkCube(final Lit lit1, final Lit lit2) {
-        if (lit1.vr == lit2.vr) {
-            if (lit1.sign == lit2.sign) {
+
+
+
+        if (lit1.sameVar(lit2)) {
+            if (lit1.sameSign(lit2)) {
                 return lit2;
             } else {
                 return mkFalse();
@@ -580,7 +583,7 @@ public class Space extends SpaceUtil implements PLConstants {
     }
 
     public Exp mkCube(Iterable<Exp> args) {
-        assert (Exp.isAllLits(args));
+        assert (Exp.Companion.isAllLits(args));
         return expFactory.argBuilder(Op.Cube).addExpIt(args).mk();
     }
 
@@ -658,7 +661,7 @@ public class Space extends SpaceUtil implements PLConstants {
             } else if (arg.isConstantFalse()) {
                 //skip
             } else if (arg.isOr()) {
-                collectOrArgs(arg.argIt(), b);
+                collectOrArgs(arg.getArgIt(), b);
             } else {
                 b.add(arg);
             }
@@ -716,7 +719,7 @@ public class Space extends SpaceUtil implements PLConstants {
         Set<Exp> lits = getLitsForInt32(int32Value, int32VarPrefix);
         DynCube cube = new DynCube(this);
         for (Exp lit : lits) {
-            cube.assign(lit.asLit());
+            cube.assign(lit.getAsLit());
         }
         return cube;
     }
@@ -984,7 +987,7 @@ public class Space extends SpaceUtil implements PLConstants {
     public Set<String> toLitCodes(Iterator<? extends Exp> litIterator) {
         ImmutableSet.Builder<String> b = ImmutableSet.builder();
         while (litIterator.hasNext()) {
-            Lit lit = litIterator.next().asLit();
+            Lit lit = litIterator.next().getAsLit();
             b.add(lit.toString());
         }
         return b.build();
@@ -1680,7 +1683,7 @@ public class Space extends SpaceUtil implements PLConstants {
         if (varCodes == null || varCodes.length == 0) return ImmutableSet.of();
         ImmutableSet.Builder<Var> b = ImmutableSet.builder();
         for (String varCode : varCodes) {
-            String code = Head.getVarCode(varCode);
+            String code = Head.Companion.getVarCode(varCode);
             Var dVar = getVar(code);
             b.add(dVar);
         }

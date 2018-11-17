@@ -55,7 +55,7 @@ public class TundraCfgTest extends CspBaseTest2 {
         int dnnfSize = tinyDnnf.length();
         System.err.println("dnnfSize[" + dnnfSize + "]");
 
-        Exp nnn = Exp.parseTinyDnnf(tinyDnnf);
+        Exp nnn = Exp.Companion.parseTinyDnnf(tinyDnnf);
         assertEquals(2635956486144L, nnn.getSatCountLong());
 
 
@@ -79,7 +79,7 @@ public class TundraCfgTest extends CspBaseTest2 {
 
         writeText("tundra/fact-invClob.cfg.dnnf.txt", tinyDnnf);
 
-        Exp nnn = Exp.parseTinyDnnf(tinyDnnf);
+        Exp nnn = Exp.Companion.parseTinyDnnf(tinyDnnf);
         BigInteger satCount = nnn.getSatCount();
         System.err.println("satCount[" + satCount + "]");
 //        assertEquals(23114496L, satCount);

@@ -12,7 +12,7 @@ import static com.tms.csp.ssutil.Console.prindent;
 public class ExpSetOld extends AbstractList<Exp> implements PLConstants {
 
     public static final ExpSetOld EMPTY = new ExpSetOld();
-    public static final Comparator<Exp> SORT = Exp.COMPARATOR_BY_EXP_ID;
+//    public static final Comparator<Exp> SORT = Exp.COMPARATOR_BY_EXP_ID;
 
     public final Exp[] args;
 
@@ -112,7 +112,7 @@ public class ExpSetOld extends AbstractList<Exp> implements PLConstants {
 
     public static Exp[] fixArgs(Exp[] args) {
         checkNotNull(args);
-        Arrays.sort(args, Exp.COMPARATOR_BY_EXP_ID);
+//        Arrays.sort(args, Exp.COMPARATOR_BY_EXP_ID);
 
         //any null array element to be removed
         //any dup array element to be set to null
@@ -264,11 +264,11 @@ public class ExpSetOld extends AbstractList<Exp> implements PLConstants {
     }
 
     public static void serializeArgs(Ser a, List<Exp> args) {
-        Exp.serializeArgs(a, args);
+        Exp.Companion.serializeArgs(a, args);
     }
 
     public static void serializeArgList(Ser a, List<Exp> args) {
-        Exp.serializeArgList(a, args);
+        Exp.Companion.serializeArgList(a, args);
     }
 
 

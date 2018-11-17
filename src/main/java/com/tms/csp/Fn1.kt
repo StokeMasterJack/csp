@@ -52,7 +52,7 @@ object VarTo {
     val pLit: (Var) -> Lit = lit(true)
     val nLit: (Var) -> Lit = lit(false)
 
-    fun exp(sign: Boolean): (Var) -> Exp = { it.lit(sign).asExp() }
+    fun exp(sign: Boolean): (Var) -> Exp = { it.lit(sign) }
     val pExp: (Var) -> Exp = exp(true)
     val nExp: (Var) -> Exp = exp(false)
 
@@ -110,9 +110,9 @@ object Fn {
     fun condition(sLits: String): ExpFn = { arg: Exp -> arg.condition(sLits) }
 
 
-    val expToLit: (Exp) -> Lit = { it.asLit() }
+    val expToLit: (Exp) -> Lit = { it.asLit }
 
-    val flipper: (Exp) -> Exp = { it.flip() }
+    val flipper: (Exp) -> Exp = { it.flip }
 
     @JvmStatic
     fun <T, R> toJvmFunction(ff: (T) -> R) = java.util.function.Function<T, R> { ff(it) }
@@ -128,7 +128,7 @@ class EntryToExp : (Entry) -> Exp {
 }
 
 class EntryToLit : (Entry) -> Lit {
-    override operator fun invoke(entry: Entry): Lit = entry.value().asLit()
+    override operator fun invoke(entry: Entry): Lit = entry.value().asLit
 }
 
 
@@ -170,10 +170,10 @@ object ExpArrayTo {
     fun expIt(a: Array<out Exp>): Iterable<Exp> = ArrayTo.it(a)
 
     @JvmStatic
-    fun litIter(a: Array<Exp>): Iterator<Lit> = ArrayTo.iter(a) { it.asLit() }
+    fun litIter(a: Array<Exp>): Iterator<Lit> = ArrayTo.iter(a) { it.asLit }
 
     @JvmStatic
-    fun litIt(a: Array<Exp>): Iterable<Lit> = ArrayTo.it(a) { it.asLit() }
+    fun litIt(a: Array<Exp>): Iterable<Lit> = ArrayTo.it(a) { it.asLit }
 
 
 }
@@ -210,6 +210,10 @@ enum class ContentModel {
     AllLits, AllComplex, Mixed, Empty, Unknown
 }
 
+
+
+
+
 enum class Structure {
 
     Dnnf, Disjoint, Fcc, Unknown;
@@ -223,7 +227,6 @@ enum class Structure {
 
 
 }
-
 
 
 

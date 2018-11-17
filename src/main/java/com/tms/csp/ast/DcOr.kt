@@ -14,15 +14,17 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
     private var value: Int? = null  //for counting graph
 
+    private val _args: List<Exp> = listOf(_vr.nLit(), _vr.pLit())
+
 //    private val cubes2 = ImmutableSet.of(
-//            _vr.nLit().asCube(),
-//            _vr.pLit().asCube()
+//            _vr.nLit().asCube,
+//            _vr.pLit().asCube
 //    )
 
-    private val cubes by lazy {
+    override val cubes by lazy {
         ImmutableSet.of(
-                _vr.nLit().asCube(),
-                _vr.pLit().asCube()
+                _vr.nLit().asCube,
+                _vr.pLit().asCube
         )
     }
 
@@ -30,30 +32,34 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
         _isNew = false;
     }
 
-    override fun isNew(): Boolean = _isNew
+    override val isNew: Boolean get() = _isNew
 
-    private val args = listOf<Exp>(_vr.nLit(), _vr.pLit())
+//    private val args = listOf<Exp>(_vr.nLit(), _vr.pLit())
 
 
-    override fun isPos(): Boolean = true
+    override val isPos: Boolean get() = true
 
-    override fun getPos(): Exp = this
 
-    override fun getArgCount(): Int = 2
+    override val vr: Var get() = _vr
 
-    override fun hasFlip(): Boolean = false
 
-    override fun getFirstVar(): Var = _vr
 
-    override fun isDnnf(): Boolean = true
+    override val pos: Exp get() = this
+
+    override val argCount: Int get() = 2
+
+    override val hasFlip: Boolean get() = false
+
+    override val firstVar: Var get() = _vr
+
+    override val isDnnf: Boolean get() = true
 
     override fun checkDnnf(): Boolean = true
 
-    override fun getPosOp() = PLConstants.PosOp.OR
+    override val posOp = PLConstants.PosOp.OR
 
-    override fun isComplex(): Boolean = true
+    override val isComplex: Boolean get() = true
 
-    override fun isOr(): Boolean = true
 
     override fun computeCubesSmooth(): Set<Cube> = cubes
 
@@ -68,29 +74,25 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 //
 //    override val cubesSmooth: Set<Cube> get() = cubes
 
-    override fun getCubesRough(): Set<Cube> = cubes
+    override val cubesRough: Set<Cube> get() = cubes
 
-    override fun getCubesSmooth(): Set<Cube> = cubes
+    override val cubesSmooth: Set<Cube> get() = cubes
 
-    override fun getArg(i: Int): Exp = when (i) {
-        0 -> _vr.nLit()
-        1 -> _vr.pLit()
-        else -> throw IllegalStateException()
-    }
+    override fun getArg(index: Int): Exp = _args[index]
 
-    override fun condition(c: Cube): Exp {
-                return if (c.containsVar(_vr)) {
-                        mkTrue()
+    override fun condition(ctx: Cube): Exp {
+        return if (ctx.containsVar(_vr)) {
+            mkTrue()
         } else {
-                        this
+            this
         }
     }
 
     override fun condition(lit: Lit): Exp {
-                return if (lit.varId == _vr.varId) {
-                        mkTrue()
+        return if (lit.varId == _vr.vrId) {
+            mkTrue()
         } else {
-                        this
+            this
         }
     }
 
@@ -101,19 +103,17 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
         return a.toString()
     }
 
-    override fun serialize(aa: Ser) {
-        val token = getPosComplexOpToken(aa)
-        aa.append(token)
-        aa.append(PLConstants.LPAREN)
-        arg1.serialize(aa)
-        aa.argSep()
-        arg2.serialize(aa)
-        aa.append(PLConstants.RPAREN)
+    override fun serialize(a: Ser) {
+        val token = getPosComplexOpToken(a)
+        a.append(token)
+        a.append(PLConstants.LPAREN)
+        arg1.serialize(a)
+        a.argSep()
+        arg2.serialize(a)
+        a.append(PLConstants.RPAREN)
     }
 
-    override fun isDcOr(): Boolean = true
-
-    override fun isSat(): Boolean = true
+    override val isSat: Boolean get() = true
 
     override fun copyToOtherSpace(destSpace: Space): Exp {
         if (_vr.space === destSpace) return this
@@ -122,35 +122,22 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
         return destVar.mkDcOr()
     }
 
-    override fun getVarCode(): String = _vr.varCode
+    override val varCode: String get() = _vr.varCode
 
-    override fun getVr(): Var = _vr
+//    override fun getVr(): Var = _vr
 
-    override fun argIt(): Iterable<Exp> {
-        return Iterable { argIter() }
-    }
 
-    override fun argIter(): Iterator<Exp> {
-        return args.iterator()
-    }
-
-    override fun isDOr(): Boolean = true
+    override val argIter: Iterator<Exp> get() = _args.iterator()
 
     override fun serializeTinyDnnf(a: Ser) {
-        val arg1NodeId = arg1.getExpId()
-        val arg2NodeId = arg2.getExpId()
+        val arg1NodeId = arg1.expId
+        val arg2NodeId = arg2.expId
         a.append('O')
         a.append(' ')
         a.append(arg1NodeId)
         a.append(' ')
         a.append(arg2NodeId)
     }
-
-
-    override fun getArgs(): List<Exp> {
-        return args
-    }
-
 
     override fun computeSat(lit: Lit) = true
 
@@ -181,19 +168,8 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
         return this.value!!
     }
 
-    override fun asDcOr(): DcOr {
-        return this
-    }
+    override val isSmooth: Boolean get() = true
 
-
-    override fun _setIsSmooth() {
-        super._setIsSmooth()
-    }
-
-    override fun isSmooth(): Boolean = true
-
-    override fun getSmooth(): Exp {
-        return this;
-    }
+    override val smooth: Exp get() = this
 }
 

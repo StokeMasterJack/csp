@@ -27,6 +27,10 @@ class CompareBB {
 
     //  4/28/2014  56m 51s
     //  11/14/2018 3m 14s
+    //  5m 35s for just csp.BB:
+    //  4m 10s
+    //  all: 3m 44s
+    //     just csp.BB: csp.BB: 3.4m
     @Test
     fun compareBB_efcOriginal() {
         if (TestConfig.runSlowTests) {

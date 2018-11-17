@@ -56,7 +56,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
         int dnnfSize = tiny.length();
         System.err.println("dnnfSize[" + dnnfSize + "]");
 
-        Exp nnn = Exp.parseTinyDnnf(tiny);
+        Exp nnn = Exp.Companion.parseTinyDnnf(tiny);
         assertEquals(expectedSatCount, nnn.getSatCount());
 
     }
@@ -105,7 +105,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
 //        int dnnfSize = tiny.length();
 //        System.err.println("dnnfSize[" + dnnfSize + "]");
 
-        Exp nnn = Exp.parseTinyDnnf(tiny);
+        Exp nnn = Exp.Companion.parseTinyDnnf(tiny);
         tt.t("parseTinyDnnf");
 
         satCount = nnn.getSatCount();

@@ -51,13 +51,13 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
                 if (n.isFalse) {
                     //                    System.err.println("XorSplit.toDnnf - skip");
                     //skip
-                } else if (n.isTrue()) {
+                } else if (n.isTrue) {
                     //                    System.err.println("XorSplit.toDnnf - true");
                     return space.mkTrue()
                 } else {
                     //                    System.err.println("XorSplit.toDnnf - open");
-                    assert(n.isOpen())
-                    assert(n.isDnnf())
+                    assert(n.isOpen)
+                    assert(n.isDnnf)
                     b.addExp(n)
                 }
             } catch (e: ConflictingAssignmentException) {

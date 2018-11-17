@@ -33,7 +33,7 @@ public class Solutions extends AbstractCubeSet {
         int solutionCubesSize = solutionCubes.size();
         assert solutionCubesSize >= 0;
 
-        int dcPermCount = Exp.computeDcPermCount(dcVars.size());
+        int dcPermCount = Exp.Companion.computeDcPermCount(dcVars.size());
         assert dcPermCount >= 0;
 
         this.size = solutionCubesSize * dcPermCount;

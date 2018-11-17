@@ -43,7 +43,7 @@ public class EfcTest extends CspBaseTest {
     public void loadToNnf() throws Exception {
 
         Csp csp = Csp.parse(CspSample.EfcOriginal);
-        csp.transform(Transformer.NNF);
+        csp.transform(Transformer.Companion.getNNF());
     }
 
     @Test

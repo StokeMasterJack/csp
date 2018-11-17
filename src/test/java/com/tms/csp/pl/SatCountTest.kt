@@ -3,6 +3,8 @@ package com.tms.csp.pl
 import com.tms.csp.ast.Csp
 import com.tms.csp.ast.Exp
 import com.tms.csp.data.CspSample
+import com.tms.csp.ssutil.Console.prindent
+import com.tms.csp.ssutil.Strings
 import com.tms.csp.ssutil.millis
 import com.tms.csp.ssutil.tt
 import kotlin.test.Test
@@ -176,6 +178,7 @@ Processing Tundra:
     //9s
     //8.8
     //49 wo toDnnfTopXorSplit before fcc
+    //8.7 s
     @Test
     fun testAllCompileAndSatCount() {
         CspSample.allPL.forEach {
@@ -192,4 +195,21 @@ Processing Tundra:
         }
     }
 
+    @Test
+    fun testCompileAndSatCountEfcOnly() {
+        CspSample.EfcOriginal.let {
+            val name = it.name
+            prindent(0, "Processing $name")
+            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+            assertEquals(it.expectedSatCount, satCount)
+
+            smooth.printNodeInfo(1)
+        }
+    }
+
 }
+

@@ -137,7 +137,7 @@ public class TundraSitTest extends CspBaseTest2 {
 
             String tinyDnnf2 = loadText("/Users/dford/temp/csp/tundra/fact-invClob.sit.dnnf.txt");
 
-            Exp rootDNode = Exp.parseTinyDnnf(tinyDnnf2);
+            Exp rootDNode = Exp.Companion.parseTinyDnnf(tinyDnnf2);
 
 
 //            BigInteger satCount = rootDNode.getSatCount();
@@ -176,7 +176,7 @@ public class TundraSitTest extends CspBaseTest2 {
 
         String tinyDnnf2 = loadText("/Users/dford/temp/csp/tundra/fact-invClob.sit.dnnf.txt");
 
-        Exp rootDNode = Exp.parseTinyDnnf(tinyDnnf2);
+        Exp rootDNode = Exp.Companion.parseTinyDnnf(tinyDnnf2);
 
         BigInteger satCount = rootDNode.getSatCount();
         System.err.println("satCount[" + satCount + "]");
@@ -210,7 +210,7 @@ public class TundraSitTest extends CspBaseTest2 {
 
         String dClob = loadResource(this, "fact-invClob.sit.varPer.dnnf.txt");
 
-        Exp d = Exp.parseTinyDnnf(dClob);
+        Exp d = Exp.Companion.parseTinyDnnf(dClob);
         Space space = d.getSpace();
 
         VarSet dealerVars = space.getVars("DLR");

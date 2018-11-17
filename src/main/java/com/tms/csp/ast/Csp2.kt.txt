@@ -163,7 +163,7 @@ class Csp2 @JvmOverloads constructor(
     fun containsConstraint(e: Exp): Boolean {
         return if (e.isSimple) {
             if (simple != null) {
-                simple!!.containsLit(e.asLit())
+                simple!!.containsLit(e.asLit)
             } else {
                 false
             }
@@ -265,7 +265,7 @@ class Csp2 @JvmOverloads constructor(
             failCspFalseConstraintAdded()
             true;
         } else if (constraint.isLit) {
-            assign(constraint.asLit())
+            assign(constraint.asLit)
         }
 /*
         else if (constraint.isNot) {
@@ -699,14 +699,14 @@ class Csp2 @JvmOverloads constructor(
         System.err.println("**** addConstraint-Imp")
         val arg1 = imp.arg1
         val arg2 = imp.arg2
-        addBinaryOr(arg1.flip(), arg2)
+        addBinaryOr(arg1.flip, arg2)
     }
 
     fun addConstraint(rmp: Rmp) {
         System.err.println("**** addConstraint-Rmp")
         val arg1 = rmp.arg1
         val arg2 = rmp.arg2
-        addBinaryOr(arg1, arg2.flip())
+        addBinaryOr(arg1, arg2.flip)
     }
 
     fun addConstraint(iff: Iff) {
@@ -719,12 +719,12 @@ class Csp2 @JvmOverloads constructor(
 
     fun addImp(arg1: Exp, arg2: Exp) {
         System.err.println("**** addImp")
-        addBinaryOr(arg1.flip(), arg2)
+        addBinaryOr(arg1.flip, arg2)
     }
 
     fun addRmp(arg1: Exp, arg2: Exp) {
         System.err.println("**** addRmp")
-        addBinaryOr(arg1, arg2.flip())
+        addBinaryOr(arg1, arg2.flip)
     }
 
     fun addIff(arg1: Exp, arg2: Exp) {
@@ -757,12 +757,12 @@ class Csp2 @JvmOverloads constructor(
         }
 
         if (arg1.isFalse && arg2.isOpen) {
-            addConstraint(arg2.flip())
+            addConstraint(arg2.flip)
             return
         }
 
         if (arg1.isOpen && arg2.isFalse) {
-            addConstraint(arg1.flip())
+            addConstraint(arg1.flip)
             return
         }
 
@@ -783,7 +783,7 @@ class Csp2 @JvmOverloads constructor(
             return
         }
 
-        if (arg1 === arg2.flip()) {
+        if (arg1 === arg2.flip) {
             return
         }
 
@@ -1710,7 +1710,7 @@ class Csp2 @JvmOverloads constructor(
             }
             val arg = xor.getArg(0)
             if (arg.isVarWithPrefix(prefix)) {
-                return xor.asXor()
+                return xor.asXor
             }
         }
         return null
@@ -2036,7 +2036,7 @@ class Csp2 @JvmOverloads constructor(
         return if (simple.isNullOrEmpty) {
             false
         } else {
-            val ch = simple!!.removeLit(lit.asLit())
+            val ch = simple!!.removeLit(lit.asLit)
             if (simple!!.isEmpty) {
                 simple = null
             }

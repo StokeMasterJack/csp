@@ -12,7 +12,7 @@ class FccTest : CspBaseTest2() {
     fun testFccsWithOnTundra1() {
         val csp = Csp.parse(CspSample.Tundra)
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
         val fccs = formula.computeComplexFccs2() ?: throw IllegalStateException()
 
 
@@ -30,7 +30,7 @@ class FccTest : CspBaseTest2() {
 
         val csp = Csp.parse(CspSample.EfcOriginal)
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
         val fccs = formula.computeComplexFccs2()
 
         assertNull(fccs)
@@ -41,7 +41,7 @@ class FccTest : CspBaseTest2() {
     fun testFccsWithOnTundra() {
         val csp = Csp.parse(CspSample.Tundra)
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
         val fccs = formula.complexFccs ?: throw IllegalStateException()
 
         assertTrue(fccs.isDAnd)
@@ -59,7 +59,7 @@ class FccTest : CspBaseTest2() {
     fun testFccsWithOnCamry() {
         val csp = Csp.parse(CspSample.Camry2011Dc)
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
         val fccs = formula.complexFccs ?: throw IllegalStateException()
 
         assertTrue(fccs.isDAnd)
@@ -78,7 +78,7 @@ class FccTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.Camry2011Dc)
 
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
         val fccs = formula.complexFccs ?: throw IllegalStateException()
 
         assertTrue(fccs.isDAnd)
@@ -87,10 +87,10 @@ class FccTest : CspBaseTest2() {
 
         val se = fccs.getFirstConjunctContaining("SE")
 
-        println(se.simpleName)
+//        println(se!!.simpleName)
 
         System.err.println(se)
-        System.err.println("se[" + se.javaClass.name + "]")
+        System.err.println("se[" + se!!.simpleName + "]")
 
 
 
@@ -104,7 +104,7 @@ class FccTest : CspBaseTest2() {
 //
 //        assertEquals(4, fccs.size());
 //
-//        Formula v6 = fccs.getFirstConjunctContaining("V6").asFormula();
+//        Formula v6 = fccs.getFirstConjunctContaining("V6").asFormula;
 //        csp = v6.refine("V6");
 //
 //        formula = csp.getFormula();

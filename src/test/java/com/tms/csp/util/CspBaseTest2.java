@@ -213,7 +213,7 @@ public class CspBaseTest2 extends CspBaseTest {
     @Nonnull
     public Exp loadDnnfEfc() {
         String tiny = loadResource(efcOriginalDnnf);
-        return Exp.compileDnnf(tiny);
+        return Exp.Companion.compileDnnf(tiny);
     }
 
     public Exp loadDnnfTundra() {
@@ -260,7 +260,7 @@ public class CspBaseTest2 extends CspBaseTest {
 
     protected Dnnf loadCspEfc() {
         String clob = loadResource(efcOriginalDnnf);
-        Exp n = Exp.parseTinyDnnf(clob);
+        Exp n = Exp.Companion.parseTinyDnnf(clob);
         return new Dnnf(n);
     }
 

@@ -10,7 +10,7 @@ public final class Assignment {
     private final List<Cause> f = new ArrayList<Cause>();
 
     public Assignment(Lit lit, Cause cause) {
-        this.var = lit.vr;
+        this.var = lit.getVr();
         if (lit.isPos()) t.add(cause);
         else f.add(cause);
     }

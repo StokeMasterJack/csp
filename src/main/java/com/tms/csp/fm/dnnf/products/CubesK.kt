@@ -24,7 +24,7 @@ object CubesK {
 
     fun DynCube.createExpArray(): Array<Exp> {
 
-        val selector = KExp.selector
+        val selector = Exp.selector
 
         val aa: Array<Exp> = arrayOfNulls<Exp?>(size).run {
             litExpIt.forEachIndexed { index, exp ->
@@ -51,7 +51,7 @@ object CubesK {
                     vr.lit(false)
                 } else {
                     assert(t.size == 1)
-                    assert(t.firstVar.varId == vr.varId)
+                    assert(t.firstVar.vrId == vr.vrId)
                     vr.lit(true)
                 }
             }

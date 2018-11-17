@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.tms.csp.ast.PLConstants.*;
 
 public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstants {
 
@@ -168,6 +169,10 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
     public int getVarId() {
         assert (varId >= MIN_VAR_ID) : "Bad varId[" + varId + "]";
         return varId;
+    }
+
+    public int getVrId() {
+        return getVarId();
     }
 
     public int getVarIndex() {
@@ -526,7 +531,7 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
     public VarSet getAllXorSiblingsOld() {
         assert isXorChild();
         Xor xorParent = getXorParentInitial();
-        List<Exp> args = xorParent.getArgs();
+        Iterable<Exp> args = xorParent.getArgs();
 
         VarSetBuilder b = getSpace().newMutableVarSet();
         for (Exp arg : args) {

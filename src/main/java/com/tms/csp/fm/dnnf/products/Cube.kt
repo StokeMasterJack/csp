@@ -54,7 +54,7 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
 
     fun containsLit(varId: Int, sign: Boolean): Boolean
 
-    fun containsLit(vr: Var, sign: Boolean): Boolean = containsLit(vr.getVarId(), sign)
+    fun containsLit(vr: Var, sign: Boolean): Boolean = containsLit(vr.vrId, sign)
 
     fun containsLit(lit: Lit): Boolean
 
@@ -64,8 +64,8 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
 
     val lits: Iterable<Lit> get() = litIt()
 
-    fun argIt(): Iterable<Exp> = ItTo.it(litIt()) { it.asExp() }
-    fun argIter(): Iterator<Exp> = IterTo.iter(litIterator()) { it.asExp() }
+    fun argIt(): Iterable<Exp> = ItTo.it(litIt()) { it as Exp }
+    fun argIter(): Iterator<Exp> = IterTo.iter(litIterator()) { it as Exp}
 
 
     fun serialize(a: Ser, sep: Char)
@@ -83,7 +83,7 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
     fun trueVarIterator(): Iterator<Var>
 
 
-    fun getValue(`var`: Var): Bit
+    fun getValue(vr: Var): Bit
 
     fun asLitSet(): Set<Lit>
 

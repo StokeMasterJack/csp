@@ -91,7 +91,7 @@ public class Solution extends AbstractCubeSet {
 
     public void forEach(CubeHandler ph) {
         int dcCount = dcVars.size();
-        long dcPermCount = Exp.computeDcPermCount(dcCount);
+        long dcPermCount = Exp.Companion.computeDcPermCount(dcCount);
         for (int dcPerm = 0; dcPerm < dcPermCount; dcPerm++) {
             DcPermCube p = new DcPermCube(this, dcPerm);
             ph.onCube(p);

@@ -437,7 +437,7 @@ class MinFCardTest {
         tt.t("load")
         val csp = Csp.parse(clob)
         tt.t("parse")
-        val n = csp.toDnnf().getSmooth()
+        val n = csp.toDnnf().smooth
         tt.t("compile")
 
         println("csp.vars.size = ${csp.vars.size}")

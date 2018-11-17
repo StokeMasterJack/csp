@@ -130,13 +130,13 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
         if (e.isAnd) throw IllegalArgumentException("Ands should be added at the csp level")
 
 //        val beforeSize = args?.size() ?: 0
-        val old = mkArgs.put(e.getExpId(), e)
+        val old = mkArgs.put(e.expId, e)
         val ch = old == null
         return if (!ch) {
             assert(old!!.expId == e.expId)
             //            System.err.println("Put Error:");
-            //            System.err.println("  new: " + e.getExpId() + ": " + e);
-            //            System.err.println("  old: " + old.getExpId() + ": " + old);
+            //            System.err.println("  new: " + e.expId + ": " + e);
+            //            System.err.println("  old: " + old.expId + ": " + old);
             //            boolean sameSpace1 = e.getSpace() == old.getSpace();
             //            boolean sameSpace2 = getSpace() == old.getSpace();
             //            System.err.println("  sameSpace1[" + sameSpace1 + "]");
@@ -188,7 +188,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 //        return if (args == null) {
 //            false
 //        } else {
-//            val expId = arg.getExpId()
+//            val expId = arg.expId
 //            val removed: Exp? = args!!.remove(expId)
 //            val ch = removed != null
 //            if (ch) {

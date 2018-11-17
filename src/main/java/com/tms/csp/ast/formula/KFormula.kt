@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap
 import com.tms.csp.Structure
 import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.ast.*
+import com.tms.csp.ast.PLConstants.*
 import com.tms.csp.util.varSets.VarSet
 import java.util.*
 
@@ -34,7 +35,8 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     private var fVars: FVars? = null
 
     private var dnnf: Exp? = null
-    private var bb: DynCube? = null
+
+    private var _bb: DynCube? = null
 
     init {
 //        println("init: $fcc")
@@ -45,7 +47,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             XorCounts.getMax(this)
         } else {
             val xors = getXorConstraints()
-            if (xors.isEmpty()) null else xors.get(0).asXor()
+            if (xors.isEmpty()) null else xors.get(0).asXor
         }
     }
 
@@ -84,58 +86,71 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getXorConstraints(): List<Exp> {
-        return Csp.getXorConstraints(argIt())
+        return Csp.getXorConstraints(argIt)
+    }
+
+    /**
+     * Active:
+     *      lit -> lit
+     *      lit -> cube
+     *      lit -> !or(all lits)
+     *
+     *      !or(a b c) is equiv to and(!a !b !c)
+     */
+    fun findAllActiveConstraints() {
+
     }
 
 
-    override fun satCountPL(): Long {
+    override val satCountPL: Long
+        get() {
 
-        fun topXorSplitSatCount(): Long? {
+            fun topXorSplitSatCount(): Long? {
 
-            val xor: Xor? = getTopXorSplit()
-            return if (xor != null) {
-                val split = XorSplit(this, xor.asXor())
-                split.plSatCount()
-            } else {
-                null
+                val xor: Xor? = getTopXorSplit()
+                return if (xor != null) {
+                    val split = XorSplit(this, xor.asXor)
+                    split.plSatCount()
+                } else {
+                    null
+                }
+
             }
 
-        }
-
-        fun bestXorSplitSatCount(): Long? {
-            val xor1: Xor? = getBestXorSplit()
-            return if (xor1 != null) {
-                val split = XorSplit(this, xor1.asXor())
-                split.plSatCount()
-            } else {
-                null
-            }
-        }
-
-        fun decisionSplitSatCount(): Long {
-            val decisionVar: Var = decide()
-            val split = FormulaSplit(this, decisionVar)
-            return split.plSatCount()
-        }
-
-        fun satCount(): Long {
-            val sc1 = topXorSplitSatCount()
-            if (sc1 != null) {
-                return sc1
+            fun bestXorSplitSatCount(): Long? {
+                val xor1: Xor? = getBestXorSplit()
+                return if (xor1 != null) {
+                    val split = XorSplit(this, xor1.asXor)
+                    split.plSatCount()
+                } else {
+                    null
+                }
             }
 
-
-            val sc2 = bestXorSplitSatCount()
-            if (sc2 != null) {
-                return sc2
+            fun decisionSplitSatCount(): Long {
+                val decisionVar: Var = decide()
+                val split = FormulaSplit(this, decisionVar)
+                return split.plSatCount()
             }
 
-            val sc3 = decisionSplitSatCount();
-            return sc3;
-        }
+            fun satCount(): Long {
+                val sc1 = topXorSplitSatCount()
+                if (sc1 != null) {
+                    return sc1
+                }
 
 
-        return satCount()
+                val sc2 = bestXorSplitSatCount()
+                if (sc2 != null) {
+                    return sc2
+                }
+
+                val sc3 = decisionSplitSatCount();
+                return sc3;
+            }
+
+
+            return satCount()
 
 //
 //        val satCountWithDc = if (parentVars.isNullOrEmpty()) {
@@ -149,7 +164,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 //        return satCountWithDc
 
 
-    }
+        }
 
 
     override fun computeIsSat(): Boolean {
@@ -173,6 +188,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     private fun toDnnfTopXorSplit(): Exp? {
         val xor = getTopXorSplit()
         return if (xor != null) {
+//            println("topXorSplit[${xor.prefix}]..")
             xorSplitToDnnf(xor)
         } else {
             null
@@ -183,6 +199,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     private fun toDnnfBestXorSplit(): Exp? {
         val xor = getBestXorSplit()
         return if (xor != null) {
+//            println("bestXorSplit[${xor.prefix}]..")
             xorSplitToDnnf(xor)
         } else {
             null
@@ -190,7 +207,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
     private fun xorSplitToDnnf(xor: Exp): Exp {
-        val split = XorSplit(this, xor.asXor())
+        val split = XorSplit(this, xor.asXor)
         return split.toDnnf()
     }
 
@@ -201,27 +218,27 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getYearXor(): Xor? {
-        return getXor(PLConstants.YR_PREFIX)
+        return getXor(YR_PREFIX)
     }
 
     fun getSeriesXor(): Xor? {
-        return getXor(PLConstants.SER_PREFIX)
+        return getXor(SER_PREFIX)
     }
 
     fun getModelXor(): Xor? {
-        return getXor(PLConstants.MDL_PREFIX)
+        return getXor(MDL_PREFIX)
     }
 
     fun getXColXor(): Xor? {
-        return getXor(PLConstants.XCOL_PREFIX)
+        return getXor(XCOL_PREFIX)
     }
 
     fun getDealerXor(): Xor? {
 
-        for (e in argIt()) {
-            if (e.isXor()) {
+        for (e in argIt) {
+            if (e.isXor) {
                 if (e.hasDealers()) {
-                    return e.asXor()
+                    return e.asXor
                 }
             }
         }
@@ -252,6 +269,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         }
 
         if (fcc == null) {
+//            println("computeComplexFccs..")
             computeComplexFccs()
         }
 
@@ -259,9 +277,11 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
         return if (fcc!!) {
             assert(_fccs == null)
+//            println("fccToDnnf..")
             fccToDnnf()
         } else if (!fcc!!) {
             assert(_fccs != null)
+//            println("fccsToDnnf..")
             fccsToDnnf()
         } else {
             throw IllegalStateException()
@@ -308,9 +328,9 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
 
     fun getXor(xorPrefix: String): Xor? {
-        for (exp in argIt()) {
-            if (exp.isXor && exp.asXor().prefix.equals(xorPrefix, ignoreCase = true)) {
-                return exp.asXor()
+        for (exp in argIt) {
+            if (exp.isXor && exp.asXor.prefix.equals(xorPrefix, ignoreCase = true)) {
+                return exp.asXor
             }
         }
         return null
@@ -323,7 +343,9 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             return bestXorSplit
         }
 
+
         val vr = decide()
+//        println("decide[$vr]..")
         return decisionSplit(vr)
     }
 
@@ -340,9 +362,9 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
-    override fun isDirectlyRelated(index1: Int, index2: Int): Boolean {
-        val complex1 = args[index1]
-        val complex2 = args[index2]
+    override fun isDirectlyRelated(c1: Int, c2: Int): Boolean {
+        val complex1 = _args[c1]
+        val complex2 = _args[c2]
 
         assert(complex1.isComplex)
         assert(complex2.isComplex)
@@ -381,7 +403,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             //            xor = new Xor(xorVars, Integer.MAX_VALUE);
             val exp = _space.mkXor(xorVars)
             if (exp.isXor) {
-                xor = exp.asXor()
+                xor = exp.asXor
             } else {
                 computeBbForNonXorPrefix(xorPrefix, bb)
                 return
@@ -432,19 +454,15 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
         val vars = vars.filter(prefix)
 
-        for (`var` in vars) {
+        for (vr in vars) {
             //            System.err.println("    testing vr[" + vr + "]");
-            val bbLit = proposeBothWays(`var`)
+            val bbLit = proposeBothWays(vr)
             if (bbLit != null) {
                 bb.assign(bbLit)
                 //                System.err.println("bbLit[" + bbLit + "]");
             }
         }
 
-    }
-
-    override fun isFormula(): Boolean {
-        return true
     }
 
 
@@ -503,12 +521,13 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         }
     }
 
-    override fun getBB(): DynCube {
-        if (bb == null) {
-            bb = computeBB()
+    override val bb: DynCube
+        get() {
+            if (_bb == null) {
+                _bb = computeBB()
+            }
+            return _bb!!
         }
-        return bb!!
-    }
 
     private fun proposeBothWays(vr: Var): Lit? {
         val split = FormulaSplit(this, vr)
@@ -616,14 +635,8 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
 
     }
 
-    override fun getOp(): Op {
-        return Op.Formula
-    }
+    override val op: Op get() = Op.Formula
 
 
-    override fun asFormula(): KFormula {
-        return this
-    }
-
-    fun copyArray(): Array<Exp> = args.copyOf()
+    fun copyArray(): Array<Exp> = _args.copyOf()
 }

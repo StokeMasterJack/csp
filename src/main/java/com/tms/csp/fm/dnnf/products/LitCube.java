@@ -34,12 +34,12 @@ public class LitCube extends AbstractCube {
 
     @Override
     public VarSet getVars() {
-        return lit.vr.mkSingletonVarSet();
+        return lit.getVr().mkSingletonVarSet();
     }
 
     @Override
     public Iterator<Var> varIterator() {
-        return Iterators.singletonIterator(lit.vr);
+        return Iterators.singletonIterator(lit.getVr());
     }
 
     @NotNull
@@ -51,7 +51,7 @@ public class LitCube extends AbstractCube {
     @Override
     public VarSet getTrueVars() {
         if (lit.isPos()) {
-            return lit.vr.mkSingletonVarSet();
+            return lit.getVr().mkSingletonVarSet();
         } else {
             return getSpace().mkEmptyVarSet();
         }

@@ -2,6 +2,7 @@ package com.tms.inv
 
 import com.google.common.collect.ImmutableSet
 import com.tms.csp.ast.PLConstants
+import com.tms.csp.ast.PLConstants.*
 import com.tms.csp.ast.Parser
 
 object KInv {

@@ -14,7 +14,7 @@ class AnyIntersectionTest : CspBaseTest2() {
 
         val csp = Csp.parse(CspSample.Camry2011Dc)
 
-        val formula = csp.mkFormula().asFormula()
+        val formula = csp.mkFormula().asFormula
 
         val vars = formula.vars
         System.err.println("formula _complexVars[" + vars.size + "]")

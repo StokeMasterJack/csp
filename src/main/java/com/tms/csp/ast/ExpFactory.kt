@@ -21,7 +21,7 @@ class ExpFactory(val space: Space) {
         val bb = argBuilder(Op.Cube)
         for (vr in vars) {
             val lit = vr.mkNegLit()
-            bb.addExp(lit.asExp())
+            bb.addExp(lit.asExp)
         }
         return bb.mk()
     }
@@ -60,17 +60,17 @@ class ExpFactory(val space: Space) {
             return space.mkTrue()
         }
 
-        if (arg1.getExpId() == arg2.getExpId()) {
+        if (arg1.expId == arg2.expId) {
             System.err.println("arg1[$arg1]")
             System.err.println("arg2[$arg2]")
-            System.err.println("arg1.getExpId()[" + arg1.getExpId() + "]")
-            System.err.println("arg2.getExpId()[" + arg2.getExpId() + "]")
+            System.err.println("arg1.expId[" + arg1.expId + "]")
+            System.err.println("arg2.expId[" + arg2.expId + "]")
             throw IllegalStateException()
         }
 
-        assert(arg1.getExpId() != arg2.getExpId()) { arg1.toString() + " = " + arg2 }
+        assert(arg1.expId != arg2.expId) { arg1.toString() + " = " + arg2 }
 
-        if (arg1 === arg2.flip()) {
+        if (arg1 === arg2.flip) {
             return space.mkFalse()
         }
 
@@ -99,16 +99,16 @@ class ExpFactory(val space: Space) {
         }
 
         if (arg1.isFalse && arg2.isOpen) {
-            return arg2.flip()
+            return arg2.flip
         }
 
         if (arg1.isOpen && arg2.isFalse) {
-            return arg1.flip()
+            return arg1.flip
         }
 
         assert(arg1.isOpen && arg2.isOpen)
         assert(arg1 !== arg2)
-        assert(arg1.flip() !== arg2)
+        assert(arg1.flip !== arg2)
         assert(!arg1.isConstant)
         assert(!arg2.isConstant)
 
@@ -122,13 +122,13 @@ class ExpFactory(val space: Space) {
 
     @JvmOverloads
     fun mkBinaryImp(lhs: Exp, rhs: Exp): Exp {
-        return mkBinaryOr(lhs.flip(), rhs);
+        return mkBinaryOr(lhs.flip, rhs);
     }
 
     @JvmOverloads
     fun mkBinaryNand(a1: Exp, a2: Exp): Exp {
-        val arg1 = a1.flip()
-        val arg2 = a2.flip()
+        val arg1 = a1.flip
+        val arg2 = a2.flip
         return mkBinaryOr(arg1, arg2);
     }
 
@@ -257,7 +257,7 @@ class ExpFactory(val space: Space) {
         val exp = it.next()
         assert(exp.isPosLit)
         assert(!it.hasNext())
-        return exp.asLit().vr.mkDcOr()
+        return exp.asLit.vr.mkDcOr()
     }
 
 
@@ -334,7 +334,7 @@ class ExpFactory(val space: Space) {
             space.mkFalse()
         } else if (arg1 === arg2) {
             arg1
-        } else if (arg1 === arg2.flip()) {
+        } else if (arg1 === arg2.flip) {
             space.mkFalse()
         } else if (arg1.isTrue) {
             arg2
@@ -360,7 +360,7 @@ class ExpFactory(val space: Space) {
             is False -> space.mkFalse();
             is True -> lit
             is Lit -> mkDCubeLitPair(lit, f)
-            is Cube -> mkDAnd(lit, f.asCubeExp())
+            is Cube -> mkDAnd(lit, f.asCubeExp)
             else -> argBuilder(Op.DAnd).addExp(lit).addExp(f).mk()
         }
     }
@@ -372,8 +372,8 @@ class ExpFactory(val space: Space) {
         return when (f) {
             is False -> space.mkFalse();
             is True -> cube
-            is Lit -> mkDAnd(f.asLit(), cube)
-            is CubeExp -> mkDAnd(cube, f.asCubeExp())
+            is Lit -> mkDAnd(f.asLit, cube)
+            is CubeExp -> mkDAnd(cube, f.asCubeExp)
             else -> argBuilder(Op.DAnd).addExp(cube).addExp(f).mk()
         }
     }
@@ -416,12 +416,12 @@ class ExpFactory(val space: Space) {
             c
         } else if (c === f) {
             c
-        } else if (f.hasFlip() && c == f.flip()) {
+        } else if (f.hasFlip && c == f.flip) {
             space.mkFalse()
         } else if (c.isLit) {
-            mkDAnd(c.asLit(), f)
+            mkDAnd(c.asLit, f)
         } else if (f.isLit) {
-            mkDAnd(f.asLit(), c)
+            mkDAnd(f.asLit, c)
         } else {
             val b = argBuilder(Op.DAnd)
             b.addExp(c)
@@ -447,7 +447,7 @@ class ExpFactory(val space: Space) {
             return arg1
         }
 
-        if (arg1 === arg2.flip()) {
+        if (arg1 === arg2.flip) {
             return space.mkTrue()
         }
 
@@ -486,11 +486,11 @@ class ExpFactory(val space: Space) {
 
     fun computeCubesForXor(xor: Xor): Set<Cube> {
         val bb = ImmutableSet.builder<Cube>()
-        val litSet = xor.args.map { it.asLit() }.toSet()
+        val litSet = xor.args.map { it.asLit }.toSet()
         for (lit in litSet) {
             val others = litSet.minus(lit)
             val cc: DynCube = DynCube(space, lit)
-            for (other in others) cc.assignSafe(other.flip().asLit())
+            for (other in others) cc.assignSafe(other.flip.asLit)
             bb.add(cc)
         }
         return bb.build()
@@ -507,7 +507,7 @@ class ExpFactory(val space: Space) {
             when {
                 ss.isFalse -> space.mkFalse()
                 ss.isTrue -> mkCubeExp(cube)
-                ss.isLit -> mkCube(cube, ss.asLit(), Bit.TRUE)
+                ss.isLit -> mkCube(cube, ss.asLit, Bit.TRUE)
                 else -> throw IllegalStateException()
             }
         } else {
@@ -530,7 +530,7 @@ class ExpFactory(val space: Space) {
             arg1
         } else if (arg1 == arg2) {
             arg1
-        } else if (arg1.flip() == arg2) {
+        } else if (arg1.flip == arg2) {
             space.mkTrue()
         } else {
             argBuilder(Op.DOr).addExp(arg1).addExp(arg2).mk()

@@ -84,7 +84,7 @@ class PosComplexSpace(val space: Space) {
             return prev
         }
 
-        val next = prev.getNext()
+        val next = prev.next
 
         if (next == null) {
             val newExpId = nodeCount
@@ -117,7 +117,7 @@ class PosComplexSpace(val space: Space) {
             }
 
             val e1 = it1.next()
-            val e2 = e.args[i]
+            val e2 = e[i]
             if (e1.expId != e2.expId) return false;
         }
         assert(!it1.hasNext())
@@ -165,14 +165,14 @@ class PosComplexSpace(val space: Space) {
             if (i != 0) {
                 val a1 = args[i - 1]
 
-                val expId1 = a1.getExpId()
-                val expId2 = a2.getExpId()
+                val expId1 = a1.expId
+                val expId2 = a2.expId
 
                 if (expId1 == expId2) {
                     throw IllegalStateException(expId1.toString() + " " + expId2)
                 } else if (expId1 > expId2) {
-                    System.err.println("e1: " + a1.getExpId() + ": " + a1)
-                    System.err.println("e2: " + a2.getExpId() + ": " + a2)
+                    System.err.println("e1: " + a1.expId + ": " + a1)
+                    System.err.println("e2: " + a2.expId + ": " + a2)
                     throw IllegalStateException(expId1.toString() + " " + expId2)
                 }
 

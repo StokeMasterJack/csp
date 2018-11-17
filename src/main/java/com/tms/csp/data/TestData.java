@@ -136,7 +136,7 @@ public class TestData {
     }
 
     public static Space loadSpaceNnf(CspSample cspSample) {
-        return loadSpace(cspSample, Transformer.NNF);
+        return loadSpace(cspSample, Transformer.Companion.getNNF());
     }
 
     public static List<String> parseClobIntoLines(String clob) {

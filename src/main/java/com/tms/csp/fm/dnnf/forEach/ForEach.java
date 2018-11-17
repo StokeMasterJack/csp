@@ -159,7 +159,7 @@ public class ForEach implements PLConstants {
 
         VarSet dontCareVars = getDontCareVars();
 
-        long dcPermCount = Exp.computeDcPermCountLong(dontCareVars.size());
+        long dcPermCount = Exp.Companion.computeDcPermCountLong(dontCareVars.size());
 //        return projection.getSatCount() * dcPermCount;
         return projection.getSatCount().multiply(BigInteger.valueOf(dcPermCount));
     }

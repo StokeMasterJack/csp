@@ -1,9 +1,5 @@
 package com.tms.csp.ast
 
-import com.google.common.collect.ImmutableSet
-import com.tms.csp.fm.dnnf.products.Cube
-import com.tms.csp.parse.GlobalTokenizer
-
 /*
 _complexVars(Root,engine,transmission,colorfamily,ICOL_FB13)
 invVars(43 44 46 47 49 61 63 64 65 66 76 79 80 83 92 93 94 96 97 148 149 150 151 153 154 155 162 163 164 165 167 169 170 174 175 178 180 181 182 183 185 186 187 188 189 190 191 192 194 199 200 201 203 204 205 207 208 210 212 213 252 253 254 255 256 257 258 259 260 261)

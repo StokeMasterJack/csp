@@ -1,5 +1,6 @@
 package com.tms.csp.ast
 
+import com.tms.csp.ast.PLConstants.PosOp
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.varSets.VarSet
 import java.math.BigInteger
@@ -13,27 +14,23 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
 
 //    val cubes = emptySet<Cube>()
 
-    override fun isPos(): Boolean = false
+    override val isPos: Boolean get() = false
 
-    override fun getPos(): Exp = throw UnsupportedOperationException()
+    override val pos: Exp get() = throw UnsupportedOperationException()
 
-    override fun getArgCount(): Int = 2
+    override val argCount: Int get() = 2
 
-    override fun hasFlip(): Boolean = false
+    override val hasFlip: Boolean get() = false
 
-    override fun getFirstVar(): Var = lit.vr
+    override val firstVar: Var get() = lit.vr
 
-    override fun isDnnf(): Boolean = true
+    override val isDnnf: Boolean get() = true
 
     override fun checkDnnf(): Boolean = true
 
-    override fun getPosOp() = PLConstants.PosOp.AND
+    override val posOp: PosOp get() = PosOp.AND
 
-    override fun isComplex(): Boolean = true
-
-    override fun isOr(): Boolean = false
-
-    override fun isAnd(): Boolean = true
+    override val isComplex: Boolean get() = true
 
     override fun computeCubesSmooth(): Set<Cube> = cubes
 
@@ -41,7 +38,7 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
 
     override fun computeSatCount(): BigInteger = BigInteger.ZERO
 
-    override fun isSmooth(): Boolean = true
+    override val isSmooth: Boolean get() = true
 
     override val vars: VarSet get() = lit.vars
 
@@ -49,29 +46,29 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
 //
 //    override val cubesSmooth: Set<Cube> get() = cubes
 
-    override fun getCubesRough(): Set<Cube> = cubes
+    override val cubesRough: Set<Cube> get() = cubes
 
-    override fun getCubesSmooth(): Set<Cube> = cubes
+    override val cubesSmooth: Set<Cube> get() = cubes
 
-    override fun getArg(i: Int): Exp = when (i) {
+    override fun getArg(index: Int): Exp = when (index) {
         0 -> lit
         1 -> sp().mkFalse()
         else -> throw IllegalStateException()
     }
 
-    override fun condition(c: Cube): Exp {
-                return if (c.containsVar(_vr)) {
-                        mkFalse()
+    override fun condition(ctx: Cube): Exp {
+        return if (ctx.containsVar(_vr)) {
+            mkFalse()
         } else {
-                        this
+            this
         }
     }
 
     override fun condition(lit: Lit): Exp {
-                return if (lit.varId == _vr.varId){
-                        mkFalse()
+        return if (lit.varId == _vr.vrId) {
+            mkFalse()
         } else {
-                        this
+            this
         }
     }
 
@@ -82,19 +79,17 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
         return a.toString()
     }
 
-    override fun serialize(aa: Ser) {
-        val token = getPosComplexOpToken(aa)
-        aa.append(token)
-        aa.append(PLConstants.LPAREN)
-        arg1.serialize(aa)
-        aa.argSep()
-        arg2.serialize(aa)
-        aa.append(PLConstants.RPAREN)
+    override fun serialize(a: Ser) {
+        val token = getPosComplexOpToken(a)
+        a.append(token)
+        a.append(PLConstants.LPAREN)
+        arg1.serialize(a)
+        a.argSep()
+        arg2.serialize(a)
+        a.append(PLConstants.RPAREN)
     }
 
-    override fun isDcOr(): Boolean = true
-
-    override fun isSat(): Boolean = true
+    override val isSat: Boolean get() = true
 
     override fun copyToOtherSpace(destSpace: Space): Exp {
         if (_vr.space === destSpace) return this
@@ -103,9 +98,10 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
         return destVar.mkDcOr()
     }
 
-    override fun getVarCode(): String = vr.varCode
+    override val varCode: String get() = vr.varCode
 
-    override fun getVr(): Var = lit.getVr()
+    override val vr: Var get() = lit.vr
+
 
     private val _vr: Var get() = lit.vr
 
@@ -117,12 +113,8 @@ class LitAndFalse(val lit: Lit, expId: Int) : PosComplexSingleVar(lit.space, exp
         a.append(arg2.serialize(a))
     }
 
-    override fun isNew(): Boolean {
-        TODO()
-    }
+    override val isNew: Boolean get() =  TODO()
 
-    override fun notNew() {
-        TODO()
-    }
+    override fun notNew() { TODO() }
 }
 
