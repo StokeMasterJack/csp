@@ -1,7 +1,8 @@
 package com.tms.csp.ast
 
 import com.tms.csp.argBuilder.IArgBuilder
-import com.tms.csp.fm.dnnf.products.Cube
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 import com.tms.csp.util.varSets.EmptyVarSet
 import com.tms.csp.util.varSets.VarSet
 import java.util.*
@@ -14,7 +15,7 @@ class DComplex(
 ) : Iterable<Exp> {
 
     private var _complexVars: VarSet? = null
-    var isFcc: Boolean? = null
+    var fcc: FccState = Open()
 
     private var formula: Exp? = null
 
@@ -63,6 +64,8 @@ class DComplex(
         return formula!!
     }
 
+    //val fcc: FccState
+
     private fun createFormula(): Exp {
         if (!deduped) dedup()
         if (!sorted) sort()
@@ -72,7 +75,7 @@ class DComplex(
             else -> {
                 val fixedArgs: Array<Exp> = a.toTypedArray()
                 val b = object : IArgBuilder {
-                    override val isFcc: Boolean? get() = this@DComplex.isFcc
+                    override val fcc: FccState get() = this@DComplex.fcc
                     override val size: Int get() = a.size
                     override val op: Op get() = Op.Formula
                     override val argIt: Iterable<Exp> get() = a
@@ -180,15 +183,14 @@ class DComplex(
         }
 
 
-        if (isFcc != other.isFcc) return false
+        if (fcc != other.fcc) {
+            println("FCC's do not match!!!!")
+            return false
+        }else{
+            return true
+        }
 
         return true
-    }
-
-    override fun hashCode(): Int {
-        var result = a.hashCode()
-        result = 31 * result + (isFcc?.hashCode() ?: 0)
-        return result
     }
 
     fun dedup() {
@@ -211,7 +213,7 @@ class DComplex(
         assert(!complex.isConstant)
         assert(!complex.isLit)
 
-        if (complex.isLitImpliesSimple) {
+        if (Space.config.addConstraint.litImps) {
             complex.litImpSimple(litImpHandler)
         }
 
@@ -233,20 +235,6 @@ class DComplex(
     }
 }
 
-/**
- * Just logging for now
- */
-class LitImpHandler : LitImps {
 
-    override fun imp(lit1: Lit, lit2: Lit) {
-        if (Space.config.log.litImps) {
-            println("lit-implies-lit: $lit1 implies $lit2")
-        }
-    }
 
-    override fun imp(lit: Lit, cube: Cube) {
-        if (Space.config.log.litImps) {
-            println("lit-implies-cube: $lit implies $cube")
-        }
-    }
-}
+

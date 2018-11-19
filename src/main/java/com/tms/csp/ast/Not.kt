@@ -203,4 +203,6 @@ class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
 
     override val satCountPL: Long get() = toNnf().satCountPL
 
+    override val argIter: Iterator<Exp> get() = Iterators.singletonIterator(pos)
+
 }

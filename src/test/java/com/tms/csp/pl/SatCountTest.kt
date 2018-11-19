@@ -179,19 +179,22 @@ Processing Tundra:
     //8.8
     //49 wo toDnnfTopXorSplit before fcc
     //8.7 s
+    //8.7
     @Test
     fun testAllCompileAndSatCount() {
-        CspSample.allPL.forEach {
-            val name = it.name
-            System.err.println("Processing $name")
-            val clob = tt("  load rules") { it.loadText() }
-            val csp = tt("  parse rules") { Csp.parse(clob) }
-            val rough = tt("  compile dnnf") { csp.toDnnf() }
-            val smooth = tt("  smooth dnnf") { rough.smooth }
-            val satCount = tt("  sat count") { smooth.satCount }
-            assertEquals(it.expectedSatCount, satCount)
+        repeat(1) {
+            CspSample.allPL.forEach {
+                val name = it.name
+                System.err.println("Processing $name")
+                val clob = tt("  load rules") { it.loadText() }
+                val csp = tt("  parse rules") { Csp.parse(clob) }
+                val rough = tt("  compile dnnf") { csp.toDnnf() }
+                val smooth = tt("  smooth dnnf") { rough.smooth }
+                val satCount = tt("  sat count") { smooth.satCount }
+                assertEquals(it.expectedSatCount, satCount)
 
-            smooth.printNodeInfo()
+                smooth.printNodeInfo()
+            }
         }
     }
 

@@ -2,6 +2,8 @@ package com.tms.csp.fm.dnnf.products
 
 import com.tms.csp.argBuilder.IArgBuilder
 import com.tms.csp.ast.*
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 import com.tms.csp.data.CspSample
 
 object CubesK {
@@ -63,7 +65,7 @@ object CubesK {
                                             }
                     override val argIt: Iterable<Exp> get() = it
                     override val size: Int = argArray.size
-                    override val isFcc: Boolean? = null;
+                    override val fcc: FccState get() = Open()
                     override val op: Op = Op.Cube
                     override fun mk(): Exp {
                         assert(space.posComplexSpace.checkArgs(argArray))

@@ -80,6 +80,7 @@ class CnfTest : CspBaseTest2() {
     @Test
     fun testEfc2013MinusTundraToCnf() {
         val csp1 = buildEfc2013MinusTundraPL()
+
         csp1.toCnf()
         val dimacs = csp1.serializeDimacs()
         System.err.println(dimacs)

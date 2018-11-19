@@ -5,6 +5,8 @@ import com.tms.csp.ExpIt
 import com.tms.csp.Structure
 import com.tms.csp.TreeSeqTo
 import com.tms.csp.ast.*
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 import com.tms.csp.fm.dnnf.TrueOrArg
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.ints.IndexedEntry
@@ -64,7 +66,7 @@ class ShortCircuit(op: Op1, cause: Cause)
 
 class ArgBuilder
 @JvmOverloads
-constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = true) : IArgBuilder {
+constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = true, override var fcc:FccState = Open()) : IArgBuilder {
 
     init {
         require(op.isAndLike || op.isOrLike || op.isXor)
@@ -446,20 +448,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     val isBinaryAnd: Boolean get() = isBinary && op1.isAnd
 
     val isNaryAnd: Boolean get() = isNary && op1.isAnd
-
-    override val isFcc: Boolean?
-        get() {
-            return if (op1.isAnd) {
-                when (structure) {
-                    Structure.Fcc -> true
-                    Structure.Disjoint -> false
-                    Structure.Dnnf -> false
-                    Structure.Unknown -> null
-                }
-            } else {
-                null
-            }
-        }
 
 
     @Throws(TrueOrArg::class)

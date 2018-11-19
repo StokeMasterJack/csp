@@ -3,6 +3,8 @@ package com.tms.csp.util
 import com.google.common.collect.Iterators
 import com.tms.csp.argBuilder.IArgBuilder
 import com.tms.csp.ast.*
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.ints.TreeSequence
 import com.tms.csp.util.it.ExpFilterIterator
@@ -17,7 +19,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     var args: TreeSequence<Exp>? = null
     var _vars: VarSet? = null
 
-    override var isFcc: Boolean? = null
+    override var fcc: FccState = Open()
 
     constructor(sp: Space, args: Iterable<Exp>) : this(sp) {
         val t: TreeSequence<Exp> = TreeSequence()
@@ -44,7 +46,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
     constructor(that: DynComplex) : this(that.space) {
         this.args = that.args?.copy()
         _vars = that._vars?.copy()
-        isFcc = that.isFcc
+        fcc = that.fcc
     }
 
     val isEmpty: Boolean

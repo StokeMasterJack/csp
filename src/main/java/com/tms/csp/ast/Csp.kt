@@ -195,11 +195,8 @@ class Csp @JvmOverloads constructor(
 //    }
 
     fun addConstraint(constraint: Exp) {
-
-//        if(constraint.toString().contains("xor")){
-//            println(constraint)
-//        }
-        assert(!isFailed && space === constraint.space)
+        assert(!isFailed)
+        assert(space === constraint.space)
         when {
             constraint.isTrue -> Unit
             constraint.isFalse -> fail()
@@ -213,8 +210,8 @@ class Csp @JvmOverloads constructor(
                     if (isFailed) return
                 }
             }
-            constraint.isNotClause -> assignAll(constraint.notClauseToCube)
-            constraint.isNotOr -> addConstraint(constraint.notOrToAnd)
+//            constraint.isNotClause -> assignAll(constraint.notClauseToCube)
+//            constraint.isNotOr -> addConstraint(constraint.notOrToAnd)
             else -> addComplexConstraint(constraint)
 
 
@@ -242,11 +239,11 @@ class Csp @JvmOverloads constructor(
 
         }
 
-        if (cc.isFlattenableNand) {
-            val and = cc.asNand.flattenNand()
-            addConstraint(and)
-            return
-        }
+//        if (cc.isFlattenableNand) {
+//            val and = cc.asNand.flattenNand()
+//            addConstraint(and)
+//            return
+//        }
 
         complex.add(cc)
 
@@ -927,11 +924,18 @@ class Csp @JvmOverloads constructor(
 
     fun simplifySeriesModelAnds() {
         if (!hasComplex) return;
+        if (isFailed) return
         val tmp = complex;
         complex = DComplex()
         for (e in tmp.argIt) {
+            if (isFailed) {
+                return
+            }
             val s = e.simplifySeriesModelAnd();
             addConstraint(s);
+            if (isFailed) {
+                return
+            }
         }
     }
 
@@ -940,27 +944,27 @@ class Csp @JvmOverloads constructor(
     }
 
     @JvmOverloads
-    fun print(depth:Int = 0) {
+    fun print(depth: Int = 0) {
         val sDontCares = if (dontCares.isNullOrEmpty) "" else dontCares.toString()
         val sSimple = if (simple.isNullOrEmpty) "" else simple.toString()
-        prindent(depth,"<csp>");
-        prindent(depth,"  <dontCares>$sDontCares</dontCares>");
-        prindent(depth,"  <simple>$sSimple</simple>");
+        prindent(depth, "<csp>");
+        prindent(depth, "  <dontCares>$sDontCares</dontCares>");
+        prindent(depth, "  <simple>$sSimple</simple>");
         val cc = complexConstraintCount
         if (cc == 0) {
-            prindent(depth,"  <complex></complex>");
+            prindent(depth, "  <complex></complex>");
         } else if (cc == 1) {
-            prindent(depth,"  <complex>" + complexIt.first() + "</complex>");
+            prindent(depth, "  <complex>" + complexIt.first() + "</complex>");
         } else {
-            prindent(depth,"  <complex>");
+            prindent(depth, "  <complex>");
             for (exp: Exp in complexIt) {
-                prindent(depth,"    $exp");
+                prindent(depth, "    $exp");
             }
-            prindent(depth,"  </complex>");
+            prindent(depth, "  </complex>");
         }
-        prindent(depth,"  <vars>$vars</vars>");
-        prindent(depth,"  <sat>" + isSat() + "</sat>");
-        prindent(depth,"<csp>");
+        prindent(depth, "  <vars>$vars</vars>");
+        prindent(depth, "  <sat>" + isSat() + "</sat>");
+        prindent(depth, "<csp>");
     }
 
 

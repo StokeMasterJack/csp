@@ -2,6 +2,7 @@ package com.tms.csp.util
 
 import com.tms.csp.argBuilder.IArgBuilder
 import com.tms.csp.ast.*
+import com.tms.csp.ast.formula.Fcc
 import com.tms.csp.ast.formula.KFormula
 import com.tms.csp.fm.dnnf.DAnd
 import com.tms.csp.fm.dnnf.DOr
@@ -27,9 +28,9 @@ class PosComplexSpace(val space: Space) {
         val retVal = when (op) {
             Op.Cube -> CubeExp(space, expId, args)
             Op.DAnd -> DAnd(space, expId, args)
-            Op.Formula -> KFormula(space, expId, args, b.isFcc)
+            Op.Formula -> KFormula(space, expId, args, b.fcc)
             Op.Fcc -> {
-                KFormula(space, expId, args, true)
+                KFormula(space, expId, args, Fcc())
             }
             Op.And -> And(space, expId, args)
             Op.DOr -> DOr(space, expId, args)
@@ -181,32 +182,32 @@ class PosComplexSpace(val space: Space) {
         }
         return true
     }
-
-    internal fun logCacheHits(prev: Exp) {
-        val prefix: String
-        if (prev.isClause) {
-            prefix = "Clause"
-        } else if (prev.isCube) {
-            prefix = "Cube"
-        } else if (prev.isFormula) {
-            prefix = "Formula"
-        } else if (prev.isFcc) {
-            prefix = "Fcc"
-        } else if (prev.isAnd) {
-            prefix = "Mixed"
-        } else if (prev.isXor) {
-            prefix = "Xor"
-        } else if (prev.isOr) {
-            prefix = "ComplexOr"
-        } else {
-            prefix = "Other"
-        }
-
-        if (prefix.startsWith("Formula")) {
-            System.err.println("Cache hit: $prefix: $prev")
-        }
-
-    }
+//
+//    internal fun logCacheHits(prev: Exp) {
+//        val prefix: String
+//        if (prev.isClause) {
+//            prefix = "Clause"
+//        } else if (prev.isCube) {
+//            prefix = "Cube"
+//        } else if (prev.isFormula) {
+//            prefix = "Formula"
+//        } else if (prev.isFcc) {
+//            prefix = "Fcc"
+//        } else if (prev.isAnd) {
+//            prefix = "Mixed"
+//        } else if (prev.isXor) {
+//            prefix = "Xor"
+//        } else if (prev.isOr) {
+//            prefix = "ComplexOr"
+//        } else {
+//            prefix = "Other"
+//        }
+//
+//        if (prefix.startsWith("Formula")) {
+//            System.err.println("Cache hit: $prefix: $prev")
+//        }
+//
+//    }
 
 
     class OpCounter {

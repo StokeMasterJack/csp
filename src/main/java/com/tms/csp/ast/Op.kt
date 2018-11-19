@@ -36,9 +36,7 @@ enum class Op {
     DOr,
     Xor,
 
-    Iff,
-    Imp,
-    Nand,
+    Iff, Imp, Rmp, Nand,
     Not;
 
     val isLit: Boolean
@@ -71,8 +69,9 @@ enum class Op {
     val isOrLike: Boolean
         get() = isOr || isDOr
 
-    val isOr: Boolean
-        get() = this == Or
+    val isOr: Boolean get() = this == Or
+    val isImp: Boolean get() = this == Imp
+    val isRmp: Boolean get() = this == Rmp
 
     val isNot: Boolean
         get() = this == Not

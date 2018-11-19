@@ -3,7 +3,8 @@ package com.tms.csp.ast
 data class CfgAddConstraint(
         val notOr_to_and: Boolean = true,
         val notClause_to_cube: Boolean = true,
-        val checkComplexForSimpleOverlap: Boolean = false
+        val checkComplexForSimpleOverlap: Boolean = false,
+        val litImps: Boolean = false
 )
 
 data class CfgDnnfCompile(
@@ -23,4 +24,4 @@ data class SpaceConfig(
         val log: CfgLog = CfgLog(),
         val dnnfCompile: CfgDnnfCompile = CfgDnnfCompile()
 
-        )
+)

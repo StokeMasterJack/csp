@@ -6,18 +6,34 @@ import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.ast.*
 import com.tms.csp.ast.PLConstants.*
 import com.tms.csp.util.varSets.VarSet
-import java.util.*
 
+
+sealed class FccState {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+}
+
+class Open : FccState()
+class Fcc : FccState()
+data class Fccs(val args: List<Exp>) : FccState()
 
 /**
- * represents a set of complex fact
+ * represents a set of complex constraints
  * <p>
  * A formula is an and with all complex args
  * <p>
  * if may be an fcc, or not
  *
  */
-class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : And(space, expId, args), FConstraintSet {
+class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Open()) : And(space, expId, args), FConstraintSet {
 
 
     //cache computed values
@@ -29,7 +45,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
      fcc = false: means this is not an fcc, complexFccs should be non-null, size >= 2
      */
 
-    var _fccs: List<Exp>? = null
+//    var _fccs: List<Exp>? = null
 
 
     private var fVars: FVars? = null
@@ -268,21 +284,17 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
             return topXorSplit
         }
 
-        if (fcc == null) {
+        if (fcc is Open) {
 //            println("computeComplexFccs..")
-            computeComplexFccs()
+            fcc = computeFccs()
         }
 
-        assert(fcc != null)
-
-        return if (fcc!!) {
-            assert(_fccs == null)
+        return if (fcc is Fcc) {
 //            println("fccToDnnf..")
             fccToDnnf()
-        } else if (!fcc!!) {
-            assert(_fccs != null)
+        } else if (fcc is Fccs) {
 //            println("fccsToDnnf..")
-            fccsToDnnf()
+            fccsToDnnf(fcc as Fccs)
         } else {
             throw IllegalStateException()
         }
@@ -349,11 +361,10 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         return decisionSplit(vr)
     }
 
-    fun fccsToDnnf(): Exp {
-        assert(_fccs != null)
+    fun fccsToDnnf(fcc: Fccs): Exp {
         val b = ArgBuilder(space, Op.DAnd)
-        for (fcc in _fccs!!) {
-            val d = fcc.toDnnf()
+        for (f in fcc.args) {
+            val d = f.toDnnf()
             if (d.isFalse) return d
             if (d.isTrue) continue
             b.addExp(d)
@@ -484,22 +495,55 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
         return vars.varIt()
     }
 
-    private fun computeComplexFccs() {
+//    /**
+//     * return null if this *is* an fcc
+//     */
+//    fun computeComplexFccs2(): List<List<Exp>>? {
+//        assert(isAllComplex)
+//        assert(isFormula)
+//        assert(!isDnnf)
+//
+//        assert(this.fcc is Open)
+//
+//        val uf = computeUnionFind()
+//
+//        val fccCount = uf.fccCount
+//
+//        if (fccCount == 1) {
+//            this.fcc = true
+//            return null
+//        }
+//
+//        val mm = ArrayListMultimap.create<Int, Exp>()
+//        for (i in 0 until constraintCount) {
+//            val fccKey = uf.getFccFor(i)
+//            val constraint = getArg(i)
+//            mm.put(fccKey, constraint)
+//        }
+//
+//        val disjoint = ArrayList<List<Exp>>()
+//        for (key in mm.keySet()) {
+//            disjoint.add(mm.get(key))
+//        }
+//
+//        return disjoint
+//
+//    }
+
+
+    fun computeFccs(): FccState {
         assert(isAllComplex) { this }
         assert(isFormula)
         assert(!isDnnf)
 
-        assert(this.fcc == null)
-        assert(this._fccs == null)
+        assert(this.fcc is Open)
 
         val uf = computeUnionFind()
-        uf.processAllUniquePairs()
 
         val fccCount = uf.fccCount
 //        println("Compute FCCs: fccCount = ${fccCount}")
         if (fccCount == 1) {
-            this.fcc = true
-            this._fccs = null
+            return Fcc()
         } else {
             val mm = ArrayListMultimap.create<Int, Exp>()
             for (i in 0 until constraintCount) {
@@ -507,7 +551,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
                 val constraint = getArg(i)
                 mm.put(fcc, constraint)
             }
-
             val list = mutableListOf<Exp>()
             for (key in mm.keySet()) {
                 val fccConstraints = mm.get(key)
@@ -516,8 +559,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
                 val fccExp = bFcc.mk()
                 list.add(fccExp)
             }
-            this.fcc = false
-            this._fccs = list
+            return Fccs(list)
         }
     }
 
@@ -599,44 +641,16 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: Boolean?) : 
     }
 
 
-    /**
-     * return null if this *is* an fcc
-     */
-    fun computeComplexFccs2(): List<List<Exp>>? {
-        assert(isAllComplex)
-        assert(isFormula)
-        assert(!isDnnf)
-
-        assert(this.fcc == null)
-
-        val uf = computeUnionFind()
-        uf.processAllUniquePairs()
-
-        val fccCount = uf.fccCount
-
-        if (fccCount == 1) {
-            this.fcc = true
-            return null
-        }
-
-        val mm = ArrayListMultimap.create<Int, Exp>()
-        for (i in 0 until constraintCount) {
-            val fccKey = uf.getFccFor(i)
-            val constraint = getArg(i)
-            mm.put(fccKey, constraint)
-        }
-
-        val disjoint = ArrayList<List<Exp>>()
-        for (key in mm.keySet()) {
-            disjoint.add(mm.get(key))
-        }
-
-        return disjoint
-
-    }
-
     override val op: Op get() = Op.Formula
 
 
     fun copyArray(): Array<Exp> = _args.copyOf()
 }
+
+/*
+        this.fcc = false
+            this._fccs = list
+ */
+
+
+

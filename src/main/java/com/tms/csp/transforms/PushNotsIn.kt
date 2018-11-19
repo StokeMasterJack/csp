@@ -49,11 +49,12 @@ class PushNotsIn : BaseTransformer() {
      */
     protected fun negOr(expIn: Exp): Exp {
         checkArgument(expIn.isNegOr)
+
         val pos = expIn.pos
         val pArgs = pos.args
 
         val oop: Op
-        if (expIn.isAllLits) {
+        if (pos.isAllLits) {
             oop = Op.DAnd
         } else {
             oop = Op.And

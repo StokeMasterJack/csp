@@ -24,8 +24,7 @@ class Iff(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(
     override val posOp: PLConstants.PosOp
         get() = OP
 
-    override val op: Op
-        get() = Op.Iff
+    override val op: Op get() = Op.Iff
 
     init {
         assert(_args.size == 2)
@@ -101,25 +100,6 @@ class Iff(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(
             mkIff(sExpr1, sExpr2)
         }
 
-    }
-
-    override fun litImpSimple(li: LitImps) {
-        val a1 = if (arg1.isNotClause) arg1.notClauseToCube else if (arg1.isNotCube) arg1.notCubeToClause else arg1
-        val a2 = if (arg2.isNotClause) arg2.notClauseToCube else if (arg2.isNotCube) arg2.notCubeToClause else arg2
-        when {
-            a1 is Lit -> when {
-                a2 is Lit -> {
-                    li.imp(a1, a2)
-                    li.imp(a2.flipLit, a1.flipLit)
-                }
-                a2 is Cube -> li.imp(a1, a2)
-                a2.isClause -> a2.args.forEach { li.imp(it.flip.asLit, a1.flipLit) }
-            }
-            a2 is Lit -> when {
-                a1 is Cube -> li.imp(a2, a1)
-                a1.isClause -> a1.args.forEach { li.imp(it.flip.asLit, a2.flipLit) }
-            }
-        }
     }
 
     companion object {

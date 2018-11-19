@@ -3,11 +3,13 @@ package com.tms.csp.argBuilder
 import com.tms.csp.ast.Exp
 import com.tms.csp.ast.Op
 import com.tms.csp.ast.Op1
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 
 
 interface IArgBuilder {
 
-    val isFcc: Boolean?
+    val fcc: FccState get() = Open()
 
     val size: Int
 

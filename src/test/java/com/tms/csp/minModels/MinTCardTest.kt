@@ -27,7 +27,6 @@ class MinTCardTest : CspBaseTest2() {
 
 
         val mm = n.minModels()
-        System.err.println("mm[$mm]")
         assertEquals(1, mm.products.size)
 
         val products = mm.products

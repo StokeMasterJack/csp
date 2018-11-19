@@ -75,8 +75,6 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     }
 
 
-
-
     override fun conditionVV(vv: Exp): Exp {
         if (vv === this) return vv
 
@@ -125,26 +123,7 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
 
     }
 
-    override fun litImpSimple(li: LitImps) {
-        if (isPair) {
-            val a1 = if (arg1.isNotClause) arg1.notClauseToCube else if (arg1.isNotCube) arg1.notCubeToClause else arg1
-            val a2 = if (arg2.isNotClause) arg2.notClauseToCube else if (arg2.isNotCube) arg2.notCubeToClause else arg2
-            when {
-                a1 is Lit -> when {
-                    a2 is Lit -> {
-                        li.imp(a1.flipLit, a2)
-                        li.imp(a2.flipLit, a1)
-                    }
-                    a2 is Cube -> li.imp(a1.flipLit, a2)
-                    a2.isClause -> a2.args.forEach { li.imp(it.flip.asLit, a1) }
-                }
-                a2 is Lit -> when {
-                    a1 is Cube -> li.imp(a2.flipLit, a1)
-                    a1.isClause -> a1.args.forEach { li.imp(it.flip.asLit, a2) }
-                }
-            }
-        }
-    }
+
 
 
     fun canVVSimplifyLocal(ll: PosComplexMultiVar.LL?): Boolean {
@@ -214,17 +193,21 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         return b.mk()
     }
 
-    override val satCountPL: Long get(){
-        val decisionVar = decide()
+    override val satCountPL: Long
+        get() {
+            val decisionVar = decide()
 
-        val tCon: Exp = condition(decisionVar.pLit())
-        val fCon: Exp = condition(decisionVar.nLit())
+            val tCon: Exp = condition(decisionVar.pLit())
+            val fCon: Exp = condition(decisionVar.nLit())
 
-        val tSatCount = Csp.computeDcVars(tCon.satCountPL, vars, tCon.vars.union(decisionVar))
-        val fSatCount = Csp.computeDcVars(fCon.satCountPL, vars, fCon.vars.union(decisionVar))
-        return tSatCount + fSatCount
+            val tSatCount = Csp.computeDcVars(tCon.satCountPL, vars, tCon.vars.union(decisionVar))
+            val fSatCount = Csp.computeDcVars(fCon.satCountPL, vars, fCon.vars.union(decisionVar))
+            return tSatCount + fSatCount
 
-    }
+        }
+
+
+    override val isOr: Boolean get() = true
 
     companion object {
 

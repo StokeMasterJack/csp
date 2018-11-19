@@ -83,8 +83,13 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
         get() = if (sign()) vr.vrId else -vr.vrId
 
 
+    /*
+      open val cubesSmooth: Set<Cube>
+        get() = computeCubesSmooth()
+     */
+
     override val cubesSmooth: Set<Cube>
-        get() = cubes
+        get() = _cubes
 
     val pref: Prefix
         get() = vr.prefix2

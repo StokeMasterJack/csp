@@ -105,7 +105,7 @@ class Parser(val space: Space) {
             val isNew = e.isNew
             val nodeCount2 = space._nodes.size
 
-            assert(e.isDOr || e.isDAnd || e.isLit) {
+            assert(e.isDOr || e.isDcOr || e.isDAnd || e.isLit) {
                 e.toString()
             }
 

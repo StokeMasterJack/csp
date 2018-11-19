@@ -122,9 +122,6 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     var next: Exp? = null //used for hash table lookup
 
 
-
-
-
     val th: Nothing get() = throw UnsupportedOperationException(this.javaClass.name)
 
     open val flip: Exp get() = th
@@ -374,7 +371,7 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     val isNand: Boolean get() = this is Nand
 
 
-    open  val isXor: Boolean get() = false
+    open val isXor: Boolean get() = false
 
     val isXorOrContainsXor: Boolean
         get() {
@@ -497,28 +494,28 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     val cubesSmoothCount: Int
         get() = cubesSmooth.size
 
-    open   val isDAnd: Boolean get() = this is DAnd
+    open val isDAnd: Boolean get() = this is DAnd
 
-    open   val isCubeExp: Boolean get() = this is CubeExp
+    open val isCubeExp: Boolean get() = this is CubeExp
 
-    open val isOr: Boolean get() = this is Or
+    open val isOr: Boolean get() = false
 
     open val isAnd: Boolean get() = this is And
 
     open val isDOr: Boolean get() = this is DOr
 
-    open  val isDcOr: Boolean get() = this is DcOr
+    open val isDcOr: Boolean get() = this is DcOr
 
     open val complexFccs: Exp get() = throw UnsupportedOperationException(javaClass.name)
 
-    open  val isFormula: Boolean get() = this is KFormula
+    open val isFormula: Boolean get() = this is KFormula
 
-    open  val isFcc: Boolean get() = this is KFormula && fcc != null && fcc!!
+//    open val isFcc: Boolean get() = this is KFormula && fcc != null && fcc!!
 
     open val isDFormula: Boolean
         get() = false
 
-    open  val isElement: Boolean
+    open val isElement: Boolean
         get() = false
 
     val productCount: Int
@@ -838,25 +835,14 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
 
     val isImpishOp: Boolean get() = this is Or || this is Imp || this is Rmp || this is Iff || this is Nand
 
-    val hasLitArg: Boolean get() = this.args.any { it is Lit }
+    val hasLitArg: Boolean get() = if (this is PosComplexMultiVar) this._args.any { it is Lit } else false
 
-    val hasCubeishArg: Boolean get()  = this.args.any { it.isCubeExp || it.isNotClause }
+    val hasCubeishArg: Boolean get() = this.args.any { it.isCubeExp || it.isNotClause }
     val hasCubeArg: Boolean get() = this.args.any { it.isCubeExp }
     val hasNotClauseArg: Boolean get() = this.args.any { it.isNotClause }
 
     val isImpish: Boolean get() = isImpishOp && isPair
 
-    val isLitImpliesSimple: Boolean get()  = this.isImpish && hasLitArg && hasCubeishArg
-
-    open fun litImpSimple(li: LitImps) {
-        if (isLitImpliesSimple) {
-            when (this) {
-                is Imp -> toOr.litImpSimple(li)
-                is Rmp -> toOr.litImpSimple(li)
-                is Nand -> toOr.litImpSimple(li)
-            }
-        }
-    }
 
     val isImpliesOrOfAndYrSerMdl: Boolean
         get() {
@@ -2049,7 +2035,6 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     }
 
 
-
     fun compare(that: Exp): LitArg {
         if (!that.isLit) return LitArg.NONE
         if (!this.isLit) return LitArg.NONE
@@ -2470,11 +2455,11 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     }
 
     fun simplifySeriesModelAnd(): Exp {
-        if (isConstant || isLit) return this
-        assert(isComplex)
         if (isConstant || isLit) {
             return this
-        } else if (isAnd && size() == 2 && arg(0).isPosLit && arg(1).isPosLit && containsSeriesVar() && containsModelVar()) {
+        }
+        assert(isComplex)
+        if (isAnd && size() == 2 && arg(0).isPosLit && arg(1).isPosLit && containsSeriesVar() && containsModelVar()) {
             return if (arg(0).isModelVar)
                 arg(0)
             else
@@ -2484,23 +2469,23 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
         } else if (isNot) {
             return arg.simplifySeriesModelAnd().flip
         } else if (isAnd) {
-            val args = ArrayList<Exp>()
+            val aa = ArrayList<Exp>()
             for (arg in args) {
-                args.add(arg.simplifySeriesModelAnd())
+                aa.add(arg.simplifySeriesModelAnd())
             }
-            return mkAnd(args)
+            return mkAnd(aa)
         } else if (isOr) {
-            val args = ArrayList<Exp>()
+            val aa = ArrayList<Exp>()
             for (arg in args) {
-                args.add(arg.simplifySeriesModelAnd())
+                aa.add(arg.simplifySeriesModelAnd())
             }
-            return mkOr(args)
+            return mkOr(aa)
         } else if (isXor) {
-            val args = ArrayList<Exp>()
+            val aa = ArrayList<Exp>()
             for (arg in args) {
-                args.add(arg.simplifySeriesModelAnd())
+                aa.add(arg.simplifySeriesModelAnd())
             }
-            return mkXor(args)
+            return mkXor(aa)
         } else {
             throw IllegalStateException(this.toString())
         }
@@ -3163,7 +3148,7 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
         System.err.println(toXml())
     }
 
-    fun printNodeInfo(depth:Int = 0) {
+    fun printNodeInfo(depth: Int = 0) {
         val nodeInfo = NodeInfo()
         forEachHead(nodeInfo)
         nodeInfo.print(depth)
@@ -3269,7 +3254,8 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
             throw IllegalStateException()
         } else if (isConstantTrue) {
             throw IllegalStateException()
-        } else if (isDOr) {
+        } else if (isDOr || isDcOr) {
+            //todo: make more efficient for DcOr
             var min = Integer.MAX_VALUE
             for (arg in argIt) {
                 val argMin = arg.minTCard()
@@ -3287,38 +3273,46 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
             }
             return sum
         } else {
-            throw UnsupportedOperationException()
+            throw UnsupportedOperationException(simpleName + "  " + this)
         }
     }
 
     fun minFCard(): Int {
-        if (isPosLit) {
-            return 0
-        } else if (isNegLit) {
-            return 1
-        } else if (isConstantFalse) {
-            throw IllegalStateException()
-        } else if (isConstantTrue) {
-            throw IllegalStateException()
-        } else if (isDOr) {
-            var min = Integer.MAX_VALUE
-            for (arg in argIt) {
-                val argMin = arg.minFCard()
-                if (argMin < min) {
-                    min = argMin
+        when {
+            isPosLit -> return 0
+            isNegLit -> return 1
+            isConstantFalse -> throw IllegalStateException()
+            isConstantTrue -> throw IllegalStateException()
+            isDOr -> {
+                var min = Integer.MAX_VALUE
+                for (arg in argIt) {
+                    val argMin = arg.minFCard()
+                    if (argMin < min) {
+                        min = argMin
+                    }
                 }
+                return min
             }
-            return min
-        } else if (isXor) {
-            return varCount - 1
-        } else if (isDAnd) {
-            var sum = 0
-            for (arg in argIt) {
-                sum += arg.minFCard()
+            isDcOr -> {
+                //todo: make this more efficient
+                var min = Integer.MAX_VALUE
+                for (arg in argIt) {
+                    val argMin = arg.minFCard()
+                    if (argMin < min) {
+                        min = argMin
+                    }
+                }
+                return min
             }
-            return sum
-        } else {
-            throw UnsupportedOperationException()
+            isXor -> return varCount - 1
+            isDAnd -> {
+                var sum = 0
+                for (arg in argIt) {
+                    sum += arg.minFCard()
+                }
+                return sum
+            }
+            else -> throw UnsupportedOperationException("$simpleName  ${this}")
         }
     }
 
@@ -3331,7 +3325,8 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
         val space = _space
         if (isConstant || isLit) {
             return this
-        } else if (isDOr) {
+        } else if (isDOr || isDcOr) {
+            //todo: make more efficient for DcOr
             val parentVars = vars
             val b = ArgBuilder(space, Op.DOr)
             for (arg in argIt) {
@@ -3356,7 +3351,7 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
             }
             return b.mk()
         } else {
-            throw UnsupportedOperationException()
+            throw UnsupportedOperationException("$simpleName  ${this}")
         }
     }
 
@@ -3426,6 +3421,22 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
                 }
             }
             return b.mk()
+        } else if (isDcOr) {
+            //todo: make this more efficient
+            val parentVars = vars
+            val b = ArgBuilder(space, Op.DOr)
+            for (arg in argIt) {
+                val argMCard = arg.minFCard()
+                if (argMCard == mCard) {
+                    val childVars = arg.vars
+                    val dcVars = parentVars.minus(childVars)
+                    val pCube = space.mkPCube(dcVars)
+                    val argMinFModels = arg.minFModels()
+                    val aa = space.expFactory.mkDAnd(argMinFModels, pCube)
+                    b.addExp(aa)
+                }
+            }
+            return b.mk()
         } else if (isXor) {
             return this
         } else if (isDAnd) {
@@ -3436,7 +3447,7 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
             }
             return b.mk()
         } else {
-            throw UnsupportedOperationException()
+            throw UnsupportedOperationException(simpleName + "  " + this)
         }
     }
 
@@ -3663,7 +3674,7 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
     fun initParentsForArgs() {
         if (isConstant) return
         if (isLit) return
-        assert(isDAnd || isDOr)
+        assert(isDAnd || isDOr || isDcOr)
         for (arg in args) {
             arg._addParent(this)
             arg.initParentsForArgs()

@@ -8,6 +8,7 @@ class Nand(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(spac
     override val isBinaryType: Boolean
         get() = true
 
+    override val op: Op = Op.Nand
 
     override val posOp: PLConstants.PosOp
         get() = OP

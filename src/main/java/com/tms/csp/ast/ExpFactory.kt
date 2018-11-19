@@ -7,6 +7,8 @@ import com.tms.csp.Fn
 import com.tms.csp.It
 import com.tms.csp.argBuilder.ArgBuilder
 import com.tms.csp.argBuilder.IArgBuilder
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Open
 import com.tms.csp.fm.dnnf.products.Cube
 import com.tms.csp.util.Bit
 import com.tms.csp.util.DynComplex
@@ -663,7 +665,7 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
     val space: Space = arg1.space
 
-    override val isFcc: Boolean? get() = null
+    override val fcc: FccState get() = Open()
     override val size: Int get() = 2
     override val op: Op get() = Op.Cube
     override val argIt: Iterable<Exp> get() = a.asIterable()
@@ -684,7 +686,7 @@ class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(lit, cube)
     val space: Space = lit.space
 
-    override val isFcc: Boolean? get() = null
+    override val fcc: FccState get() = Open()
     override val size: Int get() = 2
     override val op: Op get() = Op.DAnd
     override val argIt: Iterable<Exp> get() = a.asIterable()
@@ -704,7 +706,7 @@ class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder 
     val a: Array<Exp> = ExpFactory.MinMax.mkArray(cube1, cube2)
     val space: Space = cube2.space
 
-    override val isFcc: Boolean? get() = null
+    override val fcc: FccState get() = Open()
     override val size: Int get() = 2
     override val op: Op get() = Op.DAnd
     override val argIt: Iterable<Exp> get() = a.asIterable()

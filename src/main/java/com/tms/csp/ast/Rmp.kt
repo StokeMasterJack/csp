@@ -13,6 +13,9 @@ class Rmp(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     override val posOp: PLConstants.PosOp
         get() = OP
 
+
+    override val op: Op = Op.Rmp
+
     init {
         assert(isBinary)
     }

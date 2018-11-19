@@ -1,6 +1,9 @@
 package com.tms.csp.fcc
 
 import com.tms.csp.ast.Csp
+import com.tms.csp.ast.formula.Fcc
+import com.tms.csp.ast.formula.FccState
+import com.tms.csp.ast.formula.Fccs
 import com.tms.csp.data.CspSample
 import com.tms.csp.util.CspBaseTest2
 import org.junit.Assert.*
@@ -13,14 +16,21 @@ class FccTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.Tundra)
 
         val formula = csp.mkFormula().asFormula
-        val fccs = formula.computeComplexFccs2() ?: throw IllegalStateException()
+        val fcc: FccState = formula.computeFccs()
 
 
-        assertEquals(2, fccs.size.toLong())
+        if (fcc is Fccs) {
 
-        System.err.println("fccs: ")
-        for (fcc in fccs) {
-            System.err.println("fcc: $fcc")
+            val args = fcc.args
+            assertEquals(2, args.size)
+
+            System.err.println("fccs: ")
+            for (fcc in args) {
+                System.err.println("fcc: $fcc")
+            }
+
+        }else{
+            fail()
         }
     }
 
@@ -31,9 +41,11 @@ class FccTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.EfcOriginal)
 
         val formula = csp.mkFormula().asFormula
-        val fccs = formula.computeComplexFccs2()
+        val fcc: FccState = formula.computeFccs()
 
-        assertNull(fccs)
+
+
+        assertTrue(fcc is Fcc)
 
     }
 
@@ -42,16 +54,16 @@ class FccTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.Tundra)
 
         val formula = csp.mkFormula().asFormula
-        val fccs = formula.complexFccs ?: throw IllegalStateException()
+        val fcc: FccState = formula.computeFccs()
 
-        assertTrue(fccs.isDAnd)
+        assertTrue(fcc is Fccs)
 
-        System.err.println("fccs.op1    [" + fccs.op() + "]")
-        System.err.println("fccs.getCls[" + fccs.javaClass + "]")
-
-        System.err.println("fccs[" + fccs.size() + "]")
-
-        assertEquals(2, fccs.size().toLong())
+        if(fcc is Fccs) {
+            val args = fcc.args
+            assertEquals(2, args.size)
+        }else{
+            fail()
+        }
 
     }
 
@@ -60,16 +72,18 @@ class FccTest : CspBaseTest2() {
         val csp = Csp.parse(CspSample.Camry2011Dc)
 
         val formula = csp.mkFormula().asFormula
-        val fccs = formula.complexFccs ?: throw IllegalStateException()
+        val fcc: FccState = formula.computeFccs()
 
-        assertTrue(fccs.isDAnd)
+        assertTrue(fcc is Fccs)
 
-        System.err.println("fccs.op1    [" + fccs.op() + "]")
-        System.err.println("fccs.getCls[" + fccs.javaClass + "]")
+        if(fcc is Fccs) {
 
-        System.err.println("fccs[" + fccs.size() + "]")
+            val args = fcc.args
 
-        assertEquals(2, fccs.size().toLong())
+
+            assertEquals(2, args.size)
+
+        }
 
     }
 
@@ -79,20 +93,24 @@ class FccTest : CspBaseTest2() {
 
 
         val formula = csp.mkFormula().asFormula
-        val fccs = formula.complexFccs ?: throw IllegalStateException()
+        val fcc: FccState = formula.computeFccs()
 
-        assertTrue(fccs.isDAnd)
+        assertTrue(fcc is Fccs)
 
-        assertEquals(2, fccs.size().toLong())
+        if(fcc is Fccs) {
 
-        val se = fccs.getFirstConjunctContaining("SE")
+            val args = fcc.args
+
+            assertEquals(2, args.size)
+
+//            val se = args.getFirstConjunctContaining("SE")
 
 //        println(se!!.simpleName)
 
-        System.err.println(se)
-        System.err.println("se[" + se!!.simpleName + "]")
+//            System.err.println(se)
+//            System.err.println("se[" + se!!.simpleName + "]")
 
-
+        }
 
 
 //        csp = se.refine("SE");
