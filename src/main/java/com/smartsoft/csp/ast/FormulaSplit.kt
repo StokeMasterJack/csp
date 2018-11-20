@@ -2,9 +2,8 @@ package com.smartsoft.csp.ast
 
 //class Foo<T>(val tCon: T) where T : Bar, T : Baz { ... }
 import com.smartsoft.csp.ast.formula.KFormula
-import java.lang.IllegalStateException
 
-class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
+class FormulaSplit(val formula: KFormula, val decisionVar: Var, val vi: VarImps? = null) {
 
 
     val space: Space get() = formula.space;
@@ -36,10 +35,17 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
     }
 
 
-
     fun mkCsp(sign: Boolean): Csp {
+        //todo: fix this
         val lit = decisionVar.lit(sign)
+//        if (vi != null && vi.hasImps(sign)) {
+//            val imps: Assignments? = vi.imps(sign)
+//            val cube = DynCube(space, lit)
+//            imps!!.assignToDynCube(cube)
+//            return Csp(formula = formula.argIt, condition = cube)
+//        } else {
         return Csp(formula = formula.argIt, condition = lit)
+//        }
     }
 
 

@@ -209,12 +209,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
     }
 
     private fun toDnnfInternal(): Exp {
-//        return toDnnfInternalNoFccNoXorSplits();
-//        return toDnnfInternalNoFcc();
-        return toDnnfInternalWithFccAndXorSplits();
-    }
-
-    private fun toDnnfInternalWithFccAndXorSplits(): Exp {
 
         val topXorSplit = toDnnfTopXorSplit()
 
@@ -240,43 +234,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
     }
 
-    private fun toDnnfInternalNoFcc(): Exp {
-        val xor1 = getTopXorSplit()
-        if (xor1 != null) {
-            xorSplitToDnnf(xor1).toDnnf()
-        }
-
-        val li = litImps
-
-        val xor2 = li.getBestXor()
-        if (xor2 != null) {
-            return xorSplitToDnnf(xor2).toDnnf()
-        }
-
-        val vr = li.getBestVar()
-        return FormulaSplit(this, vr).toDnnf()
-
-
-    }
-
-
-//    private fun toDnnfInternalNoFccNoXorSplits(): Exp {
-//        val vr = decide()
-//        return decisionSplit(vr)
-//    }
-
-
-//    private fun decide(): Var {
-//        val fVars = getFVars()
-//        try {
-//            val d = fVars.decide()
-//            return d.vr
-//        } catch (e: NoVarsException) {
-//            throw NoVarsException(this.toString())
-//        }
-//
-//
-//    }
 
     private fun computeLitImps(): LitImps {
         val t1 = millis
@@ -336,9 +293,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
             return csp.toDnnf()
         }
 
-//        litImps.checkXors()
-
-//        val xor1 = getBestXorSplit()
 
         val xor = li.getBestXor()
 
@@ -347,17 +301,12 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
             return XorSplit(this, xor).toDnnf()
         }
 
+        val vr = li.getBestVar()
 
-        val vr1 = li.getBestVar()
-
-        return FormulaSplit(this, vr1).toDnnf()
+        return FormulaSplit(this, vr).toDnnf()
 
 
-//
-//        val vr = FVars2.decide(_args)!!
-////        val vr = decide()
-////        println("decide[$vr]..")
-//        return FormulaSplit(this, vr).toDnnf()
+
     }
 
     fun fccsToDnnf(fcc: Fccs): Exp {

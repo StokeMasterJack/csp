@@ -1,0 +1,7 @@
+Structure the actual constraints (in csp and formula) like LitImps for FccFormula
+
+
+Formula:
+    LitImps
+    Xors
+    Other

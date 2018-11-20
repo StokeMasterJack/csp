@@ -139,6 +139,15 @@ class Assignments {
         }
     }
 
+    fun assignToDynCube(cc: DynCube) {
+        if (map == null) return
+        for (entry in map!!.entries) {
+            val vr: Var = entry.key
+            val sign: Boolean = entry.value
+            cc.assign(vr, sign)
+        }
+    }
+
     val size: Int get() = map?.size ?: 0
 
     override fun toString(): String {
@@ -232,6 +241,13 @@ class VarImps(val vr: Var) {
         println("${indent(depth)}  score:${score}")
         println()
     }
+
+    fun imps(sign: Boolean): Assignments? {
+        if (sign) return pImps
+        return nImps
+    }
+
+    fun hasImps(sign: Boolean): Boolean = if (sign) pImpCount > 0 else nImpCount > 0
 }
 
 
@@ -298,7 +314,6 @@ class LitImps {
         addImp(lit1.flipLit, lit2)
         addImp(lit1, lit2.flipLit)
     }
-
 
 
 //    fun computeBestXor(): Xor? {
