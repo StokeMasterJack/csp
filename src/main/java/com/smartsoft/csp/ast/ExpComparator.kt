@@ -7,9 +7,9 @@ import java.util.Comparator
 
 class ExpComparator : Comparator<Exp> {
 
-    override fun compare(e1: Exp, e2: Exp): Int {
-        var e1 = e1
-        var e2 = e2
+    override fun compare(e1In: Exp, e2In: Exp): Int {
+        var e1 = e1In
+        var e2 = e2In
 
         val s1 = sortArity(e1)
         val s2 = sortArity(e2)
@@ -67,8 +67,8 @@ class ExpComparator : Comparator<Exp> {
 
         val INSTANCE = ExpComparator()
 
-        fun sortArity(e: Exp): String {
-            var e = e
+        fun sortArity(eIn: Exp): String {
+            var e = eIn
 
             val negated = e.isNegated
             val sb = StringBuilder()

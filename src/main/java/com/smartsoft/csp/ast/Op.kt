@@ -9,7 +9,7 @@ enum class Op0 {
     val isComplex: Boolean get() = this == Complex
 }
 
-enum class Op1(parent: Op0) {
+enum class Op1(@Suppress("UNUSED_PARAMETER") parent: Op0) {
     And(Op0.Complex), Or(Op0.Complex), Xor(Op0.Complex);
 
     val isAnd: Boolean get() = this == And

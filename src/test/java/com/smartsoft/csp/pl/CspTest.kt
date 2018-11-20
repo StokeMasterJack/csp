@@ -4,11 +4,11 @@ import com.smartsoft.csp.ast.Csp
 import com.smartsoft.csp.ast.toCube
 import com.smartsoft.csp.ast.toCubes
 import com.smartsoft.csp.data.CspSample
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.CspBaseTest2
-import junit.framework.Assert.assertEquals
 import java.math.BigInteger
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class CspTest : CspBaseTest2() {
 
@@ -106,7 +106,7 @@ class CspTest : CspBaseTest2() {
 
         val satCountExpected: Long = 11
 
-        val csp = Csp.parse(CspSample.TrimNoDc, tiny = true)
+        val csp = Csp.parse(CspSample.TrimNoDc)
 
         val sCubesExpected = """
             2513   !2514   !2531   !2532   !2552   !2540   !2554   !2545   !2546   !2550   !2560      L4     !V6 !Hybrid    Base     !LE     !SE    !XLE    !Hyb      6MT     !6AT    !ECVT
@@ -171,12 +171,12 @@ class CspTest : CspBaseTest2() {
         val bb3 = d3.bb
 //        println("bb3: $bb3")
 
-        assertEquals("${bb3.size}", expected.bb3.toCube(csp), bb3)
+        assertEquals(expected.bb3.toCube(csp), bb3,"${bb3.size}")
 
         val d4 = d3.condition("SER_tundra")
         val bb4 = d4.bb
         println("bb4: $bb4")
-        assertEquals("${bb3.size}",expected.bb4.toCube(csp), bb4)
+        assertEquals(expected.bb4.toCube(csp), bb4,"${bb3.size}")
 
 
     }

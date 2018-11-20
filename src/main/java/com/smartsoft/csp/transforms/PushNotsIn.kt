@@ -13,8 +13,8 @@ import com.google.common.base.Preconditions.checkArgument
 //DF: !or(a b) => and(!a !b)
 class PushNotsIn : BaseTransformer() {
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isNegAnd || expIn.isNegOr
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isNegAnd || inExp.isNegOr
     }
 
     //  !and(a b)   => or(!a !b)

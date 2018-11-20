@@ -203,7 +203,7 @@ public class ResourceLoader {
             try {
                 b = is.read();
             } catch (java.io.IOException e) {
-                throw new IORuntimeException(e);
+                throw new RuntimeException(e);
             }
             if (b == -1) break;
             char c = (char) b;

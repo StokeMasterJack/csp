@@ -56,7 +56,7 @@ class PushAndsOut : BaseTransformer() {
 
             val newAndTerms = ArgBuilder(space, Op.And)
 
-            for ((i,faExpr) in expressions1.withIndex()) {
+            for (faExpr in expressions1) {
                 val or = e.mkOr(x, faExpr)
                 newAndTerms.addExp(or)
             }

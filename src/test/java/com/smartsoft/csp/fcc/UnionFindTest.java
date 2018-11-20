@@ -4,7 +4,7 @@ import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.data.CspSample;
 import com.smartsoft.csp.ast.Csp;
 import com.smartsoft.csp.ast.Exp;
-import com.smartsoft.csp.ast.formula.FConstraintSet;
+import com.smartsoft.csp.ast.FConstraintSet;
 import com.smartsoft.csp.util.UnionFind;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

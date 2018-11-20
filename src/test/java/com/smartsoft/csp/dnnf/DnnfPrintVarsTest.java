@@ -1,7 +1,6 @@
 package com.smartsoft.csp.dnnf;
 
 import com.smartsoft.csp.util.CspBaseTest2;
-import com.smartsoft.csp.fm.dnnf.Dnnf;
 import org.junit.Test;
 
 public class DnnfPrintVarsTest extends CspBaseTest2 {

@@ -3,7 +3,7 @@ package com.smartsoft.csp.ast
 
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.ast.PLConstants.FALSE_CHAR
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 
 import java.math.BigInteger
 

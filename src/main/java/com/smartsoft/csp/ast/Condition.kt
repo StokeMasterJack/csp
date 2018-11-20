@@ -1,6 +1,6 @@
 package com.smartsoft.csp.ast
 
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.transforms.Transformer
 import com.smartsoft.csp.util.DynComplex
 import com.smartsoft.csp.util.XorCube
@@ -30,7 +30,7 @@ class Condition(val on: Any) {
     val asTransformer: Transformer get() = on as Transformer
     val asExp: Exp get() = on as Exp
 
-    fun condition(constraint: Exp, log: Boolean = true, depth: Int = 0): Exp {
+    fun condition(constraint: Exp): Exp {
 
         val conditioned: Exp = when {
             isIdentity -> constraint

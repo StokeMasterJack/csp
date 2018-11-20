@@ -2,9 +2,9 @@ package com.smartsoft.inv;
 
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.*;
-import com.smartsoft.csp.fm.dnnf.forEach.ForEach;
-import com.smartsoft.csp.fm.dnnf.models.Solution;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.forEach.ForEach;
+import com.smartsoft.csp.dnnf.models.Solution;
+import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.util.Bit;
 import com.smartsoft.csp.util.varSets.VarSet;
 

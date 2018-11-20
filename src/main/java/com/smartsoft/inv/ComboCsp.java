@@ -41,7 +41,7 @@ public class ComboCsp implements PLConstants {
         checkNotNull(varInfo);
 
         Set<String> vars1 = KInv.extractVarCodes(clobInv);
-        Set<String> vars2 = Parser.extractVarCodes(clobFactory, false);
+        Set<String> vars2 = Parser.extractVarCodes(clobFactory);
         Set<String> vars = Sets.union(vars1, vars2);
 
 
@@ -334,7 +334,7 @@ public class ComboCsp implements PLConstants {
             orArgs.addExp(featureRecord);
         }
 
-        Exp giantOr = orArgs.mk(space);
+        Exp giantOr = orArgs.mk();
 
         cspInv.addConstraint(giantOr);
     }

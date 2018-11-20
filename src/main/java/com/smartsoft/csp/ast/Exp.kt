@@ -2,22 +2,21 @@ package com.smartsoft.csp.ast
 
 import com.google.common.base.Preconditions.checkState
 import com.google.common.collect.*
-import com.smartsoft.csp.It
+import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.VarInfo
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
-import com.smartsoft.csp.ast.formula.KFormula
 import com.smartsoft.csp.common.SeriesYear
-import com.smartsoft.csp.fm.dnnf.ChildCounts
-import com.smartsoft.csp.fm.dnnf.DAnd
-import com.smartsoft.csp.fm.dnnf.DOr
-import com.smartsoft.csp.fm.dnnf.Dnnf
-import com.smartsoft.csp.fm.dnnf.products.Cube
-import com.smartsoft.csp.fm.dnnf.products.PosCube
-import com.smartsoft.csp.fm.dnnf.vars.VarFilter
-import com.smartsoft.csp.fm.dnnf.visitor.NodeHandler
-import com.smartsoft.csp.fm.dnnf.visitor.NodeInfo
-import com.smartsoft.csp.graph.Filter
+import com.smartsoft.csp.dnnf.ChildCounts
+import com.smartsoft.csp.dnnf.DAnd
+import com.smartsoft.csp.dnnf.DOr
+import com.smartsoft.csp.dnnf.Dnnf
+import com.smartsoft.csp.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.PosCube
+import com.smartsoft.csp.dnnf.vars.VarFilter
+import com.smartsoft.csp.dnnf.visitor.NodeHandler
+import com.smartsoft.csp.dnnf.visitor.NodeInfo
+//import com.smartsoft.csp.graph.Filter
 import com.smartsoft.csp.ssutil.Strings.indent
 import com.smartsoft.csp.transforms.CompoundTransformer
 import com.smartsoft.csp.transforms.Transformer
@@ -175,7 +174,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     val isAndish: Boolean
         get() = when (this) {
             is Cube -> true
-            is KFormula -> true
+            is Formula -> true
             is And -> true
             is DAnd -> true
             is LitAndFalse -> true
@@ -511,7 +510,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     open val complexFccs: Exp get() = throw UnsupportedOperationException(javaClass.name)
 
-    open val isFormula: Boolean get() = this is KFormula
+    open val isFormula: Boolean get() = this is Formula
 
 //    open val isFcc: Boolean get() = this is KFormula && fcc != null && fcc!!
 
@@ -586,10 +585,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             return false
         }
 
-    override fun compareTo(that: Exp): Int {
-        val ret = COMPARATOR_BY_EXP_ID.compare(this, that)
-        return ret
-    }
+    override fun compareTo(other: Exp): Int = COMPARATOR_BY_EXP_ID.compare(this, other)
 
     /**
      * Code is the same as unsigned head
@@ -1465,6 +1461,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     /**
      * For testing purposes
      */
+    @Suppress("UNUSED_VARIABLE")
     fun simplify(assignments: String): Exp? {
         val ctx = EvalContexts.fromAssignmentString(assignments)
         return null
@@ -1481,7 +1478,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     open val asCube: Cube get() = this as CubeExp
     open val asCubeExp: CubeExp get() = this as CubeExp
 
-    val asExp: Exp get() = this as Exp
+    val asExp: Exp get() = this
     val asLit: Lit get() = this as Lit
     val asPosComplex: PosComplexMultiVar get() = this as PosComplexMultiVar
     val asDcOr: DcOr get() = this as DcOr
@@ -1491,7 +1488,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     val asNand: Nand get() = this as Nand
     val asOr: Or get() = this as Or
     val asAnd: And get() = this as And
-    val asFormula: KFormula get() = this as KFormula
+    val asFormula: Formula get() = this as Formula
 
     open fun asDOr(): DOr {
         throw UnsupportedOperationException()
@@ -1625,13 +1622,10 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         return head
     }
 
-    fun ensureSign(sign: Boolean): Exp {
-        throw UnsupportedOperationException(javaClass.name)
-    }
 
-    fun `is`(filter: Filter): Boolean {
-        return filter.accept(this)
-    }
+//    fun `is`(filter: Filter): Boolean {
+//        return filter.accept(this)
+//    }
 
 
     fun transform(vararg transformers: Transformer): Exp {
@@ -1862,10 +1856,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     }
 
-    fun computeValue(tLit: Lit): Long {
-        return 0
-    }
-
     fun chkTrue(): Exp {
         val actual = toString()
         if (isConstantTrue) {
@@ -1887,13 +1877,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             System.err.println("actual    [$actual]")
             throw IllegalStateException()
         }
-    }
-
-
-    fun findSubsumedVVs(vvs: VVs): Collection<Exp> {
-
-
-        throw UnsupportedOperationException()
     }
 
 
@@ -2011,9 +1994,9 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         val conditionOn = _space.parser.parseLitsToConditionOn(sLits)
 
         return if (conditionOn is Lit) {
-            condition(conditionOn as Lit)
+            condition(conditionOn )
         } else if (conditionOn is Cube) {
-            condition(conditionOn as Cube)
+            condition(conditionOn )
         } else {
             throw IllegalStateException()
         }
@@ -2241,6 +2224,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             return (arg1.isCube || arg2.isCube) && (arg1.isLit || arg2.isLit)
         }
 
+    @Suppress("UNUSED_PARAMETER")
     @Throws(UnsupportedOperationException::class)
     fun getVarToken(a: Ser): String {
         return varCode
@@ -2310,7 +2294,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     }
 
     fun getConstantToken(value: Boolean, a: Ser): String {
-        val token = getConstantToken(value)
         return if (value) {
             getConstantTrueToken(a)
         } else {
@@ -2439,10 +2422,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         return a.toString().trim { it <= ' ' }
     }
 
-    fun serializeArgs(a: Ser) {
-        throw UnsupportedOperationException()
-    }
-
     fun prindent(depth: Int, a: Ser) {
         a.append(indent(depth))
         serialize(a)
@@ -2521,9 +2500,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
                 a1 = vv.arg1
                 a2 = vv.arg2
             }
-
-            val v1 = a1.vr
-            val v2 = a2.vr
 
             val op = vv.posOp
 
@@ -2727,12 +2703,12 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     }
 
 
-    override fun isVarDisjoint(vars: VarSet): Boolean {
-        return !anyVarOverlap(vars)
+    override fun isVarDisjoint(vs: VarSet): Boolean {
+        return !anyVarOverlap(vs)
     }
 
-    override fun isVarDisjoint(ctx: Cube): Boolean {
-        return !anyVarOverlap(ctx.vars)
+    override fun isVarDisjoint(cube: Cube): Boolean {
+        return !anyVarOverlap(cube.vars)
     }
 
     override fun isVarDisjoint(exp: Exp): Boolean {
@@ -2770,8 +2746,8 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         return conditionVV(vv, false)
     }
 
-    fun conditionVV(vv: Exp, keepXors: Boolean): Exp {
-        var vv = vv
+    fun conditionVV(vvIn: Exp, keepXors: Boolean): Exp {
+        var vv = vvIn
 
         if (!vv.isNnf) {
             vv = vv.toNnf(keepXors)
@@ -2874,7 +2850,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     fun containsYearVar(): Boolean {
         val vars = vars
-        val space = _space
         for (vr in vars) {
             if (vr.isYear) {
                 return true
@@ -2944,12 +2919,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             throw IllegalArgumentException()
         }
     }
-
-
-    fun anyVarIntersection(other: Iterator<Exp>): Boolean {
-        throw UnsupportedOperationException()
-    }
-
 
     open fun pushNotsIn(): Exp {
         return this
@@ -3133,22 +3102,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     }
 
-    fun printInfo(depth: Int) {
-
-
-        //        NodeInfo nodeInfo = computeNodeInfo();
-        //        nodeInfo.print(depth);
-    }
-
-
-    @JvmOverloads
-    fun printHead(depth: Int = 0) {
-        //        prindent(depth, "op1:         " + getOp1());
-        //        prindent(depth, "satCount:   " + getSatCount());
-        //        prindent(depth, "careVars:   " + get_complexVars().size() + ": " + get_complexVars());
-        //        System.err.println();
-    }
-
     fun printInfo() {
         System.err.println(toXml())
     }
@@ -3202,15 +3155,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     open fun computeSatCount1(lit: Lit): Long {
         throw UnsupportedOperationException(javaClass.name)
-    }
-
-    fun computeSatCount2(lit: Lit): Long {
-        throw UnsupportedOperationException(javaClass.name)
-    }
-
-    fun varsSet(): Set<Var> {
-        val vars = vars
-        throw UnsupportedOperationException()
     }
 
     fun putNext(next: Exp) {
@@ -3856,7 +3800,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             val p1 = e1!!.pos
             val p2 = e2!!.pos
 
-            val m1 = p1.macroType
             val m2 = p2.macroType
             val m = m2.compareTo(m2)
             if (m != 0) return@Comparator m
@@ -3903,7 +3846,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             val p1 = e1!!.pos
             val p2 = e2!!.pos
 
-            val m1 = p1.macroType
             val m2 = p2.macroType
             val m = m2.compareTo(m2)
             if (m != 0) return@Comparator m
@@ -4185,7 +4127,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         }
 
         fun printCubes(cubes: Iterable<Cube>) {
-            assert(cubes != null)
             val a = Ser()
 
 

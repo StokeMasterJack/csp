@@ -2,7 +2,7 @@ package com.smartsoft.csp.misc
 
 import com.smartsoft.csp.ast.Space
 import com.smartsoft.csp.ast.toCube
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import kotlin.test.*
 
 class VarSetTest {

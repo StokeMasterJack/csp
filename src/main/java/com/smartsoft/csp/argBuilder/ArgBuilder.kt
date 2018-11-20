@@ -1,23 +1,16 @@
 package com.smartsoft.csp.argBuilder
 
 import com.google.common.collect.Lists.newArrayList
-import com.smartsoft.csp.ExpIt
-import com.smartsoft.csp.Structure
-import com.smartsoft.csp.TreeSeqTo
+import com.smartsoft.csp.util.it.ExpIt
+import com.smartsoft.csp.util.it.Structure
+import com.smartsoft.csp.util.it.TreeSeqTo
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Open
-import com.smartsoft.csp.fm.dnnf.TrueOrArg
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.ast.FccState
+import com.smartsoft.csp.ast.Open
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.ints.IndexedEntry
 import com.smartsoft.csp.util.ints.TreeSequence
 import com.smartsoft.csp.util.varSets.VarSet
-
-enum class Cause { VarConflict, TrueArg, FalseArg, TrueArgs, Empty }
-
-
-class ShortCircuit(op: Op1, cause: Cause)
-
 
 /**
  * builder for and args and or args
@@ -66,7 +59,7 @@ class ShortCircuit(op: Op1, cause: Cause)
 
 class ArgBuilder
 @JvmOverloads
-constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = true, override var fcc:FccState = Open()) : IArgBuilder {
+constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = true, override var fcc: FccState = Open()) : IArgBuilder {
 
     init {
         require(op.isAndLike || op.isOrLike || op.isXor)
@@ -175,13 +168,11 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
      */
 
 
-    @JvmOverloads
     fun addExp(sExp: String): ArgBuilder {
         val exp: Exp = sp.parseExp(sExp)
         return addExp(exp)
     }
 
-    @JvmOverloads
     fun addExp(arg: Exp): ArgBuilder {
         if (isShortCircuit) {
             return this
@@ -194,7 +185,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-    @JvmOverloads
     fun addLit(lit: Lit): ArgBuilder {
         if (isShortCircuit) return this
         addInternal(lit)
@@ -203,7 +193,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-    @JvmOverloads
     fun addExp(vr: Var): ArgBuilder {
         if (isShortCircuit) return this
         val lit = vr.mkPosLit()
@@ -212,22 +201,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
         return this
     }
 
-    @JvmOverloads
-    fun addVars(vars: Iterable<Var>, condition: Condition = Condition.identity): ArgBuilder {
-        if (isShortCircuit) {
-            return this
-        }
-        for (v: Var in vars) {
-            if (isShortCircuit) {
-                return this
-            }
-            val arg1 = v.mkPosLit();
-            val arg2: Exp = condition.condition(arg1);
-            addExp(arg2)
-        }
-        return this
-
-    }
 
 
     @JvmOverloads
@@ -449,20 +422,7 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     val isNaryAnd: Boolean get() = isNary && op1.isAnd
 
 
-    @Throws(TrueOrArg::class)
-    fun collectOrArgs(args: Iterable<Exp>) {
-        for (arg in args) {
-            if (arg.isConstantTrue) {
-                throw TrueOrArg()
-            } else if (arg.isConstantFalse) {
-                //skip
-            } else if (arg.isOr) {
-                collectOrArgs(arg.argIt)
-            } else {
-                addExp(arg)
-            }
-        }
-    }
+
 
     override fun toString(): String {
         val list = newArrayList(argIt)

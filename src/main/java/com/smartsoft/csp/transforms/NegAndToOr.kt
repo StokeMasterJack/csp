@@ -12,8 +12,8 @@ import com.google.common.base.Preconditions.checkArgument
 //DF: !or(a b) => and(!a !b)
 class NegAndToOr : BaseTransformer() {
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isNegAnd
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isNegAnd
     }
 
     //  !and(a b)   => or(!a !b)

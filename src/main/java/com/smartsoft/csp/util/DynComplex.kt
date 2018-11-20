@@ -3,9 +3,9 @@ package com.smartsoft.csp.util
 import com.google.common.collect.Iterators
 import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Open
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.ast.FccState
+import com.smartsoft.csp.ast.Open
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.ints.TreeSequence
 import com.smartsoft.csp.util.it.ExpFilterIterator
 import com.smartsoft.csp.util.varSets.VarSet

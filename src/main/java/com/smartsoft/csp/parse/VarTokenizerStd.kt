@@ -1,7 +1,5 @@
 package com.smartsoft.csp.parse
 
-import com.smartsoft.csp.parse.std.VarTokenStd
-
 class VarTokenizerStd : VarTokenizer() {
 
     fun isValidVarFirstChar(c: Char): Boolean {

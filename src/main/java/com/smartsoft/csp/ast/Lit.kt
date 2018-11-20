@@ -3,8 +3,8 @@ package com.smartsoft.csp.ast
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterators
 import com.smartsoft.csp.argBuilder.ArgBuilder
-import com.smartsoft.csp.fm.dnnf.products.Cube
-import com.smartsoft.csp.fm.dnnf.products.LitCube
+import com.smartsoft.csp.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.LitCube
 import com.smartsoft.csp.ssutil.Strings.lpad
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.varSets.VarSet
@@ -148,7 +148,7 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
     }
 
     override fun anyVarOverlap(exp: Exp): Boolean {
-        if (exp == null || exp.isConstant) return false
+        if (exp.isConstant) return false
         if (exp.isLit) {
             return vr === exp.vr
         }
@@ -383,7 +383,7 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
         //add current args
         bAnd.addExp(this)
 
-        val exp = bAnd.mk(space)
+        val exp = bAnd.mk()
         return exp.asDAnd
     }
 

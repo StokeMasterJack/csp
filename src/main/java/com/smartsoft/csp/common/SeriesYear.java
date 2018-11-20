@@ -3,7 +3,7 @@ package com.smartsoft.csp.common;
 import com.smartsoft.csp.ast.DynCube;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.Cube;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

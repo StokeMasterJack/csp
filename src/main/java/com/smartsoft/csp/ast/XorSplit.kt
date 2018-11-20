@@ -1,15 +1,13 @@
 package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.argBuilder.ArgBuilder
-import com.smartsoft.csp.ast.formula.KFormula
 import com.smartsoft.csp.util.XorCube
-import java.lang.IllegalStateException
 
 /**
  * csp - formula and XorSplit  or varSplit
  * are all c the same level
  */
-class XorSplit(val formula: KFormula, val xor: Xor) {
+class XorSplit(val formula: Formula, val xor: Xor) {
 
     val space: Space = formula.space
     val xorVars = xor.vars

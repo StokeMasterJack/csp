@@ -58,7 +58,7 @@ class ParserTest : PLTestBase() {
     @Test
     fun test_parseImp() {
         val expText = "imp(red v6)"
-        val csp = Csp.parse(expText)
+        Csp.parse(expText)
     }
 
     @Test

@@ -33,10 +33,6 @@ class SpaceTest {
         assertEquals(1, v1.vrId)
         assertEquals(2, v2.vrId)
 
-        val i1 = v1.vrId
-        val i2 = v2.vrId
-
-
         val vv1 = sp.getVar(v1.vrId)
         val vv2 = sp.getVar(v2.vrId)
 

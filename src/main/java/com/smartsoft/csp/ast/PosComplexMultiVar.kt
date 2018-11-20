@@ -5,7 +5,7 @@ import com.google.common.collect.Iterators
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.LPAREN
 import com.smartsoft.csp.ast.PLConstants.RPAREN
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
 import com.smartsoft.csp.util.varSets.VarSet
@@ -144,8 +144,8 @@ abstract class PosComplexMultiVar(space: Space, expId: Int, internal val _args: 
     }
 
 
-    override fun getArg(i: Int): Exp {
-        return _args[i]
+    override fun getArg(index: Int): Exp {
+        return _args[index]
     }
 
     override fun argsRest(): List<Exp> {
@@ -166,7 +166,7 @@ abstract class PosComplexMultiVar(space: Space, expId: Int, internal val _args: 
     }
 
     override fun anyVarOverlap(exp: Exp): Boolean {
-        if (exp == null || exp.isConstant) return false
+        if (exp.isConstant) return false
         if (exp.isLit) {
             return vars.containsVar(exp.vr)
         }

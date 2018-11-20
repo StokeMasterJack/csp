@@ -8,7 +8,7 @@ import com.smartsoft.csp.VarInfo;
 import com.smartsoft.csp.argBuilder.ArgBuilder;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.common.*;
-import com.smartsoft.csp.fm.dnnf.products.PosCube;
+import com.smartsoft.csp.dnnf.products.PosCube;
 import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.varSets.VarSet;
 import com.smartsoft.csp.util.varSets.VarSetBuilder;

@@ -1,7 +1,7 @@
 package com.smartsoft.csp.ast
 
 
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 
 class Rmp(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space, expId, args) {
 

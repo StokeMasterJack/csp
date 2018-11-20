@@ -59,6 +59,7 @@ class CnfTest : CspBaseTest2() {
 
 
         val dimacs = csp.serializeDimacs()
+        assertTrue(!dimacs.isEmpty())
 
     }
 
@@ -83,7 +84,7 @@ class CnfTest : CspBaseTest2() {
 
         csp1.toCnf()
         val dimacs = csp1.serializeDimacs()
-//        System.err.println(dimacs)
+        assertTrue(!dimacs.isEmpty())
     }
 
     @Test

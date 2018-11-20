@@ -3,7 +3,7 @@ package com.smartsoft.csp.dnnf
 import com.smartsoft.csp.ast.Csp
 import com.smartsoft.csp.ast.toCubes
 import com.smartsoft.csp.data.CspSample
-import com.smartsoft.csp.fm.dnnf.vars.VarGrp
+import com.smartsoft.csp.dnnf.vars.VarGrp
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

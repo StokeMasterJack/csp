@@ -9,12 +9,11 @@ import com.smartsoft.csp.VarInfo;
 import com.smartsoft.csp.Vars;
 import com.smartsoft.csp.argBuilder.ArgBuilder;
 import com.smartsoft.csp.argBuilder.IArgBuilder;
-import com.smartsoft.csp.fm.dnnf.Dnnf;
-import com.smartsoft.csp.fm.dnnf.TrueOrArg;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
-import com.smartsoft.csp.fm.dnnf.products.EmptyCube;
-import com.smartsoft.csp.fm.dnnf.vars.VarFilter;
-import com.smartsoft.csp.fm.dnnf.vars.VarGrp;
+import com.smartsoft.csp.dnnf.Dnnf;
+import com.smartsoft.csp.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.EmptyCube;
+import com.smartsoft.csp.dnnf.vars.VarFilter;
+import com.smartsoft.csp.dnnf.vars.VarGrp;
 import com.smartsoft.csp.parse.Head;
 import com.smartsoft.csp.parse.ParseUtil;
 import com.smartsoft.csp.parse.VarSpace;
@@ -45,7 +44,7 @@ N: maxVarId
 N + 1: minComplexPos
 
  */
-public class Space extends SpaceUtil implements PLConstants {
+public class Space implements PLConstants {
 
     public static final Splitter MY_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings();
 
@@ -654,22 +653,6 @@ public class Space extends SpaceUtil implements PLConstants {
         return ImmutableList.copyOf(set);
     }
 
-
-    public void collectOrArgs(Iterable<Exp> args, Set<Exp> b) throws TrueOrArg {
-        for (Exp arg : args) {
-            if (arg.isConstantTrue()) {
-                throw new TrueOrArg();
-            } else if (arg.isConstantFalse()) {
-                //skip
-            } else if (arg.isOr()) {
-                collectOrArgs(arg.getArgIt(), b);
-            } else {
-                b.add(arg);
-            }
-        }
-    }
-
-
     public VarSet createVars(Set<Var> vars) {
         return varSpace.createVars(vars);
     }
@@ -963,7 +946,7 @@ public class Space extends SpaceUtil implements PLConstants {
     public Exp mkDOr(Set<Exp> args) {
         if (true) throw new UnsupportedOperationException();
         ArgBuilder b = new ArgBuilder(this, Op.DOr, args);
-        return b.mk(this);
+        return b.mk();
     }
 
 //    public Exp mkDOr(Iterable<Exp> rawArgs) {
@@ -1915,14 +1898,6 @@ public class Space extends SpaceUtil implements PLConstants {
 
     public static boolean isInt32(String prefix) {
         return VarSpace.isInt32(prefix);
-    }
-
-    public static ImmutableList<String> getInt32VarPrefixes() {
-        return VarSpace.getInt32VarPrefixes();
-    }
-
-    public static Set<String> createInt32VarCodes() {
-        return VarSpace.createInt32VarCodes();
     }
 
     public boolean check() {

@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast
 
 import com.google.common.collect.Iterators
 import com.smartsoft.csp.argBuilder.ArgBuilder
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.varSets.VarSet
 
 class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
@@ -79,10 +79,10 @@ class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
         return pos.containsVarId(varId)
     }
 
-    override fun condition(cube: Cube): Exp {
+    override fun condition(ctx: Cube): Exp {
         assert(!isConstant)
 
-        val sPos = pos.condition(cube)
+        val sPos = pos.condition(ctx)
 
         return if (sPos === pos) {
             this
@@ -120,8 +120,8 @@ class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
 
     }
 
-    override fun getArg(i: Int): Exp {
-        if (i == 0) return pos
+    override fun getArg(index: Int): Exp {
+        if (index == 0) return pos
         throw IndexOutOfBoundsException()
     }
 

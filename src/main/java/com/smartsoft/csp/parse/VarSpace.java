@@ -3,7 +3,7 @@ package com.smartsoft.csp.parse;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.*;
-import com.smartsoft.csp.fm.dnnf.products.VarPredicate;
+import com.smartsoft.csp.dnnf.products.VarPredicate;
 import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.BadVarIdException;
 import com.smartsoft.csp.util.HasVarId;

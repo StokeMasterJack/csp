@@ -1,6 +1,6 @@
 package com.smartsoft.csp;
 
-import com.smartsoft.csp.fm.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.Cube;
 
 import java.util.Collection;
 

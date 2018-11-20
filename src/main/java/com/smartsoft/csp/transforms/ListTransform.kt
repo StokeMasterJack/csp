@@ -33,11 +33,8 @@ abstract class ListTransform {
             var elementsChanged = 0
             val listOut = ArrayList<Exp>()
             for (argIn in listIn) {
-                checkState(argIn != null)
                 val argOut = transformer.transform(argIn)
-                if (argOut == null) {
-                    throw IllegalArgumentException("transform returned null. Transformer[" + transformer.javaClass.name + "]  expIn[" + argIn + "]")
-                } else if (argOut !== argIn) {
+                if (argOut !== argIn) {
                     elementsChanged++
                     listOut.add(argOut)
                 } else {
@@ -57,11 +54,8 @@ abstract class ListTransform {
             var elementsChanged = 0
             val listOut = ArrayList<Exp>()
             for (argIn in listIn) {
-                checkState(argIn != null)
                 val argOut = transformer.transform(argIn)
-                if (argOut == null) {
-                    throw IllegalArgumentException("transform returned null. Transformer[" + transformer.javaClass.name + "]  expIn[" + argIn + "]")
-                } else if (argOut !== argIn) {
+               if (argOut !== argIn) {
                     elementsChanged++
                     listOut.add(argOut)
                 } else {

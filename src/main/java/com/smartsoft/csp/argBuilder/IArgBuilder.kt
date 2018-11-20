@@ -3,8 +3,8 @@ package com.smartsoft.csp.argBuilder
 import com.smartsoft.csp.ast.Exp
 import com.smartsoft.csp.ast.Op
 import com.smartsoft.csp.ast.Op1
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Open
+import com.smartsoft.csp.ast.FccState
+import com.smartsoft.csp.ast.Open
 
 
 interface IArgBuilder {

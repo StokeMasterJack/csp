@@ -1,9 +1,9 @@
 package com.smartsoft.csp.fcc
 
 import com.smartsoft.csp.ast.Csp
-import com.smartsoft.csp.ast.formula.Fcc
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Fccs
+import com.smartsoft.csp.ast.Fcc
+import com.smartsoft.csp.ast.FccState
+import com.smartsoft.csp.ast.Fccs
 import com.smartsoft.csp.data.CspSample
 import com.smartsoft.csp.util.CspBaseTest2
 import org.junit.Assert.*
@@ -25,8 +25,8 @@ class FccTest : CspBaseTest2() {
             assertEquals(2, args.size)
 
             System.err.println("fccs: ")
-            for (fcc in args) {
-                System.err.println("fcc: $fcc")
+            for (ff in args) {
+                System.err.println("fcc: $ff")
             }
 
         }else{

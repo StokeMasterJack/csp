@@ -28,8 +28,8 @@ class IffToCnf : BaseTransformer() {
         return inExp.mkAnd(imp1, imp2)
     }
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isIff
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isIff
     }
 
 

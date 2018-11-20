@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.VarInfo;
-import com.smartsoft.csp.fm.dnnf.vars.VarGrp;
+import com.smartsoft.csp.dnnf.vars.VarGrp;
 import com.smartsoft.csp.varCodes.IVar;
 
 import java.util.Collections;

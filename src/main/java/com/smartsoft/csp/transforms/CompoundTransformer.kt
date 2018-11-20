@@ -2,7 +2,7 @@ package com.smartsoft.csp.transforms
 
 import com.smartsoft.csp.ast.Exp
 
-class CompoundTransformer(name: String?, vararg transformers: Transformer) : Transformer() {
+class CompoundTransformer(@Suppress("UNUSED_PARAMETER") name: String?, vararg transformers: Transformer) : Transformer() {
 
     private val transformers: Array<out Transformer>
 

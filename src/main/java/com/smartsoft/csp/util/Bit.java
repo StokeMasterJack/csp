@@ -1,7 +1,5 @@
 package com.smartsoft.csp.util;
 
-import com.smartsoft.csp.solver2.specs.Lbool;
-
 public enum Bit implements Tri {
 
     TRUE((byte) 1),
@@ -55,25 +53,6 @@ public enum Bit implements Tri {
         return bit == value;
     }
 
-    public static Bit fromLbool(Lbool lbool) {
-        if (lbool == Lbool.FALSE) return Bit.FALSE;
-        if (lbool == Lbool.TRUE) return Bit.TRUE;
-        if (lbool == Lbool.UNDEFINED) return Bit.OPEN;
-        throw new IllegalArgumentException();
-    }
-
-    public Lbool toLbool() {
-        switch (this) {
-            case TRUE:
-                return Lbool.TRUE;
-            case FALSE:
-                return Lbool.FALSE;
-            case OPEN:
-                return Lbool.UNDEFINED;
-            default:
-                throw new IllegalStateException();
-        }
-    }
 
     public static Bit fromBool(boolean value) {
         return value ? TRUE : FALSE;

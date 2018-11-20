@@ -19,7 +19,7 @@ class FlattenImps : BaseTransformer() {
         return and.mk()
     }
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isImp && expIn.isPair && expIn.arg2.isAnd
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isImp && inExp.isPair && inExp.arg2.isAnd
     }
 }

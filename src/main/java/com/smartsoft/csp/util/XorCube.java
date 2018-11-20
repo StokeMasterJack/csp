@@ -1,7 +1,7 @@
 package com.smartsoft.csp.util;
 
 import com.smartsoft.csp.ast.*;
-import com.smartsoft.csp.fm.dnnf.products.AbstractCube;
+import com.smartsoft.csp.dnnf.products.AbstractCube;
 import com.smartsoft.csp.util.varSets.VarSet;
 import org.jetbrains.annotations.NotNull;
 

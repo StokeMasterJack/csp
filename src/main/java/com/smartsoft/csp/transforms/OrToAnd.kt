@@ -15,8 +15,8 @@ class OrToAnd : BaseTransformer() {
         return or.createEquivAnd()
     }
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isOr
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isOr
     }
 
 

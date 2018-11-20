@@ -9,9 +9,9 @@ class FlattenAnds : BaseTransformer() {
         return flattenAnd(inExp.asAnd)
     }
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        if (expIn.isAnd) {
-            for (arg in expIn.argIt) {
+    override fun executeLocal(inExp: Exp): Boolean {
+        if (inExp.isAnd) {
+            for (arg in inExp.argIt) {
                 if (arg.isAnd) {
                     return true
                 }

@@ -1,15 +1,15 @@
 package com.smartsoft.csp.util.varSets;
 
 import com.google.common.collect.*;
-import com.smartsoft.csp.IterTo;
+import com.smartsoft.csp.util.it.IterTo;
 import com.smartsoft.csp.VarInfo;
-import com.smartsoft.csp.VarTo;
+import com.smartsoft.csp.util.it.VarTo;
 import com.smartsoft.csp.ast.*;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
-import com.smartsoft.csp.fm.dnnf.products.Cubes;
-import com.smartsoft.csp.fm.dnnf.products.VarPredicate;
-import com.smartsoft.csp.fm.dnnf.vars.IntFilter;
-import com.smartsoft.csp.fm.dnnf.vars.VarFilter;
+import com.smartsoft.csp.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.Cubes;
+import com.smartsoft.csp.dnnf.products.VarPredicate;
+import com.smartsoft.csp.dnnf.vars.IntFilter;
+import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.BadVarIdException;

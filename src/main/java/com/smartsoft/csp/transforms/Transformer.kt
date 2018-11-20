@@ -18,9 +18,9 @@ abstract class Transformer : Transforms(), PLConstants {
         return _name
     }
 
-    fun howToHandle(expIn: Exp): Any? {
-        return null
-    }
+//    fun howToHandle(expIn: Exp): Any? {
+//        return null
+//    }
 
 
     abstract fun transform(inExp: Exp): Exp

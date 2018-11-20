@@ -190,10 +190,10 @@ public abstract class CspBaseTest extends SpaceJvm implements PLConstants {
     }
 
     @Before
-    public void initLogging() throws Exception {
+    public void initLogging()  {
         try {
             String config = loadLogConfig();
-            InputStream is = new StringBufferInputStream(config);
+            @SuppressWarnings("deprecation") InputStream is = new StringBufferInputStream(config);
             LogManager.getLogManager().readConfiguration(is);
         } catch (IOException ex) {
             System.out.println("WARNING: Could not open configuration file");

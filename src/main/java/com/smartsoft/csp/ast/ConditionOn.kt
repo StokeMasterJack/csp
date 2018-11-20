@@ -1,6 +1,6 @@
 package com.smartsoft.csp.ast
 
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 
 interface ConditionOn {
 

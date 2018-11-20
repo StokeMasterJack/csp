@@ -6,11 +6,11 @@ class LitPair(val lit1: Exp, val lit2: Exp) {
         return lit1.toString() + " " + lit2
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o !is LitPair) return false
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LitPair) return false
 
-        val litPair = o as LitPair?
+        val litPair = other as LitPair?
 
         if (lit1 != litPair!!.lit1) return false
         return if (lit2 != litPair.lit2) false else true

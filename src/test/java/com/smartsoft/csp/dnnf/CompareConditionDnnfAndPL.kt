@@ -2,7 +2,7 @@ package com.smartsoft.csp.dnnf
 
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.data.CspSample
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.varSets.VarSet
 import kotlin.test.Test
 
@@ -13,8 +13,7 @@ class CompareConditionDnnfAndPL {
     fun compareAllLitsAllCsps() {
         val list: List<CspSample> = CspSample.allSimplePL
         for (sample in list) {
-            val smallest = compareAllLitsOneCsp(sample)
-//            println("smallest = ${smallest}")
+            compareAllLitsOneCsp(sample)
         }
     }
 

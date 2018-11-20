@@ -5,7 +5,7 @@ import com.google.common.io.Files;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.data.CspSample;
 import com.smartsoft.csp.data.TestData;
-import com.smartsoft.csp.fm.dnnf.Dnnf;
+import com.smartsoft.csp.dnnf.Dnnf;
 import com.smartsoft.csp.ssutil.Path;
 
 import javax.annotation.Nonnull;

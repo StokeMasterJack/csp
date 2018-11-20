@@ -2,7 +2,7 @@ package com.smartsoft.csp.pl
 
 import com.smartsoft.csp.ast.Csp
 import com.smartsoft.csp.ast.Exp
-import com.smartsoft.csp.ast.formula.KFormula
+import com.smartsoft.csp.ast.Formula
 import com.smartsoft.csp.data.CspSample
 import com.smartsoft.csp.ssutil.Console.prindent
 import com.smartsoft.csp.ssutil.Strings
@@ -186,7 +186,7 @@ Processing Tundra:
             }
         }
 
-        println("computeLitImps KFormula.globalDelta = ${KFormula.globalDelta}")
+        println("computeLitImps KFormula.globalDelta = ${Formula.globalDelta}")
     }
 
 

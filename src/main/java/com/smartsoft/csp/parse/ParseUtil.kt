@@ -43,8 +43,8 @@ class ParseUtil : PLConstants {
         }
 
         @JvmStatic
-        fun parseVarMap(token: String, varMap: String): List<String> {
-            var varMap = varMap
+        fun parseVarMap(token: String, varMapIn: String): List<String> {
+            var varMap = varMapIn
             val i1 = token.length + 1
             val i2 = varMap.length - 1
             varMap = varMap.substring(i1, i2)

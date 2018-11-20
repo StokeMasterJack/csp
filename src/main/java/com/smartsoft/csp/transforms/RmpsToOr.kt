@@ -11,8 +11,8 @@ class RmpsToOr : BaseTransformer() {
         return inExp.asRmp().toOr
     }
 
-    override fun executeLocal(expIn: Exp): Boolean {
-        return expIn.isRmp
+    override fun executeLocal(inExp: Exp): Boolean {
+        return inExp.isRmp
     }
 
 

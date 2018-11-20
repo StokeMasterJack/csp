@@ -1,0 +1,7 @@
+<component name="DependencyValidationManager">
+  <state>
+    <unnamed_scope value="src:com.smartsoft.csp.solver2.specs.Lbool" />
+    <unnamed_scope value="src:com.smartsoft.csp.util.Bit" />
+    <deny_rule from_scope="src:com.smartsoft.csp.solver2.specs.Lbool" to_scope="src:com.smartsoft.csp.util.Bit" is_deny="true" />
+  </state>
+</component>

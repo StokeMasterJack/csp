@@ -6,11 +6,15 @@ import com.google.common.collect.Multimap
 import com.smartsoft.csp.*
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.data.CspSample
-import com.smartsoft.csp.fm.dnnf.Dnnf
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.Dnnf
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.ssutil.Console.prindent
 import com.smartsoft.csp.transforms.Transformer
 import com.smartsoft.csp.util.*
+import com.smartsoft.csp.util.it.ExpFn
+import com.smartsoft.csp.util.it.ExpFnJvm
+import com.smartsoft.csp.util.it.Fn
+import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.util.varSets.VarSet
 import com.smartsoft.csp.util.varSets.VarSetBuilder
 import java.math.BigInteger
@@ -522,7 +526,6 @@ class Csp @JvmOverloads constructor(
         } else if (hasSimple && hasComplex) {
 
             assert(simple != null)
-            assert(complex != null)
 
 
             val ss = simple!!.mkCubeExp()
@@ -1311,14 +1314,14 @@ class Csp @JvmOverloads constructor(
 
     val vars: VarSet
         get() {
-            return VarSet.union(space, simple?.vars, complex?.vars, dontCares)
+            return VarSet.union(space, simple?.vars, complex.vars, dontCares)
         }
 
 
     val size: Int get() = simpleConstraintCount + complexConstraintCount
 
     val simpleConstraintCount: Int get() = simple?.size ?: 0
-    val complexConstraintCount: Int get() = complex?.size ?: 0
+    val complexConstraintCount: Int get() = complex.size
 
     fun simplifyAlwaysTrueVars() {
         maybeAddAlwaysTrueVars()
@@ -1368,7 +1371,7 @@ class Csp @JvmOverloads constructor(
 
     fun sortComplexConstraints(selector: (Exp) -> Int): List<Exp> {
         return if (hasComplex) {
-            complex!!.argIt.sortedBy(selector)
+            complex.argIt.sortedBy(selector)
         } else {
             emptyList()
         }
@@ -1377,11 +1380,11 @@ class Csp @JvmOverloads constructor(
 
     fun getExpWithLargestAnd(): Exp? {
         return if (!hasComplex) {
-            null as Exp?
+            null
         } else {
             var best: Exp? = null
             var bestAnd: Exp? = null
-            for (exp in complex!!) {
+            for (exp in complex) {
                 if (bestAnd == null) {
                     best = exp
                     bestAnd = exp.andWithHighestLitArgCount
@@ -1401,8 +1404,8 @@ class Csp @JvmOverloads constructor(
     }
 
 
-    fun getModelCodesForSeries(seriesName: String): Set<String> {
-        var seriesName = seriesName
+    fun getModelCodesForSeries(seriesNameArg: String): Set<String> {
+        var seriesName = seriesNameArg
         if (!seriesName.startsWith("SER")) {
             seriesName = "SER_$seriesName"
         }
@@ -1497,9 +1500,7 @@ class Csp @JvmOverloads constructor(
         serializeTinyCnfComplex(a);
     }
 
-    fun serializeTinyCnfSimple(a: Ser) {
-        throw UnsupportedOperationException();
-    }
+
 
     fun serializeTinyCnfComplex(a: Ser) {
         if (complex.isNullOrEmpty) return;
@@ -1561,7 +1562,7 @@ class Csp @JvmOverloads constructor(
 
     fun checkCnf(): Boolean {
         if (!hasComplex) return true;
-        for (constraint in complex!!.argIt) {
+        for (constraint in complex.argIt) {
             if (!constraint.isClause) {
                 throw IllegalStateException("constraint is not CNF[" + constraint + "]");
             }
@@ -1646,7 +1647,6 @@ class Csp @JvmOverloads constructor(
         for (yearExp in yearXor!!.argIt) {
             val yearVarCode = yearExp.varCode
 
-            val yearCsp = condition(yearVarCode)
             val map = computeSeriesModelMultiMap()
 
             val keys = map.keySet()
@@ -1710,7 +1710,7 @@ class Csp @JvmOverloads constructor(
         val clauseSortedSetComparator = ClauseSortedSetComparator()
         val ss = TreeSet<TreeSet<String>>(clauseSortedSetComparator);
 
-        if (hasComplex && complex != null) {
+        if (hasComplex) {
             for (e: Exp in complexIt) {
                 assert(e.isClause)
                 val s: TreeSet<String> = e.clauseToSortedSet();
@@ -1839,7 +1839,6 @@ class Csp @JvmOverloads constructor(
         }
 
         @JvmStatic
-        @JvmOverloads
         fun compileDnnf(sample: CspSample): Exp {
             return compileDnnf(sample.loadText())
         }
@@ -1854,12 +1853,10 @@ class Csp @JvmOverloads constructor(
         //create
 
         @JvmStatic
-        @JvmOverloads
-        fun parse(clob: String, tiny: Boolean = false): Csp = Parser.parseCsp1(clob);
+        fun parse(clob: String): Csp = Parser.parseCsp1(clob);
 
         @JvmStatic
-        @JvmOverloads
-        fun parse(cspSample: CspSample, tiny: Boolean = false): Csp {
+        fun parse(cspSample: CspSample): Csp {
             return parse(cspSample.loadText());
         }
 

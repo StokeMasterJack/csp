@@ -3,8 +3,7 @@ package com.smartsoft.csp.ast
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.PosOp
-import com.smartsoft.csp.ast.formula.FConstraintSet
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.UnionFind
 
 open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs), FConstraintSet {

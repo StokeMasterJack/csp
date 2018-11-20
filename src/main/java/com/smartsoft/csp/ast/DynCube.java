@@ -2,10 +2,10 @@ package com.smartsoft.csp.ast;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterators;
-import com.smartsoft.csp.ExpArrayTo;
-import com.smartsoft.csp.fm.dnnf.products.AbstractCube;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
-import com.smartsoft.csp.fm.dnnf.products.CubesK;
+import com.smartsoft.csp.util.it.ExpArrayTo;
+import com.smartsoft.csp.dnnf.products.AbstractCube;
+import com.smartsoft.csp.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.CubesK;
 import com.smartsoft.csp.parse.Head;
 import com.smartsoft.csp.util.Bit;
 import com.smartsoft.csp.util.HasVarId;
@@ -566,7 +566,7 @@ public class DynCube extends AbstractCube {
 
     @NotNull
     public Exp mk() {
-        return CubesK.mk(this);
+        return CubesK.mk1(this);
     }
 
 

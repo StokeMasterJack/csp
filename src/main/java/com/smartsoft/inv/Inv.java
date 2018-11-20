@@ -7,8 +7,8 @@ import com.smartsoft.csp.Vars;
 import com.smartsoft.csp.argBuilder.ArgBuilder;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.common.*;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
-import com.smartsoft.csp.fm.dnnf.vars.VarFilter;
+import com.smartsoft.csp.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.varSets.VarSet;
 import com.smartsoft.csp.util.varSets.VarSetBuilder;
@@ -989,7 +989,7 @@ public class Inv extends Mods {
         for (Var dealerVar : dealerVars) {
             and.addExp(dealerVar.mkNegLit());
         }
-        return and.mk(space);
+        return and.mk();
     }
 
     public ImmutableSet<ColorCombo> computeValidColorCombos() {

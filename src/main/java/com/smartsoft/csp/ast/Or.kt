@@ -3,10 +3,9 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
-import com.smartsoft.csp.ast.formula.CanSplit
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 
-open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs), CanSplit {
+open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs) {
 
     init {
         assert(assertFixedArgs(fixedArgs))
@@ -50,7 +49,7 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         a.append(RPAREN)
     }
 
-    override fun decide(): Var {
+    fun decide(): Var {
         return vars.getFirstVar()
     }
 
@@ -64,12 +63,12 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         }
     }
 
-    override fun condition(cube: Cube): Exp {
-        return if (!anyVarOverlap(cube)) {
+    override fun condition(ctx: Cube): Exp {
+        return if (!anyVarOverlap(ctx)) {
             this
         } else {
             argBuilder(op())
-                    .addExpArray(_args, Condition.fromCube(cube))
+                    .addExpArray(_args, Condition.fromCube(ctx))
                     .mk()
         }
     }

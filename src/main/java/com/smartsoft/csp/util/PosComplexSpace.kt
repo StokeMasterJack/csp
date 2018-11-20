@@ -2,10 +2,10 @@ package com.smartsoft.csp.util
 
 import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.formula.Fcc
-import com.smartsoft.csp.ast.formula.KFormula
-import com.smartsoft.csp.fm.dnnf.DAnd
-import com.smartsoft.csp.fm.dnnf.DOr
+import com.smartsoft.csp.ast.Fcc
+import com.smartsoft.csp.ast.Formula
+import com.smartsoft.csp.dnnf.DAnd
+import com.smartsoft.csp.dnnf.DOr
 
 class PosComplexSpace(val space: Space) {
 
@@ -28,9 +28,9 @@ class PosComplexSpace(val space: Space) {
         val retVal = when (op) {
             Op.Cube -> CubeExp(space, expId, args)
             Op.DAnd -> DAnd(space, expId, args)
-            Op.Formula -> KFormula(space, expId, args, b.fcc)
+            Op.Formula -> Formula(space, expId, args, b.fcc)
             Op.Fcc -> {
-                KFormula(space, expId, args, Fcc())
+                Formula(space, expId, args, Fcc())
             }
             Op.And -> And(space, expId, args)
             Op.DOr -> DOr(space, expId, args)
@@ -320,7 +320,7 @@ class PosComplexSpace(val space: Space) {
                 var pos = table[i]
                 while (pos != null) {
                     depth++
-                    pos = pos!!.next
+                    pos = pos.next
                 }
 
                 if (depth < minDepth) minDepth = depth

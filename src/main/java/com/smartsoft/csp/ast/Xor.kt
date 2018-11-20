@@ -3,7 +3,7 @@ package com.smartsoft.csp.ast
 import com.google.common.base.Preconditions.checkNotNull
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.argBuilder.ArgBuilder
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Range
 import com.smartsoft.csp.util.XorCube
 import com.smartsoft.csp.util.varSets.VarSet
@@ -380,7 +380,7 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
             for (v2 in vars) {
                 dAnd.addExp(v2.mkLit(v2 === v1))
             }
-            val and = dAnd.mk(space).asDAnd
+            val and = dAnd.mk().asDAnd
             dOr.addExp(and)
         }
 

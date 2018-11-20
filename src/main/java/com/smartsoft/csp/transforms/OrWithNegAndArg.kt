@@ -28,7 +28,7 @@ class OrWithNegAndArg : BaseTransformer() {
         assert(negAndArg.isNegAnd)
 
 
-        val argsCopy = inExp.copyArgs()
+        @Suppress("UNUSED_VARIABLE") val argsCopy = inExp.copyArgs()
 
         throw UnsupportedOperationException()
     }

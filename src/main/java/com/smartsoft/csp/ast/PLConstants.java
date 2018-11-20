@@ -336,17 +336,7 @@ public interface PLConstants {
             }
         }
 
-        public static PosOp parsePosComplexToken(String token) {
-            Ser a = Settings.get().ser;
 
-            for (PosOp posOp : getComplexOps2()) {
-                String t1 = posOp.getComplexOpToken(a);
-                if (token.equals(t1)) {
-                    return posOp;
-                }
-            }
-            return null;
-        }
 
 
     }

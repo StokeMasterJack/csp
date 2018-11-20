@@ -457,6 +457,9 @@ class MinFCardTest {
         val mmf = n.minFModels()
         tt.t("minFModels")
 
+        println("mmt = ${mmt}")
+        println("mmf = ${mmf}")
+
     }
 
     @Test

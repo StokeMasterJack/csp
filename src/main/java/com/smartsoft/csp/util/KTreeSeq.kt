@@ -1,9 +1,9 @@
 package com.smartsoft.csp.util
 
-import com.smartsoft.csp.It
 import com.smartsoft.csp.ast.Exp
 import com.smartsoft.csp.util.ints.IndexedEntry
 import com.smartsoft.csp.util.ints.TreeSequence
+import com.smartsoft.csp.util.it.It
 
 typealias ExpEntry = IndexedEntry<Exp>
 

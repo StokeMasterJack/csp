@@ -4,7 +4,7 @@ import com.smartsoft.csp.ast.DynCube
 import com.smartsoft.csp.ast.Exp
 import com.smartsoft.csp.ast.Lit
 import com.smartsoft.csp.ast.sp
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 
 data class CubePair(val intersection: Cube, val disjoint: Cube) {
 

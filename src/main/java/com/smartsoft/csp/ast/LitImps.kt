@@ -1,7 +1,6 @@
 package com.smartsoft.csp.ast
 
-import com.smartsoft.csp.ast.formula.KFormula
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.ssutil.Strings.indent
 import java.util.*
 
@@ -488,13 +487,13 @@ class LitImps {
     companion object {
 
         @Throws(ImpliedLitException::class)
-        fun fromFormula(formula: KFormula): LitImps = LitImps().addAll(formula._args)
+        fun fromFormula(formula: Formula): LitImps = LitImps().addAll(formula._args)
 
         @Throws(ImpliedLitException::class)
-        fun computeBest(formula: KFormula): VarImps? = fromFormula(formula).bestVarImps()
+        fun computeBest(formula: Formula): VarImps? = fromFormula(formula).bestVarImps()
 
         @Throws(ImpliedLitException::class)
-        fun computeBestVar(formula: KFormula): Var? = computeBest(formula)?.vr
+        fun computeBestVar(formula: Formula): Var? = computeBest(formula)?.vr
     }
 
     val varImpsList: List<VarImps> get() = map.values.sortedByDescending { it.score }

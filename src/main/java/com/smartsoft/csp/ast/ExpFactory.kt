@@ -1,15 +1,13 @@
 package com.smartsoft.csp.ast
 
 import com.google.common.collect.ImmutableSet
-import com.smartsoft.csp.ExpFn
-import com.smartsoft.csp.ExpIt
-import com.smartsoft.csp.Fn
-import com.smartsoft.csp.It
+import com.smartsoft.csp.util.it.ExpFn
+import com.smartsoft.csp.util.it.ExpIt
+import com.smartsoft.csp.util.it.Fn
+import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.argBuilder.IArgBuilder
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Open
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
 import com.smartsoft.csp.util.varSets.VarSet
@@ -18,7 +16,6 @@ class ExpFactory(val space: Space) {
 
     val parser: Parser get() = space.parser
 
-    @JvmOverloads
     fun mkNCube(vars: VarSet): Exp {
         val bb = argBuilder(Op.Cube)
         for (vr in vars) {
@@ -28,7 +25,6 @@ class ExpFactory(val space: Space) {
         return bb.mk()
     }
 
-    @JvmOverloads
     fun mkIff(args: Iterable<Exp>): Exp {
         val iterator = args.iterator()
         val arg1: Exp = iterator.next()
@@ -37,7 +33,6 @@ class ExpFactory(val space: Space) {
         return mkBinaryIff(arg1, arg2)
     }
 
-    @JvmOverloads
     fun mkImp(args: Iterable<Exp>): Exp {
         val iterator = args.iterator()
         val arg1: Exp = iterator.next()
@@ -46,7 +41,6 @@ class ExpFactory(val space: Space) {
         return mkBinaryImp(arg1, arg2)
     }
 
-    @JvmOverloads
     fun mkNand(args: Iterable<Exp>): Exp {
         val iterator = args.iterator()
         val arg1: Exp = iterator.next()
@@ -55,7 +49,6 @@ class ExpFactory(val space: Space) {
         return mkBinaryNand(arg1, arg2)
     }
 
-    @JvmOverloads
     fun mkBinaryIff(arg1: Exp, arg2: Exp): Exp {
 
         if (arg1 === arg2) {
@@ -122,23 +115,20 @@ class ExpFactory(val space: Space) {
     }
 
 
-    @JvmOverloads
     fun mkBinaryImp(lhs: Exp, rhs: Exp): Exp {
         return mkBinaryOr(lhs.flip, rhs);
     }
 
-    @JvmOverloads
     fun mkBinaryNand(a1: Exp, a2: Exp): Exp {
         val arg1 = a1.flip
         val arg2 = a2.flip
         return mkBinaryOr(arg1, arg2);
     }
 
-    @JvmOverloads
-    fun mkXor(vararg args: Exp, condition: Condition = Condition.identity): Exp {
+    fun mkXor(vararg args: Exp,condition: ConditionOn): Exp {
         val b = this.argBuilder(Op.Xor)
         for (arg1 in args) {
-            val arg2 = condition.condition(arg1)
+            val arg2 = arg1.condition(condition)
             b.addExp(arg2);
         }
         return b.mk()
@@ -284,7 +274,6 @@ class ExpFactory(val space: Space) {
 //        return mkPair(op = Op.Cube, arg1 = arg1, arg2 = arg2)
 //    }
 
-    @JvmOverloads
     fun mkCubeExp(args: VarSet, sign: Boolean): Exp {
         val bb = argBuilder(Op.Cube)
         args.recomputeSize()
@@ -386,7 +375,6 @@ class ExpFactory(val space: Space) {
     /**
      * Args are already known to be disjoint and dnnf
      */
-    @JvmOverloads
     fun mkDAnd(cube1: CubeExp, cube2: CubeExp): Exp {
         return CubeCubeDAndBuilder(cube1, cube2).mk()
     }
@@ -395,7 +383,6 @@ class ExpFactory(val space: Space) {
     /**
      * Args are already known to be disjoint
      */
-    @JvmOverloads
     fun mkDAnd(arg1: Lit, arg2: CubeExp): Exp {
         return LitCubeDAndBuilder(arg1, arg2).mk()
     }
@@ -403,7 +390,6 @@ class ExpFactory(val space: Space) {
     /**
      * Args are already known to be disjoint
      */
-    @JvmOverloads
     fun mkDCubeLitPair(arg1: Lit, arg2: Lit): Exp {
         return LitPairDCubeBuilder(arg1, arg2).mk()
     }
@@ -411,7 +397,6 @@ class ExpFactory(val space: Space) {
     /**
      * Args are already known to be disjoint
      */
-    @JvmOverloads
     fun mkLitPair(op: Op, arg1: Lit, arg2: Lit): Exp {
         return LitPairBuilder(op, arg1, arg2).mk()
     }

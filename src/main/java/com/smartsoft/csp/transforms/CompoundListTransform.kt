@@ -13,8 +13,8 @@ class CompoundListTransform(vararg transformer: Transformer) : ListTransform() {
         this.transformer = transformer
     }
 
-    override fun transform(listIn: List<Exp>): List<Exp> {
-        return ListTransform.multiTransformList(listIn, transformer)
+    override fun transform(inExp: List<Exp>): List<Exp> {
+        return ListTransform.multiTransformList(inExp, transformer)
     }
 
 }

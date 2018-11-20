@@ -6,7 +6,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static junit.framework.Assert.assertEquals;
+//import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SimplifySeriesModelAndsTest extends CspBaseTest2 {

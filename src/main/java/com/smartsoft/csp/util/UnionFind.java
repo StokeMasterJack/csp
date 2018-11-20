@@ -1,6 +1,6 @@
 package com.smartsoft.csp.util;
 
-import com.smartsoft.csp.ast.formula.FConstraintSet;
+import com.smartsoft.csp.ast.FConstraintSet;
 
 import java.util.HashSet;
 

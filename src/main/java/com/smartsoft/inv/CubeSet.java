@@ -2,7 +2,7 @@ package com.smartsoft.inv;
 
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.Space;
-import com.smartsoft.csp.fm.dnnf.products.Cube;
+import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.util.varSets.VarSet;
 import com.smartsoft.csp.util.varSets.VarSetBuilder;
 

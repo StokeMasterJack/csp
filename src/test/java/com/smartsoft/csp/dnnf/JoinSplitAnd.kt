@@ -4,7 +4,7 @@ import com.smartsoft.csp.ast.Csp
 import com.smartsoft.csp.ast.Exp
 import com.smartsoft.csp.ast.Prefix
 import com.smartsoft.csp.data.CspSample
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.ssutil.rpad
 import com.smartsoft.csp.ssutil.tt
 import com.smartsoft.csp.util.CspBaseTest2
@@ -15,11 +15,6 @@ import java.math.BigInteger
 import kotlin.test.assertTrue
 
 class JoinSplitAnd : CspBaseTest2() {
-
-    @Test
-    fun testCreateEfcDnnf() {
-        val efcDnnf = createEfcDnnf()
-    }
 
     @Test
     fun testCreateYsCombos() {

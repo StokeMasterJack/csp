@@ -6,7 +6,7 @@ import com.smartsoft.csp.ast.DynCube;
 import com.smartsoft.csp.ast.Exp;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.fm.dnnf.vars.VarFilter;
+import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.util.Bit;
 import com.smartsoft.csp.util.varSets.VarSet;
 

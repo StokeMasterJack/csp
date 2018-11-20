@@ -3,7 +3,7 @@ package com.smartsoft.csp.ast
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.Vars
-import com.smartsoft.csp.fm.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.parse.*
 import com.smartsoft.csp.util.DynComplex
 
@@ -61,7 +61,7 @@ class Parser(val space: Space) {
                 //            headToken.
 
 
-                val prefix = posLit.prefix
+                @Suppress("UNUSED_VARIABLE") val prefix = posLit.prefix
 //                parseCounter.countPrefix(prefix)
                 return posLit
             }
@@ -74,6 +74,7 @@ class Parser(val space: Space) {
         tokens.consumeAndCheck(PLConstants.LPAREN)
         while (true) {
             val next = tokens.peek()
+            @Suppress("SENSELESS_COMPARISON")
             if (next === null) {
                 check(retVal.size > 0)
                 return retVal
@@ -449,8 +450,8 @@ class Parser(val space: Space) {
         fun isComment(expLine: String): Boolean = expLine.trim().startsWith("#")
 
         @JvmStatic
-        fun parseCsp(clob: String, tiny: Boolean = false): Csp {
-            val raw: Raw = clobToRaw(clob, tiny)
+        fun parseCsp(clob: String): Csp {
+            val raw: Raw = clobToRaw(clob)
             return raw.csp
         }
 
@@ -467,7 +468,7 @@ class Parser(val space: Space) {
         }
 
         @JvmStatic
-        fun clobToRaw(clob: String, tiny: Boolean = false): Raw {
+        fun clobToRaw(clob: String): Raw {
             val lines = clobToLines(clob)
             val firstLine = lines.first()
             return if (Vars.isVarsLine(firstLine)) {
@@ -476,23 +477,22 @@ class Parser(val space: Space) {
                 Raw(varsLine, constraints)
             } else {
                 println("extracting var codes")
-                val varsLine: String = extractVarCodesLine(lines, tiny)
+                val varsLine: String = extractVarCodesLine(lines)
                 val constraints = lines
                 Raw(varsLine, constraints)
             }
         }
 
         @JvmStatic
-        fun extractVarCodes(clob: String, tiny: Boolean = false): Set<String> {
+        fun extractVarCodes(clob: String): Set<String> {
             val lines = clobToLines(clob)
-            return extractVarCodes(lines, tiny)
+            return extractVarCodes(lines)
         }
 
 
         @JvmStatic
-        @JvmOverloads
-        fun compareVarsLineToExtract(clob: String, tiny: Boolean = false) {
-            val extract = extractVarCodes(clob, tiny = false)
+        fun compareVarsLineToExtract(clob: String) {
+            val extract = extractVarCodes(clob)
             val lines = clobToLines(clob)
             val firstLine = lines.first()
             val varsLine = if (Vars.isVarsLine(firstLine)) {
@@ -530,8 +530,7 @@ class Parser(val space: Space) {
         fun parseLines1(clob: String): List<String> = clobToLines(clob).toList();
 
         @JvmStatic
-        @JvmOverloads
-        fun extractVarCodes(constraints: Sequence<String>, tiny: Boolean = false): Set<String> {
+        fun extractVarCodes(constraints: Sequence<String>): Set<String> {
             val space0 = Space()
             val parser = space0.parser;
             val set = mutableSetOf<String>()
@@ -541,9 +540,8 @@ class Parser(val space: Space) {
         }
 
         @JvmStatic
-        @JvmOverloads
-        fun extractVarCodesLine(constraints: Sequence<String>, tiny: Boolean = false): String {
-            val codes = extractVarCodes(constraints, tiny)
+        fun extractVarCodesLine(constraints: Sequence<String>): String {
+            val codes = extractVarCodes(constraints)
             val a = Ser()
             a.ap(Vars.HEAD_VARS_LINE)
             ParseUtil.serializeVarCodes(a, codes);

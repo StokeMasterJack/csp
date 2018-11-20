@@ -1,8 +1,6 @@
 package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.argBuilder.IArgBuilder
-import com.smartsoft.csp.ast.formula.FccState
-import com.smartsoft.csp.ast.formula.Open
 import com.smartsoft.csp.util.varSets.EmptyVarSet
 import com.smartsoft.csp.util.varSets.VarSet
 import java.util.*
@@ -183,14 +181,13 @@ class DComplex(
         }
 
 
-        if (fcc != other.fcc) {
+        return if (fcc != other.fcc) {
             println("FCC's do not match!!!!")
-            return false
+            false
         } else {
-            return true
+            true
         }
 
-        return true
     }
 
     fun dedup() {
