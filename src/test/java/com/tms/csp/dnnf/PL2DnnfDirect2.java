@@ -126,7 +126,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
     @Test
     public void efcProdFactoryRules() throws Exception {
 
-        Csp csp = CspSample.EfcProdFactoryRules.csp();
+        Csp csp = CspSample.EfcProdFactoryRules.parseCsp();
         TT tt = new TT();
         csp.printVarInfo();
         Exp n = csp.toDnnf();
@@ -177,7 +177,7 @@ public class PL2DnnfDirect2 extends CspBaseTest2 {
     }
 
     private Exp pl2dnnf(CspSample sample) {
-        Csp csp = sample.csp();
+        Csp csp = sample.parseCsp();
 
 //        csp.toNnfKeepXors();
         //        csp.print();

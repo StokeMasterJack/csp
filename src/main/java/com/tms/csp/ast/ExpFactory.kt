@@ -405,6 +405,14 @@ class ExpFactory(val space: Space) {
         return LitPairDCubeBuilder(arg1, arg2).mk()
     }
 
+    /**
+     * Args are already known to be disjoint
+     */
+    @JvmOverloads
+    fun mkLitPair(op: Op, arg1: Lit, arg2: Lit): Exp {
+        return LitPairBuilder(op, arg1, arg2).mk()
+    }
+
 
     /**
      * Args are already known to be disjoint and dnnf
@@ -668,6 +676,25 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
     override val fcc: FccState get() = Open()
     override val size: Int get() = 2
     override val op: Op get() = Op.Cube
+    override val argIt: Iterable<Exp> get() = a.asIterable()
+    override fun mk(): Exp = space.mkPosComplex(this);
+    override fun createExpArray(): Array<Exp> = a
+}
+
+/**
+ * Args are already known to be disjoint
+ */
+class LitPairBuilder(override val op: Op, val arg1: Lit, val arg2: Lit) : IArgBuilder {
+
+//    init {
+//        assert(arg1.vr != arg2.vr)
+//    }
+
+    val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
+    val space: Space = arg1.space
+
+    override val fcc: FccState get() = Open()
+    override val size: Int get() = 2
     override val argIt: Iterable<Exp> get() = a.asIterable()
     override fun mk(): Exp = space.mkPosComplex(this);
     override fun createExpArray(): Array<Exp> = a

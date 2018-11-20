@@ -59,12 +59,31 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
     }
 
     fun getBestXorSplit(): Xor? {
+//        println("KFormula.getBestXorSplit")
+        return getBestXorSplit1()
+//        return getBestXorSplit2()
+    }
+
+    //faster
+    fun getBestXorSplit1(): Xor? {
         return if (_space.hasPrefixes()) {
             XorCounts.getMax(this)
         } else {
             val xors = getXorConstraints()
             if (xors.isEmpty()) null else xors.get(0).asXor
         }
+    }
+
+    //slower
+    fun getBestXorSplit2(): Xor? {
+        //requires up-front processing
+        var best: Xor? = null
+        for (a in _args) {
+            if (a is Xor && (best == null || a.score > best.score)) {
+                best = a
+            }
+        }
+        return best
     }
 
 //    override fun getComplexFccs(): Exp? {
@@ -102,7 +121,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
 
     fun getXorConstraints(): List<Exp> {
-        return Csp.getXorConstraints(argIt)
+        return Csp.computeXorConstraints(argIt)
     }
 
     /**
@@ -222,6 +241,22 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
         }
     }
 
+    private fun toDnnfBestLitImp(): Exp? {
+        val vr: Var?
+        try {
+            vr = decideLitImp()
+        } catch (e: ImpliedLitException) {
+//            println("ImpliedLitException: ${e.lit}")
+            val csp = Csp(this.args, e.lit)
+            return csp.toDnnf()
+        }
+        return if (vr != null) {
+            return FormulaSplit(this, vr).toDnnf()
+        } else {
+            null
+        }
+    }
+
     private fun xorSplitToDnnf(xor: Exp): Exp {
         val split = XorSplit(this, xor.asXor)
         return split.toDnnf()
@@ -326,7 +361,7 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
     }
 
 
-    fun decide(): Var {
+    private fun decide(): Var {
         val fVars = getFVars()
         try {
             val d = fVars.decide()
@@ -336,6 +371,34 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
         }
 
 
+    }
+
+    fun computeLitImps(): ActualLitImps {
+        return ActualLitImps(_args)
+    }
+
+
+    override fun print() {
+        System.err.println(simpleName)
+        println("<formula>")
+        println("  <constraints>")
+        _args.forEach { println("    $it") }
+        println("  </constraints>")
+        println("  <litImps>")
+        computeLitImps().varImps.forEach { println("    $it") }
+        println("  </litImps>")
+        println("</formula>")
+    }
+
+    private fun decideLitImp(): Var? {
+        val xx = ActualLitImps(_args)
+        val best = xx.best()
+        if (best == null) {
+            return null
+        } else {
+            val bestVar = space.getVar(best)
+            return bestVar
+        }
     }
 
 
@@ -355,8 +418,14 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
             return bestXorSplit
         }
 
+        val bestLitImp = toDnnfBestLitImp()
+        if (bestLitImp != null) {
+            return bestLitImp
+        }
 
-        val vr = decide()
+
+        val vr = FVars2.decide(_args)!!
+//        val vr = decide()
 //        println("decide[$vr]..")
         return decisionSplit(vr)
     }

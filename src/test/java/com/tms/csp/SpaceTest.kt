@@ -59,7 +59,7 @@ class SpaceTest {
     fun test() {
 
 
-        val csp = CspSample.Camry2011NoDc.csp()
+        val csp = CspSample.Camry2011NoDc.parseCsp()
         println(csp.toDnnf().smooth.satCount)
 
 

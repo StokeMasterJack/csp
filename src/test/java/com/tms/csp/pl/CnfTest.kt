@@ -39,7 +39,7 @@ class CnfTest : CspBaseTest2() {
 
         val expectedSatCount = 1545337914624L
 
-        val csp = CspSample.Tundra.csp()
+        val csp = CspSample.Tundra.parseCsp()
 
         val satCountPL1 = csp.satCountPL()
         val d1 = csp.toDnnfSmooth()

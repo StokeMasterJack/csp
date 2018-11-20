@@ -416,7 +416,7 @@ public class ComboCsp implements PLConstants {
         factoryCsp = factoryCsp.copy();
         factoryCsp.conditionOutAtVars();
 
-        Set<Exp> xors = factoryCsp.getAllXorConstraints();
+        Set<Exp> xors = factoryCsp.computeAllXorConstraints();
 
         Csp masterCsp = new Csp(factoryCsp.getSpace());
         for (Exp xor : xors) {
@@ -475,7 +475,7 @@ public class ComboCsp implements PLConstants {
 
         Space space = factoryCsp.getSpace();
 
-        Set<Exp> xors = factoryCsp.getAllXorConstraints();
+        Set<Exp> xors = factoryCsp.computeAllXorConstraints();
 
         for (Exp factoryConstraint : constraints) {
 
@@ -539,7 +539,7 @@ public class ComboCsp implements PLConstants {
 
         factoryCsp.conditionOutAtVars();
 
-        Set<Exp> xors = factoryCsp.getAllXorConstraints();
+        Set<Exp> xors = factoryCsp.computeAllXorConstraints();
         Set<Exp> maybeRelax = factoryCsp.getAllNonXorConstraints();
         Set<Exp> relax = new HashSet<Exp>();
 
@@ -620,7 +620,7 @@ public class ComboCsp implements PLConstants {
         tmpCsp1.addConstraint(failedLineExp);
         tmpCsp1.conditionOutAtVars();
 
-        Set<Exp> xors = factoryCsp.getAllXorConstraints();
+        Set<Exp> xors = factoryCsp.computeAllXorConstraints();
         for (Exp xor : xors) {
             tmpCsp1.addConstraint(xor);
         }

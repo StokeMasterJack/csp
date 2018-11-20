@@ -179,9 +179,9 @@ public class Space extends SpaceUtil implements PLConstants {
 //
 //
 
-    public ParseCounter getParseCounter() {
-        return parser.getParseCounter();
-    }
+//    public ParseCounter getParseCounter() {
+//        return parser.getParseCounter();
+//    }
 
 
     public VarSet getAtVars() {
@@ -819,9 +819,9 @@ public class Space extends SpaceUtil implements PLConstants {
         return metaVar;
     }
 
-    public int getPrefixOccurrenceCountLight(String sPrefix) {
-        return parser.getParseCounter().getPrefixCounts().get(sPrefix);
-    }
+//    public int getPrefixOccurrenceCountLight(String sPrefix) {
+//        return parser.getParseCounter().getPrefixCounts().get(sPrefix);
+//    }
 
     public boolean hasPrefixes() {
         for (Var var : varSpace) {

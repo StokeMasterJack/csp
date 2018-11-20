@@ -1,0 +1,32 @@
+<var-meta>
+    <group code="MDL" radio="true">
+        <var code="2550"/>
+        <var code="2545"/>
+        <var code="2554"/>
+        <var code="2552"/>
+        <var code="2531"/>
+        <var code="2546"/>
+        <var code="2513"/>
+        <var code="2540"/>
+        <var code="2532"/>
+        <var code="2560"/>
+        <var code="2514"/>
+    </group>
+    <group code="GRD" radio="true">
+        <var code="SE"/>
+        <var code="Base"/>
+        <var code="Hyb"/>
+        <var code="XLE"/>
+        <var code="LE"/>
+    </group>
+    <group code="ENG" radio="true">
+        <var code="Hybrid"/>
+        <var code="L4"/>
+        <var code="V6"/>
+    </group>
+    <group code="TRAN" radio="true">
+        <var code="6MT"/>
+        <var code="6AT"/>
+        <var code="ECVT"/>
+    </group>
+</var-meta>

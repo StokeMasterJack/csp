@@ -18,6 +18,9 @@ import static org.junit.Assert.assertTrue;
 
 public class ComputeVarStatesTest extends CspBaseTest2 {
 
+
+
+
     @Test
     public void testComputeVarMetaCamry() throws Exception {
 
@@ -95,7 +98,7 @@ public class ComputeVarStatesTest extends CspBaseTest2 {
     public void testBBCamry() throws Exception {
 //        String text = CspSample.Camry2011NoDc.loadText();
 //        Space space = new Space(text);
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = CspSample.Camry2011NoDc.parseCsp();
         Exp root = csp.toDnnf().getSmooth();
         Exp exp = root.condition("FC14");
 

@@ -126,6 +126,14 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     }
 
     override fun condition(lit: Lit): Exp {
+        val ret = conditionInternal(lit)
+        if (ret is Xor) {
+            ret.score = this.score
+        }
+        return ret
+    }
+
+    private fun conditionInternal(lit: Lit): Exp {
         val vr = lit.vr
         if (!containsVarId(vr.vrId)) {
             return this
@@ -138,8 +146,15 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
         }
     }
 
-
     override fun condition(ctx: Cube): Exp {
+        val ret = conditionInternal(ctx)
+        if (ret is Xor) {
+            ret.score = this.score
+        }
+        return ret
+    }
+
+    private fun conditionInternal(ctx: Cube): Exp {
 
         if (isVarDisjoint(ctx)) {
             return this
@@ -392,6 +407,7 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     }
 
     override val isXor: Boolean get() = true
+    var score: Int = 0
 
 
 }

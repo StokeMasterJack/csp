@@ -7,11 +7,11 @@ import com.tms.csp.util.SerFormat
 import java.io.File
 import java.math.BigInteger
 
-
 enum class CspSample(
         val fileName: String,
         val expectedSatCount: BigInteger = BigInteger.ZERO,
-        val format: SerFormat = SerFormat.PL
+        val format: SerFormat = SerFormat.PL,
+        val vars:String? = null
 ) {
 
     //simple PL
@@ -137,7 +137,7 @@ enum class CspSample(
         return TestData.loadText(contextClass, this)
     }
 
-    fun csp(): Csp {
+    fun parseCsp(): Csp {
         val clob = loadText()
         return Csp.parse(clob)
     }

@@ -17,7 +17,7 @@ public class VarMetaDataUtil {
 
     public static Element convertToXml(Multimap<String, Var> xorParentChildMultimap) {
         DocumentFactory f = new DocumentFactory();
-        Element varMeta = f.createElement("vr-meta");
+        Element varMeta = f.createElement("var-meta");
 
         for (String groupCode : xorParentChildMultimap.keySet()) {
 

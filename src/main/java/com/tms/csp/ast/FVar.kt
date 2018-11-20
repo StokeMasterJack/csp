@@ -1,9 +1,7 @@
 package com.tms.csp.ast
 
 
-import java.util.ArrayList
-import java.util.Collections
-import java.util.Comparator
+import java.util.*
 
 class FVar(var vr: Var) {
 
@@ -20,6 +18,7 @@ class FVar(var vr: Var) {
     val vvCount: Int
         get() = if (vvConstraints == null) 0 else vvConstraints!!.size
 
+
     val complexCount: Int
         get() = if (complexConstraints == null) 0 else complexConstraints!!.size
 
@@ -33,11 +32,20 @@ class FVar(var vr: Var) {
             System.err.println()
         }
         assert(constraint.containsVar(vr))
+
+
+
         if (constraint.isXor) {
             assert(xorParent == null)
             xorParent = constraint
             assert(xorParent!!.vars.containsVar(vr))
-        } else if (constraint.isVv) {
+            throw IllegalStateException()
+        }
+//        else if (constraint.isLitImp) {
+//            assert(!constraint.isXor)
+//            addVV(constraint)
+//        }
+        else if (constraint.isLitImp) {
             assert(!constraint.isXor)
             addVV(constraint)
         } else if (constraint.isComplex) {
@@ -65,8 +73,10 @@ class FVar(var vr: Var) {
             var s = 0
 
             if (xorParent != null) {
-                val argCount = xorParent!!.asXor.argCount
-                s += 1000 * argCount
+//                println("AAAAA")
+//                val argCount = xorParent!!.asXor.argCount
+//                s += 1000 * argCount
+                throw IllegalStateException()
             }
             s += vvCount * 100
 

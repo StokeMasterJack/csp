@@ -180,6 +180,7 @@ Processing Tundra:
     //49 wo toDnnfTopXorSplit before fcc
     //8.7 s
     //8.7
+
     @Test
     fun testAllCompileAndSatCount() {
         repeat(1) {
@@ -198,19 +199,29 @@ Processing Tundra:
         }
     }
 
+    //10 times:
+    //   37  sec: getBestXorSplit2
+    //   33.8sec: getBestXorSplit1
+    //   litImp: 33.478, 32.737, 32.729
+    //   vv:     35.401, 33.283, 34.840
     @Test
     fun testCompileAndSatCountEfcOnly() {
-        CspSample.EfcOriginal.let {
-            val name = it.name
-            prindent(0, "Processing $name")
-            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
-            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
-            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
-            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
-            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
-            assertEquals(it.expectedSatCount, satCount)
+        repeat(1) {
+            CspSample.EfcOriginal.let {
+                val name = it.name
+                prindent(0, "Processing $name")
+                val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+                val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
-            smooth.printNodeInfo(1)
+
+
+                val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+                val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+                val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+                assertEquals(it.expectedSatCount, satCount)
+
+                smooth.printNodeInfo(1)
+            }
         }
     }
 

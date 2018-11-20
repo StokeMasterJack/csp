@@ -1,0 +1,26 @@
+2 Perf Goals:
+
+    1. Visit fewer nodes:
+    2. More efficient processing at each node
+
+Visit fewer nodes:
+    caching (structural hashing)
+    more reasoning at each step
+
+More efficient processing at each node
+    Add some "just once" processing
+        For example:
+            1. best xors
+            2. Var scores
+            3. isLitImp
+        Cache in file:
+            PL:
+                vars:
+                constraints:
+                cached-computed:
+
+Next step:
+Improve vars section:
+    vars
+    bool:
+

@@ -61,6 +61,6 @@ class AnyIntersectionTest : CspBaseTest2() {
     }
 
     internal fun loadCamry(): Csp {
-        return CspSample.Camry2011Dc.csp()
+        return CspSample.Camry2011Dc.parseCsp()
     }
 }

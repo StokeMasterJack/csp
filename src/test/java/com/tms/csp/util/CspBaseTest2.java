@@ -164,7 +164,7 @@ public class CspBaseTest2 extends CspBaseTest {
     }
 
     public Csp loadCsp(CspSample cspSample) {
-        return cspSample.csp();
+        return cspSample.parseCsp();
 
     }
 

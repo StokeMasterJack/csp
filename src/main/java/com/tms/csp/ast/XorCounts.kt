@@ -27,7 +27,7 @@ class XorCounts private constructor(constraints: Iterable<Exp>) {
 
 
     init {
-        val xors = Csp.getXorConstraints(constraints)
+        val xors = Csp.computeXorConstraints(constraints)
         if (xors.isEmpty()) {
             map = ImmutableMap.of()
         } else {
@@ -79,7 +79,7 @@ class XorCounts private constructor(constraints: Iterable<Exp>) {
         }
 
         fun getBestXor(constraints: Iterable<Exp>): Xor? {
-            val count = count(constraints)
+            val count:XorCounts = count(constraints)
             val max = count.max ?: return null
             return max.xor.asXor
         }

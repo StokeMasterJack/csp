@@ -15,7 +15,7 @@ public class DnnfProjectTest extends CspBaseTest2 {
 
     @Test
     public void forgetConditionThenProjectTiny() throws Exception {
-        Csp csp = CspSample.TinyNoDc.csp();
+        Csp csp = CspSample.TinyNoDc.parseCsp();
         Exp n1 = csp.toDnnf().getSmooth();
 
         assert (n1.isDnnf() && n1.checkDnnf());

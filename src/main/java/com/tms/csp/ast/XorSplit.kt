@@ -61,7 +61,8 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
                     b.addExp(n)
                 }
             } catch (e: ConflictingAssignmentException) {
-                throw UnsupportedOperationException()
+                throw e
+//                throw UnsupportedOperationException()
             }
 
         }

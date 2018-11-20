@@ -11,7 +11,7 @@ private val posComplexOpMap = PLConstants.PosOp.getPosComplexOpMap()
 
 class Parser(val space: Space) {
 
-    public val parseCounter = ParseCounter()
+//    public val parseCounter = ParseCounter()
 
 
     private fun maybeAddVarsLines(lines: Sequence<String?>): Sequence<String?> {
@@ -62,7 +62,7 @@ class Parser(val space: Space) {
 
 
                 val prefix = posLit.prefix
-                parseCounter.countPrefix(prefix)
+//                parseCounter.countPrefix(prefix)
                 return posLit
             }
         }

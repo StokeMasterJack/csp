@@ -109,7 +109,10 @@ why flattening and is a bad idea -  may disjoin any-and and children
 
 */
 
-abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Comparable<Exp>, HasCode, HasVars, HasVarId {
+typealias VarId = Int
+typealias ExpId = Int
+
+abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, Comparable<Exp>, HasCode, HasVars, HasVarId {
 
     var traversalId: Int = 0
 
@@ -682,6 +685,9 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
         @Throws(UnsupportedOperationException::class)
         get() = throw UnsupportedOperationException(simpleName)
 
+    fun xorPrefixes(): Set<ExpId> {
+        return vars.mapNotNull { it.xorParentInitial?.expId }.toSet()
+    }
 
     val isOpen: Boolean
         get() = !isConstant
@@ -2235,6 +2241,19 @@ abstract class Exp(override val space: Space, val expId: Int) : PLConstants, Com
 
         }
 
+    val isOrNotClauseLit: Boolean
+        get() {
+            if (this !is Or) return false;
+            if (argCount != 2) return false
+            return (arg1.isNotClause || arg2.isNotClause) && (arg1.isLit || arg2.isLit)
+        }
+
+    val isOrCubeLit: Boolean
+        get() {
+            if (this !is Or) return false;
+            if (argCount != 2) return false
+            return (arg1.isCube || arg2.isCube) && (arg1.isLit || arg2.isLit)
+        }
 
     @Throws(UnsupportedOperationException::class)
     fun getVarToken(a: Ser): String {

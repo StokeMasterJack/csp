@@ -46,7 +46,7 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
     @Test
     public void testSameUsingCondition1() throws Exception {
 
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = CspSample.Camry2011NoDc.parseCsp();
         Space space = csp.getSpace();
         Exp root = csp.toDnnf().getSmooth();
 
@@ -65,7 +65,7 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
 
     @Test
     public void testSameUsingCondition2() throws Exception {
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = CspSample.Camry2011NoDc.parseCsp();
         Exp root = csp.toDnnf().getSmooth();
 
         long satCount4 = root.getSatCount().longValue();
@@ -121,7 +121,7 @@ public class PartialDerivativeCamry2011Test extends CspBaseTest2 {
 
     @Test
     public void testFlipRadioUsingCondition2() throws Exception {
-        Csp csp = CspSample.Camry2011NoDc.csp();
+        Csp csp = CspSample.Camry2011NoDc.parseCsp();
         Space space = csp.getSpace();
         Exp root = csp.toDnnf().getSmooth();
 

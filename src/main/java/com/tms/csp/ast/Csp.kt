@@ -1,6 +1,7 @@
 package com.tms.csp.ast
 
 import com.google.common.collect.HashMultimap
+import com.google.common.collect.HashMultiset
 import com.google.common.collect.Multimap
 import com.tms.csp.*
 import com.tms.csp.argBuilder.ArgBuilder
@@ -211,7 +212,7 @@ class Csp @JvmOverloads constructor(
                 }
             }
 //            constraint.isNotClause -> assignAll(constraint.notClauseToCube)
-//            constraint.isNotOr -> addConstraint(constraint.notOrToAnd)
+            constraint.isNotOr -> addConstraint(constraint.notOrToAnd)
             else -> addComplexConstraint(constraint)
 
 
@@ -239,12 +240,39 @@ class Csp @JvmOverloads constructor(
 
         }
 
-//        if (cc.isFlattenableNand) {
-//            val and = cc.asNand.flattenNand()
-//            addConstraint(and)
-//            return
-//        }
+        if (cc.isFlattenableNand) {
+            val and = cc.asNand.flattenNand()
+            addConstraint(and)
+            return
+        }
 
+        /*
+        if (cc.isLitImp) {
+            val actualLitImps = ActualLitImps(arrayOf(cc))
+            assert(!actualLitImps.isEmpty())
+            if (cc.isVv) {
+                println("LitImp: $cc")
+                println("    " + actualLitImps.varImps)
+
+            } else if (cc.isOrNotClauseLit) {
+                println("LitImp: $cc")
+                println("    " + actualLitImps.varImps)
+
+            } else if (cc.isOrCubeLit) {
+                println("LitImp: $cc")
+                println("    " + actualLitImps.varImps)
+
+            } else {
+                println("LitImp: $cc")
+                println("    " + actualLitImps.varImps)
+            }
+
+        } else {
+            val actualLitImps = ActualLitImps(arrayOf(cc))
+            assert(actualLitImps.isEmpty())
+        }
+
+        */
         complex.add(cc)
 
 
@@ -506,10 +534,10 @@ class Csp @JvmOverloads constructor(
     }
 
 
-    fun getXorsDeep(): List<Exp> {
+    fun computeXorsDeep(): List<Exp> {
         if (complex.isNullOrEmpty) return emptyList()
         val b = mutableListOf<Exp>()
-        for (exp in complex!!.argIt) {
+        for (exp in complex.argIt) {
             if (exp.isConstant || exp.isLit)
                 continue
             else if (exp.isXor) {
@@ -520,6 +548,23 @@ class Csp @JvmOverloads constructor(
         }
         return b
     }
+
+    fun computeXorConstraints(): List<Exp> {
+        return Csp.computeXorConstraints(complexIt)
+    }
+
+    /**
+     * Combines Space.getCoreXorsFromSpace() with Csp.getXorConstraints
+     */
+    fun computeAllXorConstraints(): Set<Exp> {
+        val xors = mutableSetOf<Exp>()
+        val xors1 = space.coreXorsFromSpace;
+        val xors2 = computeXorConstraints();
+        xors.addAll(xors1);
+        xors.addAll(xors2);
+        return xors1.union(xors2)
+    }
+
 
 //    fun getConstraintsContainingXor(): List<Exp> {
 //        if (complex.isNullOrEmpty) return ImmutableList.of()
@@ -1524,12 +1569,9 @@ class Csp @JvmOverloads constructor(
     }
 //
 
-    fun getXorConstraints(): List<Exp> {
-        return Csp.getXorConstraints(complexIt)
-    }
 
     fun getXor(prefix: String): Xor? {
-        val xors: List<Exp> = getXorConstraints()
+        val xors: List<Exp> = computeXorConstraints()
         for (xor in xors) {
             if (xor.argCount == 0) {
                 throw IllegalStateException()
@@ -1740,7 +1782,7 @@ class Csp @JvmOverloads constructor(
 
 
         @JvmStatic
-        fun getXorConstraints(args: Iterable<Exp>): List<Exp> {
+        fun computeXorConstraints(args: Iterable<Exp>): List<Exp> {
             val aa = mutableListOf<Exp>()
             for (exp in args) {
                 if (exp.isXor) {
@@ -1953,17 +1995,6 @@ class Csp @JvmOverloads constructor(
         return b.build();
     }
 
-    /**
-     * Combines Space.getCoreXorsFromSpace() with Csp.getXorConstraints
-     */
-    fun getAllXorConstraints(): Set<Exp> {
-        val xors = mutableSetOf<Exp>()
-        val xors1 = space.coreXorsFromSpace;
-        val xors2 = getXorConstraints();
-        xors.addAll(xors1);
-        xors.addAll(xors2);
-        return xors1.union(xors2)
-    }
 
     fun getAllConstraints(): List<Exp> {
         val b = mutableListOf<Exp>()
@@ -1996,6 +2027,20 @@ class Csp @JvmOverloads constructor(
             }
         }
         return b
+    }
+
+    fun scoreXors() {
+        val mm = HashMultiset.create<ExpId>()
+        complexIt.forEach {
+            val prefixes: Set<ExpId> = it.xorPrefixes()
+            mm.addAll(prefixes)
+        }
+
+        for (e in mm.entrySet()) {
+            val xorExpId = e.element
+            val xor = space.getExp(xorExpId).asXor
+            xor.score = e.count
+        }
     }
 
 

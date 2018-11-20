@@ -1,6 +1,7 @@
 <var-meta>
 
     <!--  Trim -->
+
     <group code="MDL" radio="true">
         <var code="2550"/>
         <var code="2545"/>
@@ -49,12 +50,8 @@
     <group code="XCOL" radio="true">
         <var code="1G3"/>
         <var code="4T8"/>
-        <var code="8T5"/>
         <var code="8U8"/>
-        <var code="040"/>
-        <var code="1F7"/>
         <var code="776"/>
-        <var code="202"/>
         <var code="3R3"/>
         <var code="6V4"/>
     </group>
@@ -75,9 +72,6 @@
         <var code="FA40"/>
         <var code="FC15"/>
     </group>
-
-
-    <!-- Options -->
 
     <group code="OPT">
         <var code="2Q"/>
@@ -116,10 +110,5 @@
         <var code="RearAC"/>
     </group>
 
-    <group code="ACT">
-        <var code="QB"/>
-        <var code="E5"/>
-        <var code="WB"/>
-        <var code="32"/>
-    </group>
+
 </var-meta>

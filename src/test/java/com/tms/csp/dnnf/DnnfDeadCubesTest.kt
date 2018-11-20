@@ -106,7 +106,7 @@ class DnnfDeadCubesTest : CspBaseTest2() {
     @Test
     @Throws(Exception::class)
     fun camry() {
-        val csp = CspSample.Camry2011NoDc.csp()
+        val csp = CspSample.Camry2011NoDc.parseCsp()
         val n = csp.toDnnf()
         val bb = n.bb.asLitSet()
         System.err.println("bb$bb")

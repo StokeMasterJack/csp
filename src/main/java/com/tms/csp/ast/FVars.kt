@@ -73,17 +73,17 @@ class FVars(complex: Iterable<Exp>) {
 
 
     fun print() {
-        for (fVar in sortedList!!) {
+        for (fVar in sortedList) {
             fVar.print()
         }
     }
 
     @Throws(NoVarsException::class)
     fun decide(): FVar {
-        if (sortedList!!.isEmpty()) {
+        if (sortedList.isEmpty()) {
             throw NoVarsException()
         }
-        return sortedList!![0]
+        return sortedList[0]
     }
 
     companion object {
