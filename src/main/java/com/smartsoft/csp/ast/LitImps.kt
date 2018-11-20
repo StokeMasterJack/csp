@@ -245,18 +245,61 @@ class LitImps {
     private var bestXor: Xor? = null
 
     @Throws(ImpliedLitException::class)
-    fun addComplex(complex: Exp): LitImps {
-        if (complex is Or && complex.isVv) {
-            addVv(complex)
-        } else if (complex is Xor) {
-            addXor(complex.asXor)
+    fun addComplex(cc: Exp): LitImps {
+        if (cc is Or && cc.isVv) {
+            addVv(cc)
+        } else if (cc is Or && cc.isPair) {
+            val a1: Exp = cc._args[0]
+            val a2: Exp = cc._args[1]
+            if (a1 is Lit && a2 is Cube) {
+                addConstraintOrVvs(a1, a2)
+            } else if (a1 is Cube && a2 is Lit) {
+                addConstraintOrVvs(a2, a1)
+                for (lit1 in a1) {
+                    addImp(lit1.flipLit, a2)
+                    addImp(lit1, a2.flipLit)
+                }
+            } else if (a1 is Lit && a2 is Not && a2.pos.isClause) {
+                for (lit2 in a2.pos._args) {
+                    addImp(a1.flipLit, lit2.asLit.flipLit)
+                    addImp(a1, lit2.asLit)
+                }
+
+            } else if (a1 is Not && a1.pos.isClause && a2 is Lit) {
+                addConstraintOrVvs(a2, a1)
+            }
+        } else if (cc is Xor) {
+            addXor(cc.asXor)
         } else {
             //not xors and not vvs
-            addOtherComplex(complex)
+            addOtherComplex(cc)
         }
 
         return this
     }
+
+
+    //lit imp
+    private fun addConstraintOrVvs(lit1: Lit, cube: Cube) {
+        for (lit2: Lit in cube) {
+            addConstraintOrVv(lit1, lit2)
+        }
+    }
+
+    private fun addConstraintOrVvs(lit1: Lit, notClause: Not) {
+        if (notClause.pos !is Or) throw IllegalArgumentException()
+        for (lit2: Exp in notClause.pos._args) {
+            if (lit2 !is Lit) throw IllegalArgumentException()
+            addConstraintOrVv(lit1, lit2.flipLit)
+        }
+    }
+
+    private fun addConstraintOrVv(lit1: Lit, lit2: Lit) {
+        addImp(lit1.flipLit, lit2)
+        addImp(lit1, lit2.flipLit)
+    }
+
+
 
 //    fun computeBestXor(): Xor? {
 //        var _bestXor: XorCount? = null

@@ -3190,6 +3190,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     //only works c smooth nodes
     @JvmOverloads
     fun getSatCount(parentVars: VarSet, picVars: VarSet = _space.mkEmptyVarSet()): BigInteger {
+        if(isFalse) return 0.toBigInteger()
         val baseSatCount = satCount
         val dcVars = parentVars.minus(picVars).minus(vars)
         return Csp.computeDcVars(baseSatCount, dcVars.size)

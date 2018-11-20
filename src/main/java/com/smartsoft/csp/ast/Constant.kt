@@ -38,7 +38,11 @@ abstract class Constant(space: Space, expId: Int) : Exp(space, expId) {
 
     override val vars: VarSet
         get() {
-            if(true) throw IllegalStateException(simpleName + "  " + this.toString())
+//            if (isTrue) {
+//                return space.mkEmptyVarSet()
+//            } else {
+//                throw IllegalStateException(simpleName + "  " + this.toString())
+//            }
             return space.mkEmptyVarSet()
         }
 

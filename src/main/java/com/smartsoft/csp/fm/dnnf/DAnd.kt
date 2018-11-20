@@ -333,7 +333,6 @@ open class DAnd(space: Space, id: Int, args: Array<Exp>) : And(space, id, args) 
 
 
     override fun computeIsSat(): Boolean {
-        if(true) throw IllegalStateException()
         for (arg in args) {
             val sat = arg.isSat
             if (!sat) {

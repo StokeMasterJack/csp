@@ -39,17 +39,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
     //cache computed values
 
-    /*
-     fcc = null:  fcc and complexFccs have not been computed yet
-     fcc != null: fcc and complexFccs have been computed
-     fcc = true:  means this *is* an fcc, complexFccs set to null
-     fcc = false: means this is not an fcc, complexFccs should be non-null, size >= 2
-     */
-
-//    var _fccs: List<Exp>? = null
-
-
-//    private var fVars: FVars? = null
 
     private var _litImps: LitImps? = null
 
@@ -57,9 +46,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
     private var _bb: DynCube? = null
 
-    init {
-//        println("init: $fcc")
-    }
 
     val litImps: LitImps
         get() {
@@ -68,41 +54,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
             }
             return _litImps!!
         }
-
-    fun getBestXorSplit(): Xor? {
-//        println("KFormula.getBestXorSplit")
-        return getBestXorSplit1()
-//        return getBestXorSplit2()
-    }
-
-    //faster
-    fun getBestXorSplit1(): Xor? {
-        return if (_space.hasPrefixes()) {
-            XorCounts.getMax(this)
-        } else {
-            val xors = getXorConstraints()
-            if (xors.isEmpty()) null else xors.get(0).asXor
-        }
-    }
-
-    //slower
-    fun getBestXorSplit2(): Xor? {
-        //requires up-front processing
-        var best: Xor? = null
-        for (a in _args) {
-            if (a is Xor && (best == null || a.score > best.score)) {
-                best = a
-            }
-        }
-        return best
-    }
-
-//    override fun getComplexFccs(): Exp? {
-//        if (fcc == null) {
-//            _fccs = computeComplexFccs()
-//        }
-//        return _fccs
-//    }
 
 
     fun getTopXorSplit(): Xor? {
@@ -116,23 +67,9 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
     }
 
-
     fun getXorConstraints(): List<Exp> {
         return Csp.computeXorConstraints(argIt)
     }
-
-    /**
-     * Active:
-     *      lit -> lit
-     *      lit -> cube
-     *      lit -> !or(all lits)
-     *
-     *      !or(a b c) is equiv to and(!a !b !c)
-     */
-    fun findAllActiveConstraints() {
-
-    }
-
 
     override val satCountPL: Long
         get() {
@@ -187,17 +124,6 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
 
             return satCount()
 
-//
-//        val satCountWithDc = if (parentVars.isNullOrEmpty()) {
-//            baseSatCount
-//        } else {
-//            val dcVars = parentVars.minus(this._complexVars)
-//            val pow = Math.pow(2.0, dcVars.size.toDouble()).toLong()
-//            baseSatCount * pow
-//        }
-//
-//        return satCountWithDc
-
 
         }
 
@@ -208,7 +134,11 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
             return XorSplit(this, xor1).isSat
         }
 
-        val li = litImps
+        val li = try {
+            litImps
+        } catch (e: ImpliedLitException) {
+            return Csp(this.args, e.lit).isSat()
+        }
 
         val xor2 = li.getBestXor()
         if (xor2 != null) {
@@ -235,45 +165,10 @@ class KFormula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = O
         }
     }
 
-
-    private fun toDnnfBestXorSplit(): Exp? {
-
-        val xor = getBestXorSplit()
-
-        return if (xor != null) {
-//            println("bestXorSplit[${xor.prefix}]..")
-            xorSplitToDnnf(xor)
-        } else {
-            null
-        }
-    }
-
-    private fun toDnnfBestLitImp(): Exp? {
-        val bestVar: Var?
-        try {
-            bestVar = computeLitImps().getBestVar()
-        } catch (e: ImpliedLitException) {
-//            println("ImpliedLitException: ${e.lit}")
-            val csp = Csp(this.args, e.lit)
-            return csp.toDnnf()
-        }
-        return if (bestVar != null) {
-            return FormulaSplit(this, bestVar).toDnnf()
-        } else {
-            null
-        }
-    }
-
     private fun xorSplitToDnnf(xor: Exp): Exp {
         val split = XorSplit(this, xor.asXor)
         return split.toDnnf()
     }
-
-    private fun decisionSplit(decisionVar: Var): Exp {
-        val split = FormulaSplit(this, decisionVar)
-        return split.toDnnf()
-    }
-
 
     fun getYearXor(): Xor? {
         return getXor(YR_PREFIX)

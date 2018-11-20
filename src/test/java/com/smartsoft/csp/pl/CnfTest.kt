@@ -83,7 +83,7 @@ class CnfTest : CspBaseTest2() {
 
         csp1.toCnf()
         val dimacs = csp1.serializeDimacs()
-        System.err.println(dimacs)
+//        System.err.println(dimacs)
     }
 
     @Test

@@ -58,7 +58,7 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
         return if (!containsVar(lit)) {
             this
         } else {
-            val after = argBuilder(op()).addExpArray(_args, Condition.fromLit(lit)).mk()
+            val after = argBuilder(op()).addExpArray(_args, lit).mk()
             assert(this !== after)
             after
         }
@@ -172,7 +172,6 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
 
 
     override fun computeIsSat(): Boolean {
-        if(true) throw IllegalStateException()
         val decisionVar = decide()
         val tCon = condition(decisionVar.pLit())
 

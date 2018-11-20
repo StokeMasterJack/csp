@@ -12,7 +12,6 @@ class FormulaSplit(val formula: KFormula, val decisionVar: Var) {
 
     val isSat: Boolean
         get() {
-            if(true) throw IllegalStateException()
             val t = mkCsp(true)
             return if (t.isSat()) {
                 true

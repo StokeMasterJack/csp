@@ -387,7 +387,6 @@ class DOr(space: Space, id: Int, args: Array<Exp>) : Or(space, id, args) {
     }
 
     override fun computeIsSat(): Boolean {
-        if(true) throw IllegalStateException()
         for (arg in args) {
             val sat = arg.isSat
             if (sat) {

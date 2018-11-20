@@ -17,7 +17,6 @@ class XorSplit(val formula: KFormula, val xor: Xor) {
 
     val isSat: Boolean
         get() {
-            if(true) throw IllegalStateException()
             for (trueVar in xorVars) {
                 try {
                     val rr = mkCsp(trueVar)

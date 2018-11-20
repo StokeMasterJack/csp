@@ -25,6 +25,7 @@ class SatCountTest {
     //Csp: 19.5s
     //Csp1: 18s
     //17.666s
+    //16.1s
     @Test
     fun testSimple() {
         CspSample.allSimplePL.forEach {
@@ -105,6 +106,7 @@ Processing Tundra:
     //11
     //10.8s
     //11.2s
+    //9.2
     @Test
     fun testComplex() {
         CspSample.allComplexPL.forEach {
@@ -162,10 +164,12 @@ Processing Tundra:
     //49 wo toDnnfTopXorSplit before fcc
     //8.7 s
     //8.7
+    //7.7s
+    //7.55s
 
     @Test
     fun testAllCompileAndSatCount() {
-        repeat(20) {
+        repeat(1) {
             CspSample.allPL.forEach {
                 val name = it.name
                 System.err.println("Processing $name")
@@ -178,6 +182,7 @@ Processing Tundra:
                 assertEquals(it.expectedSatCount, satCount)
 
                 smooth.printNodeInfo()
+                println("  Node count: ${csp.space._nodes.size}")
             }
         }
 
@@ -194,9 +199,9 @@ Processing Tundra:
                 val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
                 val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
-                val satCountPL = csp.satCountPL().toBigInteger()
-
-                assertEquals(it.expectedSatCount, satCountPL)
+//                val satCountPL = csp.satCountPL().toBigInteger()
+//
+//                assertEquals(it.expectedSatCount, satCountPL)
 
                 val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
                 val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }

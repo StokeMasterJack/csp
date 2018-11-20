@@ -248,30 +248,31 @@ class Csp @JvmOverloads constructor(
         //!clause
         if (cc is Not && cc.pos is Or && cc.pos.isAllLits) {
             cc.pos._args.forEach {
-                val lit = it.asLit.flipLit
-                assign(lit)
+                if (isFailed) return
+                assign(it.asLit.flipLit)
+                if (isFailed) return
             }
             return
         }
-
-        if (cc is Or && cc._args.size == 2) {
-            val a1: Exp = cc._args[0]
-            val a2: Exp = cc._args[1]
-            if (a1 is Lit && a2 is Lit) {
-                addConstraintOrVv(cc)
-            } else if (a1 is Lit && a2 is Cube) {
-                addConstraintOrVvs(a1, a2)
-            } else if (a1 is Cube && a2 is Lit) {
-                addConstraintOrVvs(a2, a1)
-            } else if (a1 is Lit && a2 is Not && a2.pos.isClause) {
-                addConstraintOrVvs(a1, a2)
-            } else if (a1 is Not && a1.pos.isClause && a2 is Lit) {
-                addConstraintOrVvs(a2, a1)
-            } else {
-                complex.add(cc)
-            }
-            return
-        }
+//
+//        if (cc is Or && cc._args.size == 2) {
+//            val a1: Exp = cc._args[0]
+//            val a2: Exp = cc._args[1]
+//            if (a1 is Lit && a2 is Lit) {
+//                addConstraintOrVv(cc)
+//            } else if (a1 is Lit && a2 is Cube) {
+//                addConstraintOrVvs(a1, a2)
+//            } else if (a1 is Cube && a2 is Lit) {
+//                addConstraintOrVvs(a2, a1)
+//            } else if (a1 is Lit && a2 is Not && a2.pos.isClause) {
+//                addConstraintOrVvs(a1, a2)
+//            } else if (a1 is Not && a1.pos.isClause && a2 is Lit) {
+//                addConstraintOrVvs(a2, a1)
+//            } else {
+//                complex.add(cc)
+//            }
+//            return
+//        }
 
 //        if (cc.isLitImp) {
 //            println("LitImp: $cc")
@@ -295,6 +296,13 @@ class Csp @JvmOverloads constructor(
     private fun addConstraintOrVvs(lit1: Lit, cube: Cube) {
         for (lit2: Lit in cube) {
             addConstraintOrVv(lit1, lit2)
+        }
+    }
+
+    //lit imp
+    private fun addConstraintOrVvs(cube: Cube, lit: Lit) {
+        for (lit2: Lit in cube) {
+            addConstraintOrVv(lit, lit2)
         }
     }
 
@@ -414,16 +422,10 @@ class Csp @JvmOverloads constructor(
 
     fun propagate() {
         if (q == null || q!!.isEmpty() || isFailed) return
-
         val lit = q!!.removeAt(0)
-//        assert(simple!!.containsLit(lit))
-
         val before = complex
-//        before.dedup()
         complex = DComplex()
-
         addConstraintsExpIt(before.argIt, lit)
-
     }
 
 
@@ -483,9 +485,9 @@ class Csp @JvmOverloads constructor(
     fun toDnnfInternal(): Exp {
         propagate()
 
-        if (anyVarOverlap) {
-            throw IllegalStateException()
-        }
+//        if (anyVarOverlap) {
+//            throw IllegalStateException()
+//        }
 
         return if (isFailed) {
             space.mkFalse()

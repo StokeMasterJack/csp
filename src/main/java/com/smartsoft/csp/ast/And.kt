@@ -228,6 +228,7 @@ open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMult
     }
 
     override fun toDnnf(): Exp {
+        println("And.toDnnf")
         return when {
             size == 0 -> {
                 throw IllegalStateException("PosComplex disallows empty")
