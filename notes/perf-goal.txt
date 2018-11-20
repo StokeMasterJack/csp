@@ -6,6 +6,9 @@
 Visit fewer nodes:
     caching (structural hashing)
     more reasoning at each step
+        lit imps
+
+
 
 More efficient processing at each node
     Add some "just once" processing
