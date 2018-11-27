@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.util.ints.Ints;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

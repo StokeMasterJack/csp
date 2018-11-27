@@ -9,7 +9,7 @@ import com.smartsoft.csp.ast.Ser
 import com.smartsoft.csp.ast.Var
 import com.smartsoft.csp.util.HasCode
 import com.smartsoft.csp.util.it.Its
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import java.util.*
 
 class ParseUtil : PLConstants {

@@ -5,7 +5,7 @@ import com.smartsoft.csp.ast.Exp;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
 import com.smartsoft.csp.dnnf.models.Solution;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

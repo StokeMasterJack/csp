@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets;
+package com.smartsoft.csp.varSets;
 
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.util.ints.IntIterator;

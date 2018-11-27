@@ -7,8 +7,8 @@ import com.smartsoft.csp.VarInfo;
 import com.smartsoft.csp.argBuilder.ArgBuilder;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.ssutil.TT;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;

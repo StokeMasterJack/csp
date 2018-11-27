@@ -8,7 +8,7 @@ import com.smartsoft.csp.ast.VarInf;
 import com.smartsoft.csp.dnnf.Dnnf;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.util.CspBaseTest2;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 import com.smartsoft.inv.ComboCsp;
 import com.smartsoft.inv.Dealers;
 import com.smartsoft.inv.Line;

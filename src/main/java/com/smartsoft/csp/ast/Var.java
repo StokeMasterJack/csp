@@ -5,10 +5,10 @@ import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.HasCode;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.ints.Ints;
-import com.smartsoft.csp.util.varSets.SingletonVarSet;
-import com.smartsoft.csp.util.varSets.VarPair;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.SingletonVarSet;
+import com.smartsoft.csp.varSets.VarPair;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.IVar;
 import com.smartsoft.csp.varCodes.VarCode;
 

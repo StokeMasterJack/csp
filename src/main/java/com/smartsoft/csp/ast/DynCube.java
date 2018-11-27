@@ -10,8 +10,8 @@ import com.smartsoft.csp.parse.Head;
 import com.smartsoft.csp.util.Bit;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.XorCube;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

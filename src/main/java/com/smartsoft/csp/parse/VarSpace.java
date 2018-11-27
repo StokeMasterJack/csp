@@ -8,10 +8,10 @@ import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.BadVarIdException;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.it.Its;
-import com.smartsoft.csp.util.varSets.Converter;
-import com.smartsoft.csp.util.varSets.EmptyVarSet;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.Converter;
+import com.smartsoft.csp.varSets.EmptyVarSet;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.VarCode;
 import com.smartsoft.csp.varCodes.VarCodes;
 import org.jetbrains.annotations.NotNull;
@@ -19,21 +19,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.smartsoft.csp.ssutil.Console.prindent;
 
 public class VarSpace implements PLConstants, Iterable<Var> {
-
-    //varId = varIndex + 1
 
     private static final ImmutableList<String> int32VarPrefixes = ImmutableList.of(MSRP_PREFIX, DLR_PREFIX);   //todo this should not include dealers
 
     private final int minVarId = 1;
-//    private final int maxVarId;
 
-//    private final Var[] varMap; //varIndex to Var
-
-    //    private final Map<String, Var> map;
     private final Map<String, Var> map = new HashMap<String, Var>();
-    private final Set<Var> set = new HashSet<Var>();
     private final List<Var> list = new ArrayList<Var>();  //varIndex to Var
 
     private VarSet vars;
@@ -45,7 +39,6 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     private Space space;
 
     private boolean freeze = false;
-    private Integer maxVarCount = null;
 
     public VarSpace(Space space) {
         this.space = space;
@@ -54,12 +47,16 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 //    public VarSpace() {
 //    }
 
-    public int getMaxVarCount() {
-        if (maxVarCount == null) {
-            maxVarCount = map.size();
-        }
-        assert maxVarCount == map.size();
-        return maxVarCount;
+//    public int getMaxVarCount() {
+//        if (maxVarCount == null) {
+//            maxVarCount = map.size();
+//        }
+//        assert maxVarCount == list.size();
+//        return maxVarCount;
+//    }
+
+    public int getVarCount() {
+        return list.size();
     }
 
     public VarSpace() {
@@ -312,7 +309,7 @@ public class VarSpace implements PLConstants, Iterable<Var> {
         System.err.println("minVarId[" + minVarId + "]");
 //        System.err.println("maxVarId[" + maxVarId + "]");
 
-        int maxWordCount = getMaxWordCount();
+        int maxWordCount = getWordCount();
         System.err.println("maxWordCount[" + maxWordCount + "]");
 
         for (int i = 0; i < list.size(); i++) {
@@ -367,13 +364,9 @@ public class VarSpace implements PLConstants, Iterable<Var> {
         return list.size() - 1;
     }
 
-    public int getMaxWordCount() {
-        int varCount = getMaxVarCount();
+    public int getWordCount() {
+        int varCount = getVarCount();
         return (varCount >>> 6) + 1;
-    }
-
-    public final int wordIndex(int varId) {
-        return varId >>> 6;
     }
 
     public final long bitMask(int varId) {
@@ -384,13 +377,14 @@ public class VarSpace implements PLConstants, Iterable<Var> {
         return getMaxVarIndex() + Var.MIN_VAR_ID;
     }
 
-    public void printVarInfo() {
-        System.err.println("Space varInfo:");
-        System.err.println("  list.size(): " + list.size());
-        System.err.println("  map.size(): " + map.size());
-        System.err.println("  set.size(): " + set.size());
-        System.err.println("  maxVarIndex(): " + getMaxVarIndex());
-        System.err.println("  getMaxVarId(): " + getMaxVarId());
+    public void printVarInfo(int depth) {
+
+        prindent(depth, "Space varInfo:");
+        prindent(depth, "list.size(): " + list.size());
+        prindent(depth, "map.size(): " + map.size());
+        prindent(depth, "maxVarIndex(): " + getMaxVarIndex());
+        prindent(depth, "getMaxVarId(): " + getMaxVarId());
+        prindent(depth, "getMaxWordCount(): " + getWordCount());
 
     }
 
@@ -414,10 +408,6 @@ public class VarSpace implements PLConstants, Iterable<Var> {
         return list.iterator();
     }
 
-
-    public int getVarCount() {
-        return list.size();
-    }
 
     public Set<String> getVarCodes() {
         return map.keySet();
@@ -584,8 +574,8 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
 
-    public Set<Var> getVarSet() {
-        return set;
+    public Set<Var> toSet() {
+        return ImmutableSet.copyOf(map.values());
     }
 
 

@@ -1,9 +1,9 @@
 package com.smartsoft.csp.util.it;
 
 import com.smartsoft.csp.util.ints.IntIterator;
-import com.smartsoft.csp.util.varSets.Converter;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VsIterator;
+import com.smartsoft.csp.varSets.Converter;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VsIterator;
 
 import java.util.Collection;
 import java.util.Iterator;

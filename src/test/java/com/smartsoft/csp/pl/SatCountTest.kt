@@ -199,6 +199,7 @@ Processing Tundra:
                 val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
                 val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
+                println("maxWordCount ${csp.space.varSpace.wordCount}")
 //                val satCountPL = csp.satCountPL().toBigInteger()
 //
 //                assertEquals(it.expectedSatCount, satCountPL)
@@ -214,5 +215,20 @@ Processing Tundra:
         }
     }
 
+    @Test
+    fun cspStats() {
+        println("Csp Stats:")
+        CspSample.allPL.forEach {
+            val name = it.name
+            prindent(0, "Processing $name")
+            val clob = it.loadText()
+            val csp = Csp.parse(clob)
+
+            csp.printVarInfo(1)
+
+
+        }
+    }
 }
+
 

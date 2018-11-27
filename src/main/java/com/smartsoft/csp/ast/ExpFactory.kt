@@ -10,7 +10,7 @@ import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 
 class ExpFactory(val space: Space) {
 

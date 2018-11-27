@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets;
+package com.smartsoft.csp.varSets;
 
 
 import com.smartsoft.csp.ast.Ser;

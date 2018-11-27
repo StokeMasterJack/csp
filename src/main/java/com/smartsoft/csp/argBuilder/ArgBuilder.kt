@@ -10,7 +10,7 @@ import com.smartsoft.csp.ast.Open
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.ints.IndexedEntry
 import com.smartsoft.csp.util.ints.TreeSequence
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 
 /**
  * builder for and args and or args

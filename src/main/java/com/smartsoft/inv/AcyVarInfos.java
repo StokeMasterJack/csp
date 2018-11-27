@@ -3,7 +3,7 @@ package com.smartsoft.inv;
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 import com.smartsoft.csp.varCodes.IVar;
 
 import java.util.ArrayList;

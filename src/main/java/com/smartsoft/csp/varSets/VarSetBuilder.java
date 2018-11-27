@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets;
+package com.smartsoft.csp.varSets;
 
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.Ser;
@@ -20,14 +20,14 @@ public class VarSetBuilder extends VarSet {
 
     public VarSetBuilder(VarSpace varMap) {
         this.vSpace = varMap;
-        this.words = new long[varMap.getMaxWordCount()];
+        this.words = new long[varMap.getWordCount()];
     }
 
     public VarSetBuilder(VarSpace varMap, long[] words) {
         this.vSpace = varMap;
-        int maxWordCount = varMap.getMaxWordCount();
+        int maxWordCount = varMap.getWordCount();
         if (words.length == maxWordCount) {
-            this.words = new long[varMap.getMaxWordCount()];
+            this.words = new long[varMap.getWordCount()];
         } else {
             throw new IllegalArgumentException();
         }
@@ -93,7 +93,7 @@ public class VarSetBuilder extends VarSet {
 
 
     public int getMaxWordCount() {
-        return vSpace.getMaxWordCount();
+        return vSpace.getWordCount();
     }
 
     @Override
@@ -254,9 +254,12 @@ public class VarSetBuilder extends VarSet {
         return word | mask;
     }
 
-
     public boolean isWordActive(int wordIndex) {
         return words[wordIndex] != 0;
+    }
+
+    public static int computeWordIndexFromVarIndex(int varIndex){
+        return varIndex >>> 6;
     }
 
     public boolean containsVarId(int varId) {
@@ -672,8 +675,8 @@ public class VarSetBuilder extends VarSet {
         Space space = vs1.getSpace();
         VarSpace vSpace = space.getVarSpace();
 
-        assert vs1.words.length == vSpace.getMaxWordCount();
-        assert vs2.words.length == vSpace.getMaxWordCount();
+        assert vs1.words.length == vSpace.getWordCount();
+        assert vs2.words.length == vSpace.getWordCount();
 
         for (int wordIndex = 0; wordIndex < vs1.words.length; wordIndex++) {
             if ((vs1.words[wordIndex] & vs2.words[wordIndex]) != 0) {

@@ -6,7 +6,7 @@ import com.google.common.collect.Sets
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.ints.Ints
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import com.smartsoft.csp.varCodes.VarCode
 import java.util.*
 

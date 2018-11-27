@@ -4,7 +4,7 @@ import com.smartsoft.csp.util.it.ItTo
 import com.smartsoft.csp.util.it.IterTo
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.util.Bit
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import java.util.*
 
 interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> {

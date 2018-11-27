@@ -6,7 +6,7 @@ import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Range
 import com.smartsoft.csp.util.XorCube
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import java.math.BigInteger
 
 

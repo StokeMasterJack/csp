@@ -4,7 +4,7 @@ import com.google.common.collect.Iterators;
 import com.smartsoft.csp.ast.Lit;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

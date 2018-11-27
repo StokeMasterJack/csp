@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets
+package com.smartsoft.csp.varSets
 
 object VarSetK {
     @JvmStatic
@@ -23,5 +23,8 @@ object VarSetK {
         }
 
     }
+
+
+
 }
 

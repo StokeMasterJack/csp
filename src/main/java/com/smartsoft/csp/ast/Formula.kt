@@ -5,7 +5,7 @@ import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
 import com.smartsoft.csp.ssutil.millis
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 
 
 sealed class FccState {

@@ -4,9 +4,9 @@ import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.data.CspSample;
 import com.smartsoft.csp.ast.Csp;
 import com.smartsoft.csp.ast.Space;
-import com.smartsoft.csp.util.varSets.VarPair;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarPair;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
 

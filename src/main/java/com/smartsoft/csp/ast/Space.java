@@ -20,8 +20,8 @@ import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.ssutil.SingleLineLogFormatter;
 import com.smartsoft.csp.util.*;
 import com.smartsoft.csp.util.ints.IntIterator;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.IVar;
 import kotlin.sequences.Sequence;
 import org.jetbrains.annotations.NotNull;
@@ -1027,7 +1027,7 @@ public class Space implements PLConstants {
     }
 
     public Set<Var> getVarSet() {
-        return getVarSpace().getVarSet();
+        return getVarSpace().toSet();
     }
 
 

@@ -9,8 +9,8 @@ import com.smartsoft.csp.dnnf.partial.PartialPicsCallback;
 import com.smartsoft.csp.dnnf.partial.PartialPicsGenerator;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.vars.VarGrp;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

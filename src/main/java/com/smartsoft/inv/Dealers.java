@@ -6,7 +6,7 @@ import com.smartsoft.csp.dnnf.forEach.ForEach;
 import com.smartsoft.csp.dnnf.models.Solution;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.util.Bit;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 import java.util.Set;
 

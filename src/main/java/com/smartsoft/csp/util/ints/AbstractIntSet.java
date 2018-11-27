@@ -21,7 +21,7 @@
  */
 package com.smartsoft.csp.util.ints;
 
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 import java.util.NoSuchElementException;
 

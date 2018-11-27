@@ -8,7 +8,7 @@ import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
 import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.util.Bit;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 import java.util.HashMap;
 import java.util.logging.Logger;

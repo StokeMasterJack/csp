@@ -1,8 +1,8 @@
 package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.argBuilder.IArgBuilder
-import com.smartsoft.csp.util.varSets.EmptyVarSet
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.EmptyVarSet
+import com.smartsoft.csp.varSets.VarSet
 import java.util.*
 
 class DComplex(

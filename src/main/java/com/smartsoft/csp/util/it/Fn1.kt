@@ -6,7 +6,7 @@ import com.smartsoft.csp.ast.Var
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.ints.IndexedEntry
 import com.smartsoft.csp.util.ints.TreeSequence
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 
 typealias ExpIter = Iterator<Exp>
 typealias ExpIt = Iterable<Exp>

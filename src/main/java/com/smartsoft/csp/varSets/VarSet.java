@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets;
+package com.smartsoft.csp.varSets;
 
 import com.google.common.collect.*;
 import com.smartsoft.csp.util.it.IterTo;
@@ -73,7 +73,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
 
     public int getMaxWordCount() {
-        return getVarSpace().getMaxWordCount();
+        return getVarSpace().getWordCount();
     }
 
     public String toString() {

@@ -21,7 +21,7 @@ import com.smartsoft.csp.ssutil.Strings.indent
 import com.smartsoft.csp.transforms.CompoundTransformer
 import com.smartsoft.csp.transforms.Transformer
 import com.smartsoft.csp.util.*
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import com.smartsoft.csp.varCodes.VarCode
 import java.math.BigInteger
 import java.util.*

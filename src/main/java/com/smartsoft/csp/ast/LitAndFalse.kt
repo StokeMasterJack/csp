@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.ast.PLConstants.PosOp
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import java.math.BigInteger
 
 

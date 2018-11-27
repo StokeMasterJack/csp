@@ -1,4 +1,4 @@
-package com.smartsoft.csp.util.varSets;
+package com.smartsoft.csp.varSets;
 
 import com.smartsoft.csp.ast.Ser;
 import com.smartsoft.csp.ast.Space;
@@ -8,12 +8,16 @@ import com.smartsoft.csp.util.ints.IntIterator;
 
 import java.util.NoSuchElementException;
 
-public class EmptyVarSetOld extends VarSet {
+public class EmptyVarSet extends VarSet {
 
-    private final VarSpace varMap;
+    private static VarSet _INSTANCE;
 
-    public EmptyVarSetOld(VarSpace varMap) {
-        this.varMap = varMap;
+    public static VarSet getInstance() {
+        if (_INSTANCE == null) _INSTANCE = new EmptyVarSet();
+        return _INSTANCE;
+    }
+
+    private EmptyVarSet() {
     }
 
     @Override
@@ -22,11 +26,11 @@ public class EmptyVarSetOld extends VarSet {
     }
 
     public VarSpace getVarSpace() {
-        return varMap;
+        throw new UnsupportedOperationException();
     }
 
     public Space getSpace() {
-        return varMap.getSpace();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -36,12 +40,12 @@ public class EmptyVarSetOld extends VarSet {
 
     @Override
     public int getVarSetId() {
-                return 0;
+        return 0;
     }
 
     @Override
     public boolean containsVarId(int varId) {
-                return false;
+        return false;
     }
 
     @Override
@@ -56,23 +60,12 @@ public class EmptyVarSetOld extends VarSet {
 
     @Override
     public IntIterator intIterator() {
-                return new IntIterator() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public int next() {
-                throw new IllegalStateException();
-            }
-
-        };
+        return IntIterator.EMPTY;
     }
 
     @Override
     public boolean containsPrefix(String prefix) {
-                return false;
+        return false;
     }
 
     @Override
@@ -97,17 +90,17 @@ public class EmptyVarSetOld extends VarSet {
 
     @Override
     public VarSet minus(int varIdToRemove) {
-                throw new IndexOutOfBoundsException();
+        return this;
     }
 
     @Override
     public VarSet union(Var var) {
-                return var.mkSingletonVarSet();
+        return var.mkSingletonVarSet();
     }
 
     @Override
     public VarSet minus(VarSet varsToRemove) {
-                return this;
+        return this;
     }
 
     @Override

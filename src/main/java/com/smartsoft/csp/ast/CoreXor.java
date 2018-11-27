@@ -1,6 +1,6 @@
 package com.smartsoft.csp.ast;
 
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 public class CoreXor implements IXor {
 

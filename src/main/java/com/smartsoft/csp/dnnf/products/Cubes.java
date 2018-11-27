@@ -12,7 +12,7 @@ import com.smartsoft.csp.util.Control;
 import com.smartsoft.csp.util.IntPairCallback2;
 import com.smartsoft.csp.util.Range;
 import com.smartsoft.csp.util.ints.Ints;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 import javax.annotation.Nullable;
 import java.util.*;

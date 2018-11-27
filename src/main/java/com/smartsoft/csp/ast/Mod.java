@@ -1,7 +1,7 @@
 package com.smartsoft.csp.ast;
 
 import com.google.common.collect.ImmutableSet;
-import com.smartsoft.csp.util.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSet;
 
 public class Mod extends Mods {
 

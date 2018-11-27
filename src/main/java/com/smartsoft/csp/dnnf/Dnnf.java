@@ -14,8 +14,8 @@ import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.Cubes;
 import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.Bit;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
@@ -171,7 +171,7 @@ public class Dnnf implements PLConstants, HasSpace {
 
 
     public Set<Var> getOpenVars() {
-        Set<Var> all = ImmutableSet.copyOf(getAllVars());
+        Set<Var> all = ImmutableSet.copyOf(getAllVarsAsSet());
         Set<Var> assigned = getAssignedVars();
         return Sets.difference(all, assigned);
     }
@@ -439,8 +439,8 @@ public class Dnnf implements PLConstants, HasSpace {
         return getSatCount();
     }
 
-    public Set<Var> getAllVars() {
-        return space.getVarSpace().getVarSet();
+    public Set<Var> getAllVarsAsSet() {
+        return space.getVarSpace().toSet();
     }
 
     public long forEachSatCount() {
@@ -520,7 +520,7 @@ public class Dnnf implements PLConstants, HasSpace {
 
 
     public List<String> getAllVarsCodes() {
-        Set<String> set = space.createVarCodeSet(getAllVars());
+        Set<String> set = space.createVarCodeSet(getAllVarsAsSet());
         return ImmutableList.copyOf(set);
     }
 
@@ -557,7 +557,7 @@ public class Dnnf implements PLConstants, HasSpace {
 
     public void printVars() {
 
-        Set<Var> all = getAllVars();
+        Set<Var> all = getAllVarsAsSet();
         Set<Var> a = getAssignedVars();
         Set<Var> o = getOpenVars();
         Set<Var> t = getTrueVars();

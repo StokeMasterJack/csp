@@ -8,7 +8,7 @@ import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.ssutil.rpad
 import com.smartsoft.csp.ssutil.tt
 import com.smartsoft.csp.util.CspBaseTest2
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.math.BigInteger

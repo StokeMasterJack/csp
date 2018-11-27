@@ -7,7 +7,7 @@ import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.dnnf.products.LitCube
 import com.smartsoft.csp.ssutil.Strings.lpad
 import com.smartsoft.csp.util.Bit
-import com.smartsoft.csp.util.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSet
 import com.smartsoft.csp.varCodes.VarCode
 import java.math.BigInteger
 

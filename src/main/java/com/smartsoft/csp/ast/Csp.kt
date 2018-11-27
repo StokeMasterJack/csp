@@ -15,8 +15,8 @@ import com.smartsoft.csp.util.it.ExpFn
 import com.smartsoft.csp.util.it.ExpFnJvm
 import com.smartsoft.csp.util.it.Fn
 import com.smartsoft.csp.util.it.It
-import com.smartsoft.csp.util.varSets.VarSet
-import com.smartsoft.csp.util.varSets.VarSetBuilder
+import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSets.VarSetBuilder
 import java.math.BigInteger
 import java.util.*
 import kotlin.collections.ArrayList
@@ -1881,9 +1881,10 @@ class Csp @JvmOverloads constructor(
 
     }//end companion
 
-    fun printVarInfo() {
+    @JvmOverloads
+    fun printVarInfo(depth:Int = 0) {
         val varMap = space.getVarSpace();
-        varMap.printVarInfo();
+        varMap.printVarInfo(depth);
     }
 
 

@@ -10,8 +10,8 @@ import com.smartsoft.csp.common.*;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.parse.VarSpace;
-import com.smartsoft.csp.util.varSets.VarSet;
-import com.smartsoft.csp.util.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.IVar;
 
 import java.util.*;
