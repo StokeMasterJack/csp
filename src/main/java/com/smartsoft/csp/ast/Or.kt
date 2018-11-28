@@ -200,8 +200,8 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
             val tCon: Exp = condition(decisionVar.pLit())
             val fCon: Exp = condition(decisionVar.nLit())
 
-            val tSatCount = Csp.computeDcVars(tCon.satCountPL, vars, tCon.vars.union(decisionVar))
-            val fSatCount = Csp.computeDcVars(fCon.satCountPL, vars, fCon.vars.union(decisionVar))
+            val tSatCount = Csp.computeDcVars(tCon.satCountPL, vars, tCon.vars.plus(decisionVar))
+            val fSatCount = Csp.computeDcVars(fCon.satCountPL, vars, fCon.vars.plus(decisionVar))
             return tSatCount + fSatCount
 
         }

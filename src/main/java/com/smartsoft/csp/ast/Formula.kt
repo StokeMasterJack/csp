@@ -1,10 +1,9 @@
 package com.smartsoft.csp.ast
 
-import com.google.common.collect.ArrayListMultimap
-import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
 import com.smartsoft.csp.ssutil.millis
+import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.varSets.VarSet
 
 
@@ -33,7 +32,7 @@ data class Fccs(val args: List<Exp>) : FccState()
  * if may be an fcc, or not
  *
  */
-class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Open()) : And(space, expId, args), FConstraintSet {
+class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Open()) : And(space, expId, args), FConstraintSet<Exp> {
 
 
     //cache computed values
@@ -305,7 +304,6 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
         return FormulaSplit(this, vr).toDnnf()
 
 
-
     }
 
     fun fccsToDnnf(fcc: Fccs): Exp {
@@ -423,6 +421,9 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
     }
 
+    override fun getConstraint(index: Int): Exp {
+        return getArg(index)
+    }
 
     //    fun getConstraintCount(): Int {
 //        return argCount
@@ -487,21 +488,19 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
         val uf = computeUnionFind()
 
-        val fccCount = uf.fccCount
 //        println("Compute FCCs: fccCount = ${fccCount}")
-        if (fccCount == 1) {
+        if (uf.fccCount == 1) {
             return Fcc()
         } else {
-            val mm = ArrayListMultimap.create<Int, Exp>()
-            for (i in 0 until constraintCount) {
-                val fcc = uf.getFccFor(i)
-                val constraint = getArg(i)
-                mm.put(fcc, constraint)
-            }
             val list = mutableListOf<Exp>()
-            for (key in mm.keySet()) {
-                val fccConstraints = mm.get(key)
-                val bFcc = ArgBuilder(_space, Op.Fcc, fccConstraints)
+            for (fccConstraints: List<Exp> in uf.fccs) {
+                //sp: Space, op: Op, args: Iterable<Exp>, condition: Condition = Condition.identity, fcc: FccState = Open(), flatten: Boolean = true
+                val bFcc = ArgBuilder(
+                        sp = _space,
+                        op = Op.Fcc,
+                        args = fccConstraints,
+                        fcc = Fcc()
+                )
                 bFcc.structure = Structure.Fcc
                 val fccExp = bFcc.mk()
                 list.add(fccExp)

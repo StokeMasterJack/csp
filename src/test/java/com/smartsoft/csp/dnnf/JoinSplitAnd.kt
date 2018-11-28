@@ -35,7 +35,7 @@ class JoinSplitAnd : CspBaseTest2() {
 
         val yearVars = space.vars.filter(Prefix.YR)
         val seriesVars = space.vars.filter(Prefix.SER)
-        val ys = VarSet.union(space, yearVars, seriesVars)
+        val ys = VarSet.plus(space, yearVars, seriesVars)
 
         val ysCombosDnnf = efcDnnf.project(ys)
 

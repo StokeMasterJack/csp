@@ -199,11 +199,6 @@ Processing Tundra:
                 val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
                 val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
-                println("maxWordCount ${csp.space.varSpace.wordCount}")
-//                val satCountPL = csp.satCountPL().toBigInteger()
-//
-//                assertEquals(it.expectedSatCount, satCountPL)
-
                 val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
                 val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
                 val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }

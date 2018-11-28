@@ -1,4 +1,4 @@
-package com.smartsoft.csp.misc;
+package com.smartsoft.csp.varSets;
 
 import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.data.CspSample;
@@ -41,14 +41,8 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertTrue(vs1.contains("c"));
         assertTrue(vs1.contains("d"));
 
-        System.err.println(vs1.getClass().getSimpleName());
-
-        System.err.println("vs1[" + vs1 + "]");
-
         boolean removed = vs1.removeVar("b");
         assertTrue(removed);
-
-        System.err.println("vs1[" + vs1 + "]");
 
         assertTrue(vs1.contains("a"));
         assertFalse(vs1.contains("b"));
@@ -72,7 +66,6 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertTrue(vs1.contains("b"));
         assertTrue(vs1.contains("c"));
         assertTrue(vs1.contains("d"));
-        System.err.println(vs1.getClass().getSimpleName());
 
         VarSetBuilder vs2 = csp.getSpace().newMutableVarSet();
         vs2.addVar("a");
@@ -83,13 +76,8 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertFalse(vs2.contains("b"));
         assertTrue(vs2.contains("c"));
         assertTrue(vs2.contains("d"));
-        System.err.println(vs2.getClass().getSimpleName());
 
         VarSet vs3 = vs1.minus(vs2);
-
-        System.err.println("vs1 = {" + vs1 + "}");
-        System.err.println("vs2 = {" + vs2 + "}");
-        System.err.println("vs1 - vs2 = {" + vs3 + "}");
 
 
         assertFalse(vs3.contains("a"));
@@ -124,10 +112,6 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertTrue(b2 instanceof VarSetBuilder);
         assertTrue(b3 instanceof VarSetBuilder);
 
-        System.err.println("b1[" + b1 + "]");
-        System.err.println("b2[" + b2 + "]");
-        System.err.println("b3[" + b3 + "]");
-
         assertFalse(b1.anyVarOverlap(b2));
         assertTrue(b1.anyVarOverlap(b3));
         assertTrue(b2.anyVarOverlap(b3));
@@ -139,10 +123,6 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertTrue(vs1 instanceof VarPair);
         assertTrue(vs2 instanceof VarPair);
         assertTrue(vs3 instanceof VarPair);
-
-        System.err.println("vs1[" + vs1 + "]");
-        System.err.println("vs2[" + vs2 + "]");
-        System.err.println("vs3[" + vs3 + "]");
 
         assertFalse(vs1.anyVarOverlap(b2));
         assertTrue(vs1.anyVarOverlap(b3));
@@ -173,7 +153,6 @@ public class VarSetTestTiny extends CspBaseTest2 {
         assertTrue(vars.contains("b"));
         assertTrue(vars.contains("c"));
         assertTrue(vars.contains("d"));
-        System.err.println(vars.getClass());
 
 
         VarSetBuilder b1 = csp.newMutableVarSet();

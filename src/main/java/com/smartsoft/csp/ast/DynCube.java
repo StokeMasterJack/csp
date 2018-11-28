@@ -342,8 +342,8 @@ public class DynCube extends AbstractCube {
             return space.mkSimple();
         } else {
             assert !assNull && !bbNull;
-            VarSet v = VarSet.union(space, ass.v, bb.v);
-            VarSet t = VarSet.union(space, ass.t, bb.t);
+            VarSet v = VarSet.plus(space, ass.v, bb.v);
+            VarSet t = VarSet.plus(space, ass.t, bb.t);
             return new DynCube(space, v, t);
         }
 

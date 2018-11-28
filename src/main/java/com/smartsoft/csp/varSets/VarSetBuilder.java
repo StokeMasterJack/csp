@@ -8,41 +8,43 @@ import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.ints.IntIterator;
 import com.smartsoft.csp.util.ints.Ints;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+
+import static com.smartsoft.csp.ast.VarK.computeSize;
 
 public class VarSetBuilder extends VarSet {
 
     public VarSpace vSpace;
 
     public long[] words;
-    public int _size;
+    public int _size = -1;  // -1 means dirty
 
+    /**
+     * Empty VarSetBuilder
+     */
     public VarSetBuilder(VarSpace varMap) {
         this.vSpace = varMap;
         this.words = new long[varMap.getWordCount()];
+        _size = 0;
     }
 
-    public VarSetBuilder(VarSpace varMap, long[] words) {
-        this.vSpace = varMap;
-        int maxWordCount = varMap.getWordCount();
-        if (words.length == maxWordCount) {
-            this.words = new long[varMap.getWordCount()];
-        } else {
-            throw new IllegalArgumentException();
-        }
-        recalculateSize();
-    }
+//    public VarSetBuilder(VarSpace varMap, long[] words) {
+//        assert varMap.getWordCount() == words.length;
+//        this.vSpace = varMap;
+//        this.words = new long[varMap.getWordCount()];
+//    }
 
     public VarSpace getVarSpace() {
         return vSpace;
     }
 
-    @SuppressWarnings("CopyConstructorMissesField")
     public VarSetBuilder(VarSetBuilder that) {
         this.vSpace = that.getVarSpace();
         this.words = copyWordArrayExactly(that.words);
-        recalculateSize();
+        this._size = that._size;
     }
 
     public long[] copyAndCompressWords() {
@@ -71,10 +73,10 @@ public class VarSetBuilder extends VarSet {
         return copy;
     }
 
-    public static long[] copyWordArrayExactly(long[] fixedWords) {
-        assert fixedWords != null;
-        long[] copy = new long[fixedWords.length];
-        System.arraycopy(fixedWords, 0, copy, 0, fixedWords.length);
+    public static long[] copyWordArrayExactly(long[] words) {
+        assert words != null;
+        long[] copy = new long[words.length];
+        System.arraycopy(words, 0, copy, 0, words.length);
         return copy;
     }
 
@@ -89,11 +91,6 @@ public class VarSetBuilder extends VarSet {
             }
         }
         return copy;
-    }
-
-
-    public int getMaxWordCount() {
-        return vSpace.getWordCount();
     }
 
     @Override
@@ -131,13 +128,6 @@ public class VarSetBuilder extends VarSet {
         return false;
     }
 
-    public static int computeSize(long[] words) {
-        int s = 0;
-        for (int i = 0; i < words.length; i++) {
-            s += Long.bitCount(words[i]);
-        }
-        return s;
-    }
 
     public static int computeActiveWordsBitSet(long[] words) {
         int activeWords = 0;
@@ -211,6 +201,11 @@ public class VarSetBuilder extends VarSet {
         return b.build();
     }
 
+    public boolean addVarSet(@NotNull String sVarCodes) {
+        VarSet vs = getSpace().mkVarSet(sVarCodes);
+        return addVarSet(vs);
+    }
+
     public static class EmptyIntIterator implements IntIterator {
         @Override
         public boolean hasNext() {
@@ -258,10 +253,6 @@ public class VarSetBuilder extends VarSet {
         return words[wordIndex] != 0;
     }
 
-    public static int computeWordIndexFromVarIndex(int varIndex){
-        return varIndex >>> 6;
-    }
-
     public boolean containsVarId(int varId) {
         final int varIndex = varId - 1;
         final int wordIndex = varIndex >>> 6;
@@ -275,6 +266,14 @@ public class VarSetBuilder extends VarSet {
 
     public void makeDirty() {
         _size = -1;
+    }
+
+    private boolean maybeDirty(long before, long after) {
+        boolean ch = before != after;
+        if (ch) {
+            makeDirty();
+        }
+        return ch;
     }
 
 //    public void addVarIdQuiet(int varId) {
@@ -295,13 +294,7 @@ public class VarSetBuilder extends VarSet {
         long mask = getMaskForLongWord(varId);
         long oldValue = words[wordIndex];
         words[wordIndex] |= mask;
-        boolean ch = oldValue != words[wordIndex];
-        if (ch) {
-            makeDirty();
-            return true;
-        } else {
-            return false;
-        }
+        return maybeDirty(oldValue, words[wordIndex]);
     }
 
 //    public void addLits(Iterable<? extends Exp> lits) {
@@ -411,66 +404,77 @@ public class VarSetBuilder extends VarSet {
     public boolean removeVarId(int varId) {
         int wordIndex = getWordIndexForVarId(varId);
         long mask = getMaskForLongWord(varId);
-
         long before = words[wordIndex];
         words[wordIndex] &= ~(mask);
-
         long after = words[wordIndex];
+        return maybeDirty(before, after);
+    }
 
-        boolean ch = before != after;
+
+//    public boolean removeVarSetBuilderBruteForce(VarSetBuilder b) {
+//        boolean anyChange = false;
+//        for (HasVarId var : b) {
+//            int varId = var.getVarId();
+//            boolean ch = removeVarId(varId);
+//            if (ch) {
+//                anyChange = true;
+//            }
+//        }
+//        return anyChange;
+//    }
+
+    public void removeVarIt(Iterable<? extends HasVarId> b) {
+        for (HasVarId var : b) {
+            int varId = var.getVarId();
+            removeVarId(varId);
+        }
+    }
+
+    public void removeVarSetBuilderBruteForce(VarSetBuilder b) {
+        removeVarIt(b);
+    }
+
+    public boolean removeVarSetBuilderBitWise(VarSetBuilder b) {
+        assert words.length == b.words.length;
+        boolean ch = false;
+        for (int i = 0; i < b.getWordCount(); i++) {
+            long newVal = VarSetK.minus(words[i], b.words[i]);
+            if (words[i] != newVal) {
+                ch = true;
+            }
+            words[i] = newVal;
+        }
         if (ch) {
             makeDirty();
         }
         return ch;
-
     }
 
-    public boolean removeVars(Iterable<? extends HasVarId> varsToRemove) {
-        if (varsToRemove == null) {
+    public boolean removeSingletonVarSet(@Nonnull SingletonVarSet vs) {
+        int v1 = vs.min();
+        return removeVarId(v1);
+    }
+
+    public boolean removeVarPair(@Nonnull VarPair vs) {
+        int v1 = vs.min();
+        int v2 = vs.max();
+        boolean ch1 = removeVarId(v1);
+        boolean ch2 = removeVarId(v2);
+        return ch1 || ch2;
+    }
+
+    public boolean removeVarSet(@Nonnull VarSet vs) {
+        if (vs instanceof EmptyVarSet) {
             return false;
-        }
-        if (varsToRemove instanceof VarSet) {
-            VarSet vs = (VarSet) varsToRemove;
-            if (vs.isEmpty()) {
-                return false;
-            } else if (vs.isSingleton()) {
-                int v1 = vs.min();
-                return removeVarId(v1);
-            } else if (vs.isVarPair()) {
-                int v1 = vs.min();
-                int v2 = vs.max();
-                boolean ch1 = removeVarId(v1);
-                boolean ch2 = removeVarId(v2);
-                return ch1 || ch2;
-            } else if (vs.isVarNSet()) {
-                throw new UnsupportedOperationException();
-            } else if (vs.isVarSetBuilder()) {
-                //todo fix this - use bitwise ops
-                boolean anyChange = false;
-                for (HasVarId var : varsToRemove) {
-                    int varId = var.getVarId();
-                    boolean ch = removeVarId(varId);
-                    if (ch) {
-                        anyChange = true;
-                    }
-                }
-                return anyChange;
-            } else {
-                throw new IllegalStateException(vs.getClass() + "");
-            }
+        } else if (vs instanceof SingletonVarSet) {
+            return removeSingletonVarSet((SingletonVarSet) vs);
+        } else if (vs instanceof VarPair) {
+            return removeVarPair((VarPair) vs);
+        } else if (vs instanceof VarSetBuilder) {
+            return removeVarSetBuilderBitWise((VarSetBuilder) vs);
         } else {
-            boolean anyChange = false;
-            for (HasVarId var : varsToRemove) {
-                int varId = var.getVarId();
-                boolean ch = removeVarId(varId);
-                if (ch) {
-                    anyChange = true;
-                }
-            }
-            return anyChange;
+            throw new IllegalStateException(vs.getClass() + "");
         }
-
-
     }
 
 
@@ -514,7 +518,7 @@ public class VarSetBuilder extends VarSet {
 
     public int getVarId(int index) throws IndexOutOfBoundsException {
         int lvi = 0;
-        for (int wordIndex = 0; wordIndex < getMaxWordCount(); wordIndex++) {
+        for (int wordIndex = 0; wordIndex < this.getWordCount(); wordIndex++) {
             IntIterator it = bitIterator(words[wordIndex]);
             while (it.hasNext()) {
                 int bitIndex = it.next();
@@ -531,7 +535,7 @@ public class VarSetBuilder extends VarSet {
 
 
     public int minActiveWord() {
-        for (int wordIndex = 0; wordIndex < getMaxWordCount(); wordIndex++) {
+        for (int wordIndex = 0; wordIndex < this.getWordCount(); wordIndex++) {
             if (isWordActive(wordIndex)) {
                 return wordIndex;
             }
@@ -540,7 +544,7 @@ public class VarSetBuilder extends VarSet {
     }
 
     public int maxActiveWord() {
-        for (int wordIndex = getMaxWordCount() - 1; wordIndex >= 0; wordIndex--) {
+        for (int wordIndex = this.getWordCount() - 1; wordIndex >= 0; wordIndex--) {
             if (isWordActive(wordIndex)) {
                 return wordIndex;
             }
@@ -691,20 +695,27 @@ public class VarSetBuilder extends VarSet {
     public VarSet minus(int varIdToRemove) {
         VarSetBuilder copy = copy();
         copy.removeVarId(varIdToRemove);
-        return copy.build();
+        return copy;
     }
 
     @Override
-    public VarSet union(Var var) {
+    public VarSet plus(VarSet that) {
+        VarSetBuilder b = copy();
+        b.addVarSet(that);
+        return b;
+    }
+
+    @Override
+    public VarSet plus(Var var) {
         VarSetBuilder copy = copy();
         copy.addVar(var);
-        return copy.build();
+        return copy;
     }
 
     @Override
     public VarSet minus(VarSet varsToRemove) {
         VarSetBuilder copy = copy();
-        copy.removeVars(varsToRemove);
+        copy.removeVarSet(varsToRemove);
         return copy.build();
     }
 
@@ -721,7 +732,7 @@ public class VarSetBuilder extends VarSet {
 
     public int indexOf(final int qVarId) {
         int bitIndexInWords = 0;
-        for (int wordIndex = 0; wordIndex < getMaxWordCount(); wordIndex++) {
+        for (int wordIndex = 0; wordIndex < this.getWordCount(); wordIndex++) {
             IntIterator it = bitIterator(words[wordIndex]);
             while (it.hasNext()) {
                 int bitIndexInWord = it.next();
@@ -801,7 +812,7 @@ public class VarSetBuilder extends VarSet {
         }
 
         public int maxWordCount() {
-            return varSet.getMaxWordCount();
+            return varSet.getWordCount();
         }
 
 
@@ -893,7 +904,7 @@ public class VarSetBuilder extends VarSet {
             return -1;
         }
         int lwi = 0;
-        for (int wordIndex = 0; wordIndex < getMaxWordCount(); wordIndex++) {
+        for (int wordIndex = 0; wordIndex < this.getWordCount(); wordIndex++) {
             if (isWordActive(activeWords, wordIndex)) {
                 if (wordIndex == globalWordIndex) {
                     return lwi;

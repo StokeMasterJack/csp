@@ -94,7 +94,12 @@ public class EmptyVarSet extends VarSet {
     }
 
     @Override
-    public VarSet union(Var var) {
+    public VarSet plus(VarSet that) {
+        return that;
+    }
+
+    @Override
+    public VarSet plus(Var var) {
         return var.mkSingletonVarSet();
     }
 

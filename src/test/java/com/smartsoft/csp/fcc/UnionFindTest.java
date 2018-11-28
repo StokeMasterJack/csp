@@ -1,10 +1,10 @@
 package com.smartsoft.csp.fcc;
 
-import com.smartsoft.csp.util.CspBaseTest2;
-import com.smartsoft.csp.data.CspSample;
 import com.smartsoft.csp.ast.Csp;
 import com.smartsoft.csp.ast.Exp;
 import com.smartsoft.csp.ast.FConstraintSet;
+import com.smartsoft.csp.data.CspSample;
+import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.util.UnionFind;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -18,8 +18,7 @@ public class UnionFindTest extends CspBaseTest2 {
 
     @Test
     public void testWithFakeConstraintSet() throws Exception {
-        UnionFind uf1 = new UnionFind(new MyConstraintSet());
-        uf1.processAllUniquePairs();
+        UnionFind uf1 = UnionFind.compute(new MyConstraintSet());
         int fccCount = uf1.getFccCount();
         assertEquals(3, fccCount);
     }
@@ -42,12 +41,17 @@ public class UnionFindTest extends CspBaseTest2 {
 
 
     @Test
-    public void testUFWithCamry() throws Exception {
+    public void testUFWithCamry()  {
         Csp csp = loadCsp(CspSample.Camry2011Dc);
-        UnionFind unionFind = csp.computeUnionFind();
+        UnionFind<Exp> unionFind = csp.computeUnionFind();
         int fccCount = unionFind.getFccCount();
         assertEquals(2, fccCount);
+
+
     }
+
+
+
 
 
     //44s  49s  51s 49s  16s 13s 24s 8.4s
@@ -59,7 +63,7 @@ public class UnionFindTest extends CspBaseTest2 {
         Csp csp = Csp.parse(clob);
 
         long t1 = System.currentTimeMillis();
-        UnionFind unionFind = csp.computeUnionFind();
+        UnionFind<Exp> unionFind = csp.computeUnionFind();
         int fccCount = unionFind.getFccCount();
         long t2 = System.currentTimeMillis();
         assertEquals(1, fccCount);
@@ -68,7 +72,7 @@ public class UnionFindTest extends CspBaseTest2 {
 
     }
 
-    public static class MyConstraintSet implements FConstraintSet {
+    public static class MyConstraintSet implements FConstraintSet<int[]> {
 
         int[][] constraints = {
                 {1, 2, 3},
@@ -122,6 +126,11 @@ public class UnionFindTest extends CspBaseTest2 {
             return index >= 0;
         }
 
+        @NotNull
+        @Override
+        public int[] getConstraint(int index) {
+            return constraints[index];
+        }
     }
 
 

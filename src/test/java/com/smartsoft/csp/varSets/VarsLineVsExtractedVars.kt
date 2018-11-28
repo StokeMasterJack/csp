@@ -1,4 +1,4 @@
-package com.smartsoft.csp.misc
+package com.smartsoft.csp.varSets
 
 import com.smartsoft.csp.ast.Parser
 import kotlin.test.Test

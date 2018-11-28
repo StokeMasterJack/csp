@@ -5,7 +5,7 @@ package com.smartsoft.csp.ast
  * represents a set of complex fact
  * Used by union find (compute fccs)
  */
-interface FConstraintSet {
+interface FConstraintSet<T> {
 
     /**
      * Does not include simple fact
@@ -15,5 +15,7 @@ interface FConstraintSet {
     fun isDirectlyRelated(c1: Int, c2: Int): Boolean
 
     val argIt: Iterable<Exp>
+
+    fun getConstraint(index: Int): T
 
 }

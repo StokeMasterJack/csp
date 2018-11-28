@@ -1,15 +1,13 @@
 package com.smartsoft.csp.argBuilder
 
 import com.google.common.collect.Lists.newArrayList
-import com.smartsoft.csp.util.it.ExpIt
-import com.smartsoft.csp.util.it.Structure
-import com.smartsoft.csp.util.it.TreeSeqTo
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.FccState
-import com.smartsoft.csp.ast.Open
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.ints.IndexedEntry
 import com.smartsoft.csp.util.ints.TreeSequence
+import com.smartsoft.csp.util.it.ExpIt
+import com.smartsoft.csp.util.it.Structure
+import com.smartsoft.csp.util.it.TreeSeqTo
 import com.smartsoft.csp.varSets.VarSet
 
 /**
@@ -85,10 +83,8 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-
-
     @JvmOverloads
-    constructor(sp: Space, op: Op, args: Iterable<Exp>, condition: Condition = Condition.identity) : this(sp, op) {
+    constructor(sp: Space, op: Op, args: Iterable<Exp>, condition: Condition = Condition.identity, fcc: FccState = Open(), flatten: Boolean = true) : this(sp, op, flatten, fcc) {
         addExpIt(args, condition);
     }
 
@@ -202,7 +198,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     }
 
 
-
     @JvmOverloads
     fun addExpSeq(args: Sequence<Exp>, condition: Condition = Condition.identity): ArgBuilder {
         if (isShortCircuit) {
@@ -258,7 +253,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
         addExpIt(expIt, condition);
         return this
     }
-
 
 
     val simpleIt: Iterable<Exp> get() = TreeSeqTo.litIt(simple)
@@ -420,8 +414,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
     val isBinaryAnd: Boolean get() = isBinary && op1.isAnd
 
     val isNaryAnd: Boolean get() = isNary && op1.isAnd
-
-
 
 
     override fun toString(): String {

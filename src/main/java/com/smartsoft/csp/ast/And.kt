@@ -6,7 +6,10 @@ import com.smartsoft.csp.ast.PLConstants.PosOp
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.UnionFind
 
-open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs), FConstraintSet {
+open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMultiVar(space, expId, fixedArgs), FConstraintSet<Exp> {
+    override fun getConstraint(index: Int): Exp {
+        return getArg(index)
+    }
 
 
     override val constraintCount: Int
@@ -17,7 +20,7 @@ open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMult
 
 
     override fun computeIsSat(): Boolean {
-        if(true) throw IllegalStateException()
+        if (true) throw IllegalStateException()
         return if (isCube) {
             true
         } else {
@@ -77,10 +80,8 @@ open class And(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMult
 
     }
 
-    override fun computeUnionFind(): UnionFind {
-        val unionFind = UnionFind(this)
-        unionFind.processAllUniquePairs()
-        return unionFind
+    override fun computeUnionFind(): UnionFind<Exp> {
+        return UnionFind.compute(this)
     }
 
     override fun createHardFlip(): Exp {

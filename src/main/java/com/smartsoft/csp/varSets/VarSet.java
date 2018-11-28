@@ -1,9 +1,7 @@
 package com.smartsoft.csp.varSets;
 
 import com.google.common.collect.*;
-import com.smartsoft.csp.util.it.IterTo;
 import com.smartsoft.csp.VarInfo;
-import com.smartsoft.csp.util.it.VarTo;
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.Cubes;
@@ -15,6 +13,8 @@ import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.BadVarIdException;
 import com.smartsoft.csp.util.DynComplex;
 import com.smartsoft.csp.util.ints.IntIterator;
+import com.smartsoft.csp.util.it.IterTo;
+import com.smartsoft.csp.util.it.VarTo;
 import com.smartsoft.csp.util.it.VsSet;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +45,10 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return containsVarId(vr.varId);
     }
 
+    public boolean notContainsVar(@NotNull String varCode) {
+        return !containsVar(varCode);
+    }
+
     public int getVarCount() {
         return size();
     }
@@ -71,15 +75,14 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 //        return System.identityHashCode(this);
     }
 
-
-    public int getMaxWordCount() {
-        return getVarSpace().getWordCount();
-    }
-
-    public String toString() {
+    public String ser() {
         Ser a = new Ser();
         serialize(a);
         return a.toString();
+    }
+
+    public String toString() {
+        return ser();
     }
 
     public abstract void serialize(Ser a);
@@ -163,9 +166,15 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     public abstract boolean containsVarId(int varId);
 
     final public boolean containsVar(Var vr) {
-        int varId = vr.getVarId();
-        boolean b = containsVarId(varId);
-        return b;
+        return containsVarId(vr.getVarId());
+    }
+
+    final public boolean containsVars(Var vr1, Var vr2) {
+        return containsVarId(vr1.getVarId()) && containsVarId(vr2.getVarId());
+    }
+
+    final public boolean containsVars(VarPair pair) {
+        return containsVar(pair.var1) && containsVar(pair.var2);
     }
 
     final public boolean containsVar(Lit lit) {
@@ -174,14 +183,14 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
 
     /**
-     * Returns the smallest varId formula this set.
+     * Returns the smallest varId in this set.
      * <p>
      * Throws a NoSuchElementException if this set is empty.
      */
     public abstract int min() throws NoSuchElementException;
 
     /**
-     * Returns the largest varId formula this set.
+     * Returns the largest varId in this set.
      * <p>
      * Throws a NoSuchElementException if this set is empty.
      */
@@ -623,43 +632,54 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return minus(vr);
     }
 
+
+    public VarSetBuilder copyToVarSetBuilder() {
+        return VarSetK.copyToVarSetBuilder(this);
+    }
+
+//    public VarSet plus(String varCode) {
+//        Var vr = getSpace().getVar(varCode);
+//        return plus(vr);
+//    }
+
+//    public VarSet plus(Var vr) {
+//        VarSetBuilder bb = copyToVarSetBuilder();
+//        bb.addVar(vr);
+//        return bb;
+//    }
+
+//    public VarSet plus(VarSet varSet) {
+//        return VarSetK.
+//        return union(varSet);
+//    }
+
+    abstract public VarSet plus(VarSet that);
+
     public VarSet plus(String varCode) {
         Var vr = getSpace().getVar(varCode);
-        return union(vr);
+        return plus(vr);
     }
 
-    public VarSet plus(Var vr) {
-        return union(vr);
-    }
-
-    public VarSet plus(VarSet varSet) {
-        return VarSet.union(getSpace(), this, varSet);
-    }
-
-    public VarSet union(String varCode) {
-        Var vr = getSpace().getVar(varCode);
-        return union(vr);
-    }
-
-    public VarSet minus(VarSet varsToRemove) {
-        throw new UnsupportedOperationException(getSimpleName(this) + "  " + getSimpleName(varsToRemove));
-    }
-
-    public VarSet union(Var var) {
+    public VarSet plus(Var var) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 
-    public static VarSet union(VarSet... that) {
-        Space space = that[0].getSpace();
-        return union(space, that);
-    }
+//    public static VarSet union(VarSet... that) {
+//        Space space = that[0].getSpace();
+//        return plus(space, that);
+//    }
 
-    public static VarSet union(Space space, VarSet... that) {
+    public static VarSet plus(Space space, VarSet... that) {
         VarSetBuilder b = space.varSetBuilder();
         for (VarSet vars : that) {
             b.addVarSet(vars);
         }
         return b.build();
+    }
+
+
+    public VarSet minus(VarSet varsToRemove) {
+        throw new UnsupportedOperationException(getSimpleName(this) + "  " + getSimpleName(varsToRemove));
     }
 
 
@@ -886,16 +906,10 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     //mutatations
 
 
-    public boolean addVarSet(VarSet other) {
+    public boolean addVarSet(@Nonnull VarSet vs) {
         throw new UnsupportedOperationException();
     }
 
-    public VarSet plusVarSet(VarSet that) {
-        VarSetBuilder b = getSpace().varSetBuilder();
-        b.addVarSet(this);
-        b.addVarSet(that);
-        return b.build();
-    }
 
     public boolean addVar(Var var) {
         throw new UnsupportedOperationException();
@@ -914,8 +928,8 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return removeVar(var);
     }
 
-    final public boolean removeVar(Var var) {
-        int varId = var.getVarId();
+    final public boolean removeVar(Var vr) {
+        int varId = vr.getVarId();
         return removeVarId(varId);
     }
 
@@ -944,12 +958,12 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    final public boolean removeAll(Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean remove(Object o) {
+    final public boolean remove(Object o) {
         throw new UnsupportedOperationException();
     }
 
@@ -1083,16 +1097,6 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return filter(ACY_PREFIX);
     }
 
-    public VarSet removeSystemVars() {
-        VarSetBuilder b = builder();
-        for (Var var : this) {
-            if (var.getVarCode().contains("_")) {
-                b.add(var);
-            }
-        }
-        return b.build();
-    }
-
     abstract public boolean recomputeSize();
 
     public VarSet refreshSize() {
@@ -1102,6 +1106,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public Set<VarPair> getAllPairs() {
         return VarSetK.getAllPairs(this);
+    }
+
+    public void assertSer(String ser) {
+        String ser1 = toString();
+        assert ser.equals(ser1);
     }
 
 }

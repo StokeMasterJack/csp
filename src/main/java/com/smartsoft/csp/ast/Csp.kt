@@ -3,7 +3,7 @@ package com.smartsoft.csp.ast
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.HashMultiset
 import com.google.common.collect.Multimap
-import com.smartsoft.csp.*
+import com.smartsoft.csp.Vars
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.data.CspSample
 import com.smartsoft.csp.dnnf.Dnnf
@@ -396,12 +396,13 @@ class Csp @JvmOverloads constructor(
         return complex.mkFormula()
     }
 
-    fun computeUnionFind(): UnionFind {
-        val ff = mkFormula()
-        val f = ff.asFormula
-        return f.computeUnionFind();
+    fun computeUnionFind(): UnionFind<Exp> {
+        return mkFormula().computeUnionFind();
     }
 
+    fun computeFccs(): List<List<Exp>> {
+        return mkFormula().computeUnionFind().fccs;
+    }
 
     val isDirty: Boolean
         get() {
@@ -1008,7 +1009,7 @@ class Csp @JvmOverloads constructor(
 
     val careVars: VarSet get() = complexVars;
 
-    val simpleAndComplexVars: VarSet get() = complexVars.plusVarSet(simpleVars);
+    val simpleAndComplexVars: VarSet get() = complexVars.plus(simpleVars);
 
     fun simplifySeriesModelAnds() {
         if (!hasComplex) return;
@@ -1314,7 +1315,7 @@ class Csp @JvmOverloads constructor(
 
     val vars: VarSet
         get() {
-            return VarSet.union(space, simple?.vars, complex.vars, dontCares)
+            return VarSet.plus(space, simple?.vars, complex.vars, dontCares)
         }
 
 
@@ -1499,7 +1500,6 @@ class Csp @JvmOverloads constructor(
         //        serializeTinyCnfSimple(a);
         serializeTinyCnfComplex(a);
     }
-
 
 
     fun serializeTinyCnfComplex(a: Ser) {
@@ -1882,7 +1882,7 @@ class Csp @JvmOverloads constructor(
     }//end companion
 
     @JvmOverloads
-    fun printVarInfo(depth:Int = 0) {
+    fun printVarInfo(depth: Int = 0) {
         val varMap = space.getVarSpace();
         varMap.printVarInfo(depth);
     }

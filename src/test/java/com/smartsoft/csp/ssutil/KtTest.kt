@@ -23,7 +23,7 @@ class KtTest {
     @Test
     fun test() {
         println(11)
-        tmp()
+        BitSetJ()
         println(22)
     }
 }

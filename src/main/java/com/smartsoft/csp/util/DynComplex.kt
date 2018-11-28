@@ -163,7 +163,7 @@ class DynComplex constructor(val space: Space) : IArgBuilder, PLConstants, Itera
 
 
     private fun addVars(e: Exp) {
-        this._vars = VarSet.union(space, _vars, e.vars);
+        this._vars = VarSet.plus(space, _vars, e.vars);
     }
 
 

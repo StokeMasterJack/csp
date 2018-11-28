@@ -9,15 +9,15 @@ import com.smartsoft.csp.util.ints.Ints;
 
 public class SingletonVarSet extends VarSet {
 
-    private final Var var;
+    private final Var vr;
 
     public SingletonVarSet(Var var) {
-        this.var = var;
+        this.vr = var;
     }
 
     @Override
     public VarSpace getVarSpace() {
-        return var.getVarSpace();
+        return vr.getVarSpace();
     }
 
     @Override
@@ -27,19 +27,23 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public int indexOf(int varId) {
-                if (varId == var.getVarId()) return 0;
+        if (varId == vr.getVarId()) return 0;
         return -1;
+    }
+
+    public Var getVr() {
+        return vr;
     }
 
     @Override
     public int getVarId(int index) throws IndexOutOfBoundsException {
-                if (index == 0) return var.varId;
+        if (index == 0) return vr.varId;
         throw new IndexOutOfBoundsException();
     }
 
     //    @Override
     public void serialize(Ser a) {
-        a.ap(var.getVarCode());
+        a.ap(vr.getVarCode());
     }
 
     @Override
@@ -49,33 +53,33 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public boolean containsVarId(int varId) {
-                return var.varId == varId;
+        return vr.varId == varId;
     }
 
     @Override
     final public Space getSpace() {
-        return var.getSpace();
+        return vr.getSpace();
     }
 
     @Override
     final public int min() {
-                return var.getVarId();
+        return vr.getVarId();
     }
 
     @Override
     final public int max() {
-                return var.getVarId();
+        return vr.getVarId();
     }
 
 
     @Override
     public IntIterator intIterator() {
-                return new SingletonIntIterator();
+        return new SingletonIntIterator();
     }
 
     @Override
     public boolean containsPrefix(String prefix) {
-        return var.is(prefix);
+        return vr.is(prefix);
     }
 
     @Override
@@ -85,11 +89,11 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public boolean containsAllVars(VarSet that) {
-                if (that == null || that.isEmpty()) {
+        if (that == null || that.isEmpty()) {
             return true;
         } else if (that.size() == 1) {
             int v = that.min();
-            return var.varId == v;
+            return vr.varId == v;
         } else {
             return false;
         }
@@ -106,20 +110,52 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public VarSet minus(int varIdToRemove) {
-                if (varIdToRemove == var.varId) return getSpace().mkEmptyVarSet();
+        if (varIdToRemove == vr.varId) return getSpace().mkEmptyVarSet();
         return this;
     }
 
     @Override
-    public VarSet union(Var var) {
-                if (var == this.var) return this;
-        return new VarPair(var, this.var);
+    public VarSet plus(VarSet that) {
+        if (that instanceof EmptyVarSet) {
+            return this;
+        } else if (that instanceof SingletonVarSet) {
+            SingletonVarSet singleton = that.asSingleton();
+            if (this.vr == singleton.vr) {
+                return this;
+            } else {
+                return new VarPair(this.vr, singleton.vr);
+            }
+        } else if (that instanceof VarPair) {
+            if (that.containsVar(vr)) {
+                return that;
+            } else {
+                VarSetBuilder b = that.copyToVarSetBuilder();
+                b.add(vr);
+                return b;
+            }
+        } else if (that instanceof VarSetBuilder) {
+            if (that.containsVar(vr)) {
+                return that;
+            } else {
+                VarSetBuilder b = that.copyToVarSetBuilder();
+                b.add(vr);
+                return b;
+            }
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public VarSet plus(Var var) {
+        if (var == this.vr) return this;
+        return new VarPair(var, this.vr);
     }
 
     @Override
     public VarSet minus(VarSet varsToRemove) {
-                if (varsToRemove.containsVarId(var.varId)) {
-            return var.getSpace().mkEmptyVarSet();
+        if (varsToRemove.containsVarId(vr.varId)) {
+            return vr.getSpace().mkEmptyVarSet();
         } else {
             return this;
         }
@@ -137,8 +173,8 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public int computeContentHash() {
-                int hash = 1;
-        hash = Ints.superFastHashIncremental(var.getVarId(), hash);
+        int hash = 1;
+        hash = Ints.superFastHashIncremental(vr.getVarId(), hash);
         return Ints.superFastHashAvalanche(hash);
     }
 
@@ -148,7 +184,7 @@ public class SingletonVarSet extends VarSet {
         private Var next;
 
         public SingletonIntIterator() {
-                        next = var;
+            next = vr;
         }
 
         public boolean hasNext() {
@@ -171,9 +207,9 @@ public class SingletonVarSet extends VarSet {
 
     @Override
     public boolean containsAllBitSet(VarSetBuilder s) {
-                if (s == null || s.isEmpty()) return true;
+        if (s == null || s.isEmpty()) return true;
         if (s.size() > 1) return false;
-        return s.containsVar(var);
+        return s.containsVar(vr);
     }
 
 

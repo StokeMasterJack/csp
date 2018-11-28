@@ -20,9 +20,10 @@ import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.ssutil.SingleLineLogFormatter;
 import com.smartsoft.csp.util.*;
 import com.smartsoft.csp.util.ints.IntIterator;
+import com.smartsoft.csp.varCodes.IVar;
 import com.smartsoft.csp.varSets.VarSet;
 import com.smartsoft.csp.varSets.VarSetBuilder;
-import com.smartsoft.csp.varCodes.IVar;
+import com.smartsoft.csp.varSets.VarSetK;
 import kotlin.sequences.Sequence;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,6 +106,10 @@ public class Space implements PLConstants {
     public Space(@Nonnull Iterable<String> varCodes) {
         this();
         varSpace.mkVars(varCodes);
+    }
+
+    public Space(@Nonnull String sVarCodes) {
+        this(MY_SPLITTER.split(sVarCodes.trim()));
     }
 
     public Space(@Nonnull VarSet vars) {
@@ -227,6 +232,13 @@ public class Space implements PLConstants {
         return varMap1.getVars();
     }
 
+    public VarSet mkVarSet(String sVarCodes) {
+        return VarSetK.mkVarSet(this, sVarCodes);
+    }
+
+    public VarSetBuilder mkVarSetBuilder(String sVarCodes) {
+        return VarSetK.mkVarSetBuilder(this, sVarCodes);
+    }
 
     //msrp - 32 bits
     public static int getBuiltInVarCount() {
@@ -259,9 +271,7 @@ public class Space implements PLConstants {
 
     public Var getVar(String varCode) throws BadVarCodeException {
         VarSpace varMap1 = getVarSpace();
-        assert varSpace != null;
-//        return varMap1.getVar(varCode);
-        return varMap1.mkVar(varCode);
+        return varMap1.mkVar(varCode.trim());
     }
 
     public Var getVar(Var var) throws BadVarCodeException {
@@ -477,27 +487,6 @@ public class Space implements PLConstants {
         return varCode.startsWith("AND__");
     }
 
-    public VarSet mkVarSet(String varCodes) {
-        return parseVarCodes2(varCodes);
-    }
-
-    public VarSet parseVarCodes2(String varCodes) {
-        String[] a = parseVarCodes(varCodes);
-        VarSetBuilder b = newMutableVarSet();
-        b.addVarCodes(a);
-        return b.build();
-    }
-
-    public static String[] parseVarCodes(String ss) {
-        String[] a = ss.split(" ");
-        ImmutableSet<String> set = ImmutableSet.copyOf(a);
-        ArrayList<String> list = new ArrayList<String>(set);
-        String[] aa = new String[list.size()];
-        list.toArray(aa);
-        Arrays.sort(aa);
-        return aa;
-    }
-
 
     /**
      * args should be all complex
@@ -532,7 +521,6 @@ public class Space implements PLConstants {
     }
 
     public Exp mkCube(final Lit lit1, final Lit lit2) {
-
 
 
         if (lit1.sameVar(lit2)) {

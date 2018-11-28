@@ -1900,7 +1900,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         }
     }
 
-    open fun computeUnionFind(): UnionFind {
+    open fun computeUnionFind(): UnionFind<Exp> {
         throw UnsupportedOperationException()
     }
 

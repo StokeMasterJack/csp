@@ -82,7 +82,7 @@ class CompareConditionDnnfAndPL {
 //        val c1 = cubes1.map { it.trueVars.toVarCodeSetSorted().reversed().toString() }.sorted()
 //        val c2 = cubes2.map { it.trueVars.toVarCodeSetSorted().reversed().toString() }.sorted()
 
-        fun op(acc: VarSet, cube: Cube): VarSet = VarSet.union(space, acc, cube.trueVars)
+        fun op(acc: VarSet, cube: Cube): VarSet = VarSet.plus(space, acc, cube.trueVars)
 
         val c1TrueVars: VarSet = cubes1.fold(space.mkEmptyVarSet(), ::op)
         val c2TrueVars: VarSet = cubes2.fold(space.mkEmptyVarSet(), ::op)
