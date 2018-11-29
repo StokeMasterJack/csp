@@ -1,5 +1,6 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
+import com.smartsoft.csp.ast.Var;
 import com.smartsoft.csp.util.ints.IntIterator;
 
 import java.util.NoSuchElementException;
@@ -11,9 +12,14 @@ public class VarSets {
         return varIndex >>> 6;
     }
 
+    public static int getWordIndexForVar(Var vr) {
+        int varIndex = vr.getVarIndex();
+        return varIndex >>> 6;
+    }
+
     public static int getMask(int varId) {
         int varIndex = varId - 1;
-        return 1 << varIndex;
+        return getMaskForIntWord(varId);
     }
 
     public static long getMaskForLongWord(int varId) {
@@ -26,25 +32,50 @@ public class VarSets {
         return 1 << varIndex;
     }
 
-    public static int getBitIndexForIntWord(int varId) {
-        int mask = getMaskForIntWord(varId);
-        return Integer.numberOfTrailingZeros(mask);
+    public static long getMaskForLongWord(Var vr) {
+        int varIndex = vr.getVarIndex();
+        return 1L << varIndex;
     }
+
+//    public static int getMaskForIntWord(int varId) {
+//        int varIndex = varId - 1;
+//        return 1 << varIndex;
+//    }
+
+//    public static int getBitIndexForIntWord(int varId) {
+//        int mask = getMaskForIntWord(varId);
+//        return Integer.numberOfTrailingZeros(mask);
+//    }
 
     public static int getBitIndexForLongWord(int varId) {
         long mask = getMaskForLongWord(varId);
         return Long.numberOfTrailingZeros(mask);
     }
 
-    public static boolean isBitSet(long word, int varId) {
-        long mask = getMaskForLongWord(varId);
-        return (word & (mask)) != 0;
+    public static int getBitIndexForLongWord(Var vr) {
+        long mask = getMaskForLongWord(vr);
+        return Long.numberOfTrailingZeros(mask);
     }
 
-    public static boolean isBitSet(int word, int varId) {
-        int mask = getMaskForIntWord(varId);
-        return (word & (mask)) != 0;
+    public static boolean isBitSet(long word, int varId) {
+        long mask = getMaskForLongWord(varId);
+        return (word & (mask)) != 0L;
     }
+
+    public static boolean isBitSet(long word, Var vr) {
+        long mask = getMaskForLongWord(vr);
+        return (word & (mask)) != 0L;
+    }
+
+    public static long foo(long word1, long word2) {
+        long word3 = word1 & ~word2;
+        return word3;
+    }
+
+//    public static boolean isBitSet(int word, int varId) {
+//        int mask = getMaskForIntWord(varId);
+//        return (word & (mask)) != 0;
+//    }
 
     public static IntIterator bitIterator(long word) {
         return new BitIteratorLong(word);

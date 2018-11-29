@@ -8,7 +8,7 @@ import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.dnnf.models.Solution
 import com.smartsoft.csp.dnnf.models.Solutions
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 import java.math.BigInteger
 
 class DOr(space: Space, id: Int, args: Array<Exp>) : Or(space, id, args) {
@@ -300,6 +300,9 @@ class DOr(space: Space, id: Int, args: Array<Exp>) : Or(space, id, args) {
         for (child in args) {
             val childVars = child.vars
             if (parentVars != childVars) {
+//                println("parentVars != childVars")
+//                println("  parentVars = ${parentVars.simpleName}:${parentVars}")
+//                println("  childVars = ${childVars.simpleName}:${childVars}")
                 return false
             }
             if (!child.isSmooth) {

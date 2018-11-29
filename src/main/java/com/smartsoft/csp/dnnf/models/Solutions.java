@@ -4,7 +4,7 @@ import com.smartsoft.csp.ast.Exp;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.Cubes;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

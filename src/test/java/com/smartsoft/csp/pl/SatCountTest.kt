@@ -36,7 +36,7 @@ class SatCountTest {
 
             val satCountPL = csp.satCountPL().toBigInteger()
 
-            assertEquals(it.expectedSatCount, satCountPL)
+            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
 
             val rough1 = csp.toDnnf()
@@ -56,6 +56,73 @@ class SatCountTest {
             println("   $name satCount: $satCount1")
 
 
+        }
+    }
+
+    @Test
+    fun testSatCountPL() {
+        CspSample.allSimplePL.forEach {
+            val name = it.name
+            println("Processing $name")
+            val clob = it.loadText()
+            val csp = Csp.parse(clob)
+
+            val satCountPL = csp.satCountPL().toBigInteger()
+
+//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+
+            if (it.expectedSatCount != satCountPL) {
+                println("satCountPL failed on $name")
+                println("   expected: ${it.expectedSatCount}")
+                println("   actual: ${satCountPL}")
+            }
+
+        }
+    }
+
+    @Test
+    fun testSatCountPLTrimColorOptionsDc() {
+        repeat(1) {
+            CspSample.TrimColorOptionsDc.let {
+                val name = it.name
+                println("Processing $name")
+                val clob = it.loadText()
+                val csp = Csp.parse(clob)
+
+                val satCountPL = csp.satCountPL().toBigInteger()
+
+//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+
+                if (it.expectedSatCount != satCountPL) {
+                    println("satCountPL failed on $name")
+                    println("   expected: ${it.expectedSatCount}")
+                    println("   actual: ${satCountPL}")
+                }
+
+            }
+        }
+    }
+
+    @Test
+    fun testSatCountPLTrimColorNoDc() {
+        repeat(1) {
+            CspSample.TrimColorNoDc.let {
+                val name = it.name
+                println("Processing $name")
+                val clob = it.loadText()
+                val csp = Csp.parse(clob)
+
+                val satCountPL = csp.satCountPL().toBigInteger()
+
+//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+
+                if (it.expectedSatCount != satCountPL) {
+                    println("satCountPL failed on $name")
+                    println("   expected: ${it.expectedSatCount}")
+                    println("   actual: ${satCountPL}")
+                }
+
+            }
         }
     }
 
@@ -169,21 +236,21 @@ Processing Tundra:
 
     @Test
     fun testAllCompileAndSatCount() {
-        repeat(1) {
-            CspSample.allPL.forEach {
-                val name = it.name
-                System.err.println("Processing $name")
-                val clob = tt("  load rules") { it.loadText() }
-                val csp = tt("  parse rules") { Csp.parse(clob) }
-                val rough = tt("  compile dnnf") { csp.toDnnf() }
-                val smooth = tt("  smooth dnnf") { rough.smooth }
-                val satCount = tt("  sat count") { smooth.satCount }
+        CspSample.allPL.forEach {
+            val name = it.name
+            println("Processing $name")
+            val clob = tt("  load rules") { it.loadText() }
+            val csp = tt("  parse rules") { Csp.parse(clob) }
+            val rough = tt("  compile dnnf") { csp.toDnnf() }
+            val smooth = tt("  smooth dnnf") { rough.smooth }
+            val satCount = tt("  sat count") { smooth.satCount }
 
-                assertEquals(it.expectedSatCount, satCount)
+            smooth.printNodeInfo()
+            println("  Node count: ${csp.space._nodes.size}")
 
-                smooth.printNodeInfo()
-                println("  Node count: ${csp.space._nodes.size}")
-            }
+            assertEquals(it.expectedSatCount, satCount, "SatCount Failed on $name")
+
+
         }
 
         println("computeLitImps KFormula.globalDelta = ${Formula.globalDelta}")
@@ -191,22 +258,58 @@ Processing Tundra:
 
 
     @Test
-    fun testCompileAndSatCountEfc() {
-        repeat(1) {
-            CspSample.EfcOriginal.let {
-                val name = it.name
-                prindent(0, "Processing $name")
-                val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
-                val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+    fun testCompileAndSatCountTrimColorOptionsDc() {
+        CspSample.TrimColorOptionsDc.let {
+            val name = it.name
+            prindent(0, "Processing $name")
+            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
-                val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
-                val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
-                val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
-                assertEquals(it.expectedSatCount, satCount)
+            val satCountPL = csp.satCountPL()
 
-                println("satCount = ${satCount}")
-                smooth.printNodeInfo(1)
-            }
+            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+
+            smooth.printNodeInfo(1)
+
+            assertEquals(it.expectedSatCount, satCount)
+            assertEquals(it.expectedSatCount, satCountPL.toBigInteger())
+        }
+    }
+
+    @Test
+    fun testCompileAndSatCountCamry2011NoDc() {
+        CspSample.Camry2011NoDc.let {
+            val name = it.name
+            prindent(0, "Processing $name")
+            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+
+            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+
+            smooth.printNodeInfo(1)
+            assertEquals(it.expectedSatCount, satCount)
+        }
+    }
+
+
+    @Test
+    fun testCompileAndSatCountEfcOriginal() {
+        CspSample.EfcOriginal.let {
+            val name = it.name
+            prindent(0, "Processing $name")
+            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+
+            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+
+            smooth.printNodeInfo(1)
+            assertEquals(it.expectedSatCount, satCount)
         }
     }
 

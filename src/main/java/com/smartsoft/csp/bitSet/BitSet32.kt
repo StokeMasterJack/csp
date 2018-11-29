@@ -1,32 +1,35 @@
-package com.smartsoft.csp.ssutil
+package com.smartsoft.csp.bitSet
 
 import com.google.common.base.Splitter
+import com.smartsoft.csp.ast.bitCount
 import java.util.*
+
+typealias BitIndex = Int
 
 private val MY_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings()
 
-fun mutableBitSetOf(vararg indexes: Int): MutableBitSet {
-    val s = MutableBitSet()
+fun mutableBitSet32Of(vararg indexes: BitIndex): MutableBitSet32 {
+    val s = MutableBitSet32()
     for (index in indexes) {
         s.add(index)
     }
     return s
 }
 
-fun mutableBitSetOf(sIndexes: String): MutableBitSet = MutableBitSet(sIndexes)
+fun mutableBitSet32Of(sIndexes: String): MutableBitSet32 = MutableBitSet32(sIndexes)
 
-fun bitSetOf(vararg indexes: Int): BitSet {
-    return if (indexes.isEmpty()) BitSet.EMPTY
-    else mutableBitSetOf(*indexes)
+fun bitSet32Of(vararg indexes: Int): BitSet32 {
+    return if (indexes.isEmpty()) BitSet32.EMPTY
+    else mutableBitSet32Of(*indexes)
 }
 
-fun bitSetOf(sIndexes: String): BitSet {
-    return if (sIndexes.trim().isEmpty()) BitSet.EMPTY else mutableBitSetOf(sIndexes)
+fun bitSet32Of(sIndexes: String): BitSet32 {
+    return if (sIndexes.trim().isEmpty()) BitSet32.EMPTY else mutableBitSet32Of(sIndexes)
 }
 
-fun emptyBitSet(): BitSet = BitSet.EMPTY
+fun emptyBitSet32(): BitSet32 = BitSet32.EMPTY
 
-open class BitSet(initWord: Int) {
+open class BitSet32(initWord: Int) {
 
     internal var _word: Int = initWord
 
@@ -35,17 +38,29 @@ open class BitSet(initWord: Int) {
     fun isSet(index: Int): Boolean = get(index)
     fun isClear(index: Int): Boolean = !isSet(index)
 
+    val word: Int get() = _word
 
     operator fun contains(index: Int): Boolean = get(index)
 
 
     val asInt: Int get() = _word
 
-    val size: Int get() = Integer.bitCount(_word)
+    val size: Int get() = _word.bitCount
 
     val isEmpty: Boolean get() = _word == 0
     val isNotEmpty: Boolean get() = !isEmpty
 
+    fun filter(f: (BitIndex) -> Boolean): BitSet32 {
+        val ret = MutableBitSet32()
+        forEach {
+            if (f(it)) {
+                ret.set(it)
+            }
+        }
+        return ret
+    }
+
+    fun any(f: (BitIndex) -> Boolean): Boolean = trueSeq.any(f)
 
     @Throws(IndexOutOfBoundsException::class)
     fun nextSetBit(fromIndex: Int): Int {
@@ -87,39 +102,50 @@ open class BitSet(initWord: Int) {
         }
     }
 
+    fun copy(): BitSet32 {
+        return MutableBitSet32(word)
+    }
+
     val min: Int get() = nextSetBit(0)
 
     val max: Int get() = previousSetBit(31)
 
-    fun forEach(action: (Int) -> Unit) = toIntSeq().forEach(action)
+    fun forEach(action: (Int) -> Unit) = trueSeq.forEach(action)
 
-    fun toIntSeq() = sequence {
-        var index = 0
-        while (true) {
-            if (index > MAX_INDEX) break
-            val next = nextSetBit(index)
-            if (next == -1) {
-                break
-            } else {
-                yield(next)
-                index = next + 1
+    val trueSeq: Sequence<BitIndex>
+        get() = sequence {
+            var index = 0
+            while (true) {
+                if (index > MAX_INDEX) break
+                val next = nextSetBit(index)
+                if (next == -1) {
+                    break
+                } else {
+                    yield(next)
+                    index = next + 1
+                }
             }
         }
-    }
 
-    fun toIntList(): List<Int> = toIntSeq().toList()
-    fun toSortedIntSet(): SortedSet<Int> = toIntSeq().toSortedSet()
+    fun toIntList(): List<Int> = trueSeq.toList()
+    fun toSortedIntSet(): SortedSet<Int> = trueSeq.toSortedSet()
 
-    fun anyOverlap(other: BitSet): Boolean = BitSet.anyOverlap(this._word, other._word)
+    val asMutableBitSet: MutableBitSet32 get() = this as MutableBitSet32
+    val asBitSet: BitSet32 get() = this as BitSet32
 
     //15 16 17
-    val ser: String get() = toIntSeq().joinToString(" ")
+    val ser: String get() = trueSeq.joinToString(" ")
 
 
     override fun equals(other: Any?): Boolean {
-        if (other == null) return false
         if (this === other) return true
-        if (other !is BitSet) return false
+        if (other == null) return false
+        if (other !is BitSet32) return false
+        return eq(other)
+    }
+
+    fun eq(other: BitSet32): Boolean {
+        if (this === other) return true
         return _word == other._word
     }
 
@@ -146,6 +172,18 @@ open class BitSet(initWord: Int) {
     fun assertSet(index: Int) = assert(isSet(index))
     fun assertClear(index: Int) = assert(isClear(index))
 
+    fun anyOverlap(other: BitSet32): Boolean = anyOverlap(this, other)
+
+    fun overlap(other: BitSet32): BitSet32 = overlapBitSet(this, other)
+
+    fun minus(other: MutableBitSet32): BitSet32 {
+        return BitSet32.minus(this.word, other.word).toBitSet
+    }
+
+    fun minus(index: BitIndex): BitSet32 {
+        return BitSet32.minus(this.word, index).toBitSet
+    }
+
     companion object {
 
         const val BITS_PER_WORD: Int = 32
@@ -153,7 +191,7 @@ open class BitSet(initWord: Int) {
         val INDEX_RANGE: IntRange = 0..MAX_INDEX
 
 
-        val EMPTY: BitSet = MutableBitSet()
+        val EMPTY: BitSet32 = MutableBitSet32()
 
         private const val WORD_MASK = -1
 
@@ -163,28 +201,60 @@ open class BitSet(initWord: Int) {
             }
         }
 
-        fun anyOverlap(bs1: BitSet, bs2: BitSet): Boolean = anyOverlap(bs1._word, bs2._word)
+        fun size(word: Int): Int = word.bitCount
 
-        fun anyOverlap(word1: Int, word2: Int): Boolean = word1 and word2 != 0
+        @JvmStatic
+        fun minus(word1: Int, word2: Int): Int = word1 and word2.inv()
 
-        fun union(s1: BitSet, s2: BitSet): BitSet {
-            return MutableBitSet(initWord = s1._word or s2._word)
+        @JvmStatic
+        fun contains(word1: Int, word2: Int): Boolean = plus(word1, word2) == word1
+
+        @JvmStatic
+        fun plus(word1: Int, word2: Int): Int = word1 or word2
+
+
+        @JvmStatic
+        fun overlap(word1: Int, word2: Int): Int = word1 and word2
+
+        @JvmStatic
+        fun overlap(s1: BitSet32, s2: BitSet32): Int = overlap(s1.word, s2.word)
+
+        @JvmStatic
+        fun overlapBitSet(s1: BitSet32, s2: BitSet32): BitSet32 = overlap(s1, s2).toBitSet
+
+        @JvmStatic
+        fun overlapMutableBitSet(s1: BitSet32, s2: BitSet32): MutableBitSet32 = overlap(s1, s2).toMutableBitSet
+
+
+        @JvmStatic
+        fun anyOverlap(word1: Int, word2: Int): Boolean = overlap(word1, word2) != 0
+
+
+        @JvmStatic
+        fun anyOverlap(bs1: BitSet32, bs2: BitSet32): Boolean = overlap(bs1.word, bs2.word) != 0
+
+
+        @JvmStatic
+        fun plus(s1: BitSet32, s2: BitSet32): BitSet32 {
+            return MutableBitSet32(initWord = s1._word or s2._word)
         }
 
-        fun union(s1: BitSet, s2: BitSet, s3: BitSet): BitSet {
-            return MutableBitSet(initWord = s1._word or s2._word or s3._word)
+        @JvmStatic
+        fun plus(s1: BitSet32, s2: BitSet32, s3: BitSet32): BitSet32 {
+            return MutableBitSet32(initWord = s1._word or s2._word or s3._word)
         }
 
-        fun fromWord(initWord: Int): BitSet = MutableBitSet(initWord = initWord)
 
-        fun fromIntIt(indexes: Iterable<Int>): BitSet {
-            val s = MutableBitSet()
+        fun fromWord(initWord: Int): BitSet32 = MutableBitSet32(initWord = initWord)
+
+        fun fromIntIt(indexes: Iterable<Int>): BitSet32 {
+            val s = MutableBitSet32()
             s.addAll(indexes)
             return s
         }
 
-        fun fromBitSet(bitSet: BitSet): BitSet {
-            val s = MutableBitSet()
+        fun fromBitSet(bitSet: BitSet32): BitSet32 {
+            val s = MutableBitSet32()
             s.addAll(bitSet)
             return s
         }
@@ -192,9 +262,9 @@ open class BitSet(initWord: Int) {
 
 }
 
-class MutableBitSet(initWord: Int = 0) : BitSet(initWord = initWord) {
+class MutableBitSet32(initWord: Int = 0) : BitSet32(initWord = initWord) {
 
-    internal constructor(bitSet: BitSet) : this(bitSet._word)
+    internal constructor(bitSet: BitSet32) : this(bitSet._word)
 
     internal constructor(intIt: Iterable<Int>) : this() {
         addAll(intIt = intIt)
@@ -205,12 +275,12 @@ class MutableBitSet(initWord: Int = 0) : BitSet(initWord = initWord) {
     }
 
     fun set(index: Int) {
-        BitSet.requireIndex(index)
+        requireIndex(index)
         _word = _word or (1 shl index)
     }
 
     fun clear(index: Int) {
-        BitSet.requireIndex(index)
+        requireIndex(index)
         _word = _word and (1 shl index).inv()
     }
 
@@ -221,8 +291,12 @@ class MutableBitSet(initWord: Int = 0) : BitSet(initWord = initWord) {
     //same as clear
     fun remove(index: Int) = clear(index)
 
-    fun removeAll(bitSet: BitSet) {
+    fun removeAll(bitSet: BitSet32) {
         _word = _word and bitSet._word.inv()
+    }
+
+    fun minus(that: BitSet32): BitSet32 {
+        return minus(this.word, that.word).toBitSet
     }
 
     //less efficient than removeAll(bitSet: BitSet)
@@ -234,12 +308,12 @@ class MutableBitSet(initWord: Int = 0) : BitSet(initWord = initWord) {
 
     //less efficient than removeAll(bitSet: BitSet)
     fun removeAll(sIndexes: String) {
-        val bitSet = bitSetOf(sIndexes)
+        val bitSet = bitSet32Of(sIndexes)
         removeAll(bitSet)
     }
 
     //more efficient than addAll(indexes: Iterable<Int>)
-    fun addAll(bitSet: BitSet) {
+    fun addAll(bitSet: BitSet32) {
         _word = _word or bitSet._word
     }
 
@@ -268,6 +342,9 @@ class MutableBitSet(initWord: Int = 0) : BitSet(initWord = initWord) {
 
 
 }
+
+val Int.toBitSet: BitSet32 get() = this.toMutableBitSet
+val Int.toMutableBitSet: MutableBitSet32 get() = MutableBitSet32(initWord = this)
 
 
 

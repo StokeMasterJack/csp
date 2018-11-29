@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 
 import java.util.ArrayList;
 import java.util.Collections;

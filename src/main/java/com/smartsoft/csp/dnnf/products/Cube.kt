@@ -1,10 +1,10 @@
 package com.smartsoft.csp.dnnf.products
 
-import com.smartsoft.csp.util.it.ItTo
-import com.smartsoft.csp.util.it.IterTo
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.util.Bit
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.util.it.ItTo
+import com.smartsoft.csp.util.it.IterTo
+import com.smartsoft.csp.varSet.VarSet
 import java.util.*
 
 interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> {
@@ -65,7 +65,7 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
     val lits: Iterable<Lit> get() = litIt()
 
     fun argIt(): Iterable<Exp> = ItTo.it(litIt()) { it as Exp }
-    fun argIter(): Iterator<Exp> = IterTo.iter(litIterator()) { it as Exp}
+    fun argIter(): Iterator<Exp> = IterTo.iter(litIterator()) { it as Exp }
 
 
     fun serialize(a: Ser, sep: Char)
@@ -101,7 +101,7 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
         return that.condition(this)
     }
 
-    override fun iterator():Iterator<Lit> = litIterator()
+    override fun iterator(): Iterator<Lit> = litIterator()
 
     fun varCodesSorted(): SortedSet<String> = vars.toVarCodeSetSorted()
 
@@ -129,3 +129,17 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
 
 
 val Cube?.isNullOrEmpty: Boolean get() = this == null || this.isEmpty
+
+fun Cube.toStringDetail(): String {
+    return "${this::class.simpleName} ${oneLineSer()}  vars:${vars.toStringDetail()}";
+}
+
+fun Cube.oneLineSer(): String {
+    val a = Ser()
+    for (lit in this.litIt()) {
+        lit.serialize(a)
+        a.append(PLConstants.ARG_SEP)
+    }
+    return a.toString().trim()
+}
+

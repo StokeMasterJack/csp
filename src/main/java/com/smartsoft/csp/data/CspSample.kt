@@ -22,9 +22,12 @@ enum class CspSample(
 
     TrimColorNoDc("trim-color", expectedSatCount = 227),
 
+    //NodeCounts: CubeExp: 66   DAnd: 39   DOr: 31   DcOr: 6   Lit: 160
     TrimColorOptionsNoDc("trim-color-options-no-dc", expectedSatCount = 22472),
     TrimColorOptionsDc("trim-color-options", expectedSatCount = 44944),
 
+
+    //NodeCounts: CubeExp: 68   DAnd: 44   DOr: 34   DcOr: 10   Lit: 174
     Camry2011NoDc("camry-2011-no-dc", expectedSatCount = 520128),
     Camry2011Dc("camry-2011", expectedSatCount = 2080512),
 
@@ -40,6 +43,8 @@ enum class CspSample(
     //NodeCounts: CubeExp: 691   DAnd: 4891   DOr: 1905   DcOr: 236   Lit: 1564
     //NodeCounts: CubeExp: 766   DAnd: 4039   DOr: 1532   DcOr: 237   Lit: 1564
     //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564
+    //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564
+    //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564 Node count: 143206
     EfcOriginal("efcOriginal/factory.txt", expectedSatCount = "262420340940321044675939268"),
 
     EfcProdFactoryRules("g/ProdFactoryRules.txt", expectedSatCount = "529696075773177406915015081985"),

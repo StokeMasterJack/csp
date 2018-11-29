@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast
 
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 import java.math.BigInteger
 
 /**
@@ -18,6 +18,8 @@ class DcOr(private val _vr: Var, expId: Int) : PosComplexSingleVar(_vr.space, ex
 
 //    private val cubes2 = ImmutableSet.of(
 //            _vr.nLit().asCube,
+
+
 //            _vr.pLit().asCube
 //    )
 

@@ -4,11 +4,19 @@ val Var.varCount: Int get() = space.varSpace.varCount
 
 val Var.wordCount: Int get() = space.varSpace.wordCount
 
-val Var.wordIndex: Int get() = VarK.computeWordIndexFromVarIndex(varIndex)
+val Var.wordIndex: Int get() = VarK.wordIndexFromVar(this)
 
 object VarK {
 
-    fun computeWordIndexFromVarIndex(varIndex: Int): Int = varIndex.ushr(6)
+    fun varIdFromVarIndex(varIndex: Int): VarId = varIndex + 1
+
+    fun varIndexFromVarId(varId: VarId): Int = varId - 1
+
+    fun wordIndexFromVarId(varId: VarId): Int = wordIndexFromVarIndex(varIndexFromVarId(varId))
+
+    fun wordIndexFromVarIndex(varIndex: Int): Int = varIndex.ushr(6)
+
+    fun wordIndexFromVar(vr: Var): Int = wordIndexFromVarIndex(vr.varIndex)
 
     @JvmStatic
     fun computeSize(words: LongArray): Int = words.bitCount
@@ -38,7 +46,10 @@ object VarK {
 
 }
 
+
 val Long.bitCount get() = java.lang.Long.bitCount(this)
+
+val Int.bitCount get() = java.lang.Integer.bitCount(this)
 
 
 val LongArray.bitCount: Int

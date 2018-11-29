@@ -1,9 +1,9 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 import com.google.common.collect.ImmutableSet;
-import com.smartsoft.csp.ast.Ser;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
+import com.smartsoft.csp.bitSet.BitSet64;
 import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.ints.IntIterator;
@@ -11,7 +11,10 @@ import com.smartsoft.csp.util.ints.Ints;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static com.smartsoft.csp.ast.VarK.computeSize;
 
@@ -22,14 +25,32 @@ public class VarSetBuilder extends VarSet {
     public long[] words;
     public int _size = -1;  // -1 means dirty
 
+    VarSetBuilder(VarSpace varSpace, long[] words, int size) {
+        this.vSpace = varSpace;
+        this.words = words;
+        this._size = size;
+    }
+
     /**
      * Empty VarSetBuilder
      */
-    public VarSetBuilder(VarSpace varMap) {
-        this.vSpace = varMap;
-        this.words = new long[varMap.getWordCount()];
-        _size = 0;
+    public VarSetBuilder(VarSpace varSpace) {
+        this(varSpace, new long[varSpace.getWordCount()], 0);
     }
+
+    @SuppressWarnings("CopyConstructorMissesField")
+    public VarSetBuilder(VarSetBuilder o) {
+        this(o.getVarSpace(), o.copyWords(), o._size);
+    }
+
+    public long[] copyWords() {
+        return Arrays.copyOf(words, words.length);
+    }
+
+    public VarSetBuilder(VarSpace varSpace, long[] words) {
+        this(varSpace, words, -1);
+    }
+
 
 //    public VarSetBuilder(VarSpace varMap, long[] words) {
 //        assert varMap.getWordCount() == words.length;
@@ -41,10 +62,8 @@ public class VarSetBuilder extends VarSet {
         return vSpace;
     }
 
-    public VarSetBuilder(VarSetBuilder that) {
-        this.vSpace = that.getVarSpace();
-        this.words = copyWordArrayExactly(that.words);
-        this._size = that._size;
+    public boolean contentEquals(VarSetBuilder other) {
+        return Arrays.equals(words, other.words);
     }
 
     public long[] copyAndCompressWords() {
@@ -73,12 +92,6 @@ public class VarSetBuilder extends VarSet {
         return copy;
     }
 
-    public static long[] copyWordArrayExactly(long[] words) {
-        assert words != null;
-        long[] copy = new long[words.length];
-        System.arraycopy(words, 0, copy, 0, words.length);
-        return copy;
-    }
 
     public static long[] copyButShrinkWordArray(long[] words, int activeWords) {
         int newActiveWordCount = Integer.bitCount(activeWords);
@@ -98,6 +111,13 @@ public class VarSetBuilder extends VarSet {
         return this;
     }
 
+    public int getMaxWordIndex() {
+        return getWordCount() - 1;
+    }
+
+    public int getMinWordIndex() {
+        return 0;
+    }
 
     public int getWordCount() {
         return words.length;
@@ -133,7 +153,7 @@ public class VarSetBuilder extends VarSet {
         int activeWords = 0;
         for (int i = 0; i < words.length; i++) {
             if (words[i] != 0) {
-                activeWords |= (getMask(i));
+                activeWords |= (getMaskForIntWord(i));
             }
         }
         return activeWords;
@@ -147,6 +167,11 @@ public class VarSetBuilder extends VarSet {
 
     public long getWord(int wordIndex) {
         return words[wordIndex];
+    }
+
+    public long getWord(Var vr) {
+        int wordIndex = vr.getWordIndex();
+        return getWord(wordIndex);
     }
 
     public static long[] computeActiveWordArray(long[] completeWordArray, int activeWordCount) {
@@ -206,6 +231,7 @@ public class VarSetBuilder extends VarSet {
         return addVarSet(vs);
     }
 
+
     public static class EmptyIntIterator implements IntIterator {
         @Override
         public boolean hasNext() {
@@ -244,8 +270,8 @@ public class VarSetBuilder extends VarSet {
     }
 
 
-    public static int setBit(int word, int bitIndex) {
-        int mask = getMaskForIntWord(bitIndex);
+    public static long setBit(long word, int bitIndex) {
+        long mask = getMaskForLongWord(bitIndex);
         return word | mask;
     }
 
@@ -253,27 +279,16 @@ public class VarSetBuilder extends VarSet {
         return words[wordIndex] != 0;
     }
 
-    public boolean containsVarId(int varId) {
-        final int varIndex = varId - 1;
-        final int wordIndex = varIndex >>> 6;
-        final long mask = 1L << varIndex;
-        return (words[wordIndex] & mask) != 0;
-    }
-
     public boolean isDirty() {
         return _size == -1;
     }
 
     public void makeDirty() {
-        _size = -1;
+        VarSetBuilderKKt._makeDirty(this);
     }
 
-    private boolean maybeDirty(long before, long after) {
-        boolean ch = before != after;
-        if (ch) {
-            makeDirty();
-        }
-        return ch;
+    boolean maybeDirty(long before, long after) {
+        return VarSetBuilderKKt._maybeDirty(this, before, after);
     }
 
 //    public void addVarIdQuiet(int varId) {
@@ -349,17 +364,22 @@ public class VarSetBuilder extends VarSet {
     }
 
 
+//    public boolean adjust(VarSet vs, boolean add) {
+//        return add ? addVarSet(vs) : removeVarSet(vs);
+//    }
+
+
     public boolean addVarSet(VarSet vs) {
         if (vs == null) {
             return false;
         } else if (vs.isEmpty()) {
             return false;
         } else if (vs.isSingleton()) {
-            int v1 = vs.min();
+            int v1 = vs.minVrId();
             return addVarId(v1);
         } else if (vs.isVarPair()) {
-            int v1 = vs.min();
-            int v2 = vs.max();
+            int v1 = vs.minVrId();
+            int v2 = vs.maxVrId();
             boolean ch1 = addVarId(v1);
             boolean ch2 = addVarId(v2);
             return ch1 || ch2;
@@ -402,12 +422,7 @@ public class VarSetBuilder extends VarSet {
     }
 
     public boolean removeVarId(int varId) {
-        int wordIndex = getWordIndexForVarId(varId);
-        long mask = getMaskForLongWord(varId);
-        long before = words[wordIndex];
-        words[wordIndex] &= ~(mask);
-        long after = words[wordIndex];
-        return maybeDirty(before, after);
+        return VarSetBuilderKKt._removeVarId(this, varId);
     }
 
 
@@ -438,7 +453,7 @@ public class VarSetBuilder extends VarSet {
         assert words.length == b.words.length;
         boolean ch = false;
         for (int i = 0; i < b.getWordCount(); i++) {
-            long newVal = VarSetK.minus(words[i], b.words[i]);
+            long newVal = BitSet64.minus(words[i], b.words[i]);
             if (words[i] != newVal) {
                 ch = true;
             }
@@ -451,30 +466,15 @@ public class VarSetBuilder extends VarSet {
     }
 
     public boolean removeSingletonVarSet(@Nonnull SingletonVarSet vs) {
-        int v1 = vs.min();
-        return removeVarId(v1);
+        return VarSetBuilderKKt._removeSingletonVarSet(this, vs);
     }
 
     public boolean removeVarPair(@Nonnull VarPair vs) {
-        int v1 = vs.min();
-        int v2 = vs.max();
-        boolean ch1 = removeVarId(v1);
-        boolean ch2 = removeVarId(v2);
-        return ch1 || ch2;
+        return VarSetBuilderKKt._removeVarPair(this, vs);
     }
 
     public boolean removeVarSet(@Nonnull VarSet vs) {
-        if (vs instanceof EmptyVarSet) {
-            return false;
-        } else if (vs instanceof SingletonVarSet) {
-            return removeSingletonVarSet((SingletonVarSet) vs);
-        } else if (vs instanceof VarPair) {
-            return removeVarPair((VarPair) vs);
-        } else if (vs instanceof VarSetBuilder) {
-            return removeVarSetBuilderBitWise((VarSetBuilder) vs);
-        } else {
-            throw new IllegalStateException(vs.getClass() + "");
-        }
+        return VarSetBuilderKKt._removeVarSet(this, vs);
     }
 
 
@@ -483,12 +483,18 @@ public class VarSetBuilder extends VarSet {
         return word & ~mask;
     }
 
+    //1L << varIndex
+    public long clearBit(long word, Var vr) {
+        long mask = getMaskForLongWord(vr);
+        return word & ~(mask);
+    }
+
     public long clearBit(long word, int bitIndex) {
         return word & ~(1L << bitIndex);
     }
 
-    public long clearBit(long[] words, int wordIndex, int varId) {
-        int mask = getMaskForIntWord(varId);
+    public long clearBit(long[] words, int wordIndex, Var vr) {
+        long mask = getMaskForLongWord(vr);
         return words[wordIndex] &= ~(mask);
     }
 
@@ -509,7 +515,7 @@ public class VarSetBuilder extends VarSet {
     }
 
     public boolean isEmpty() {
-        return _size == 0;
+        return VarSetBuilderKKt.get_isEmpty(this);
     }
 
     public Space getSpace() {
@@ -552,14 +558,14 @@ public class VarSetBuilder extends VarSet {
         throw new NoSuchElementException();
     }
 
-    public int min() throws NoSuchElementException {
+    public int minVrId() throws NoSuchElementException {
         int minActiveWord = minActiveWord();
         long minWord = words[minActiveWord];
         int minBit = minBit(minWord);
         return computeVarId(minActiveWord, minBit);
     }
 
-    public int max() throws NoSuchElementException {
+    public int maxVrId() throws NoSuchElementException {
         int maxActiveWord = maxActiveWord();
         long maxWord = words[maxActiveWord];
         int maxBit = maxBit(maxWord);
@@ -593,15 +599,15 @@ public class VarSetBuilder extends VarSet {
     }
 
     public VarSet build() {
-        recalculateSize();
+        calculateSize();
 
         if (_size == 0) {
             return vSpace.mkEmptyVarSet();
         } else if (_size == 1) {
-            return vSpace.mkSingleton(min());
+            return vSpace.mkSingleton(minVrId());
         } else if (_size == 2) {
-            int v1 = min();
-            int v2 = max();
+            int v1 = minVrId();
+            int v2 = maxVrId();
             return vSpace.mkVarPair(v1, v2);
         } else {
 
@@ -637,20 +643,6 @@ public class VarSetBuilder extends VarSet {
     }
 
 
-    @Override
-    public boolean containsAllBitSet(VarSetBuilder that) {
-//        System.err.println("VarSetBuilder.containsAllBitSet");
-        //todo use bitwise ops
-        for (Var var : that) {
-            int thatVarId = var.getVarId();
-            if (!this.containsVarId(thatVarId)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public static class VarSetBuilderIntIterator extends BitSetIntIterator<VarSetBuilder> {
 
         public VarSetBuilderIntIterator(VarSetBuilder varSet) {
@@ -671,57 +663,8 @@ public class VarSetBuilder extends VarSet {
 //            }
 //        }
 //        return false;
-//    }
+//
 
-    public static boolean anyIntersection(VarSetBuilder vs1, VarSetBuilder vs2) {
-        if (vs1 == null || vs2 == null) return false;
-
-        Space space = vs1.getSpace();
-        VarSpace vSpace = space.getVarSpace();
-
-        assert vs1.words.length == vSpace.getWordCount();
-        assert vs2.words.length == vSpace.getWordCount();
-
-        for (int wordIndex = 0; wordIndex < vs1.words.length; wordIndex++) {
-            if ((vs1.words[wordIndex] & vs2.words[wordIndex]) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public VarSet minus(int varIdToRemove) {
-        VarSetBuilder copy = copy();
-        copy.removeVarId(varIdToRemove);
-        return copy;
-    }
-
-    @Override
-    public VarSet plus(VarSet that) {
-        VarSetBuilder b = copy();
-        b.addVarSet(that);
-        return b;
-    }
-
-    @Override
-    public VarSet plus(Var var) {
-        VarSetBuilder copy = copy();
-        copy.addVar(var);
-        return copy;
-    }
-
-    @Override
-    public VarSet minus(VarSet varsToRemove) {
-        VarSetBuilder copy = copy();
-        copy.removeVarSet(varsToRemove);
-        return copy.build();
-    }
-
-    public VarSetBuilder copy() {
-        return new VarSetBuilder(this);
-    }
 
 //    public String toString() {
 //        Ser a = new Ser();
@@ -770,17 +713,6 @@ public class VarSetBuilder extends VarSet {
         return copy;
     }
 
-    @Override
-    public void serialize(Ser a) {
-        Iterator<Var> it = varIter();
-        while (it.hasNext()) {
-            Var next = it.next();
-            a.append(next.getVarCode());
-            if (it.hasNext()) {
-                a.argSep();
-            }
-        }
-    }
 
     public IntIterator intIterator() {
         return new VarSetBuilderIntIterator(this);
@@ -920,8 +852,8 @@ public class VarSetBuilder extends VarSet {
     }
 
 
-    public static boolean isWordIndexBitSet(int word, int wordIndex) {
-        int mask = getWordIndexMaskForIntWord(wordIndex);
+    public static boolean isWordIndexBitSet(long word, int wordIndex) {
+        long mask = getMaskForLongWord(wordIndex);
         return (word & (mask)) != 0;
     }
 

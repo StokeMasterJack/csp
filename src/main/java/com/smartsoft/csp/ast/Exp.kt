@@ -1,8 +1,8 @@
 package com.smartsoft.csp.ast
 
+//import com.smartsoft.csp.graph.Filter
 import com.google.common.base.Preconditions.checkState
 import com.google.common.collect.*
-import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.VarInfo
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
@@ -16,15 +16,16 @@ import com.smartsoft.csp.dnnf.products.PosCube
 import com.smartsoft.csp.dnnf.vars.VarFilter
 import com.smartsoft.csp.dnnf.visitor.NodeHandler
 import com.smartsoft.csp.dnnf.visitor.NodeInfo
-//import com.smartsoft.csp.graph.Filter
 import com.smartsoft.csp.ssutil.Strings.indent
 import com.smartsoft.csp.transforms.CompoundTransformer
 import com.smartsoft.csp.transforms.Transformer
 import com.smartsoft.csp.util.*
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.varCodes.VarCode
+import com.smartsoft.csp.varSet.VarSet
 import java.math.BigInteger
 import java.util.*
+import kotlin.reflect.KClass
 
 
 /*
@@ -1994,9 +1995,9 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         val conditionOn = _space.parser.parseLitsToConditionOn(sLits)
 
         return if (conditionOn is Lit) {
-            condition(conditionOn )
+            condition(conditionOn)
         } else if (conditionOn is Cube) {
-            condition(conditionOn )
+            condition(conditionOn)
         } else {
             throw IllegalStateException()
         }
@@ -2234,6 +2235,10 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
         val a = Ser()
         serialize(a)
         return a.toString()
+    }
+
+    fun toStringDetail(): String {
+        return "$simpleName ${toString()}";
     }
 
     fun toString(a: Ser) {
@@ -2716,8 +2721,14 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     }
 
     override fun anyVarOverlap(vs: VarSet): Boolean {
-        if (isConstant) return false
-        return if (isLit) vs.containsVar(this) else vs.anyVarOverlap(vs)
+        return when (this) {
+            is Constant -> false
+            is Lit -> vs.containsVar(this.vr)
+            is PosComplexSingleVar -> vs.containsVar(this.vr)
+            is PosComplexMultiVar -> vs.anyVarOverlap(this.vars)
+            is Not -> vs.anyVarOverlap(pos.vars)
+            else -> Exp.th()
+        }
     }
 
     override fun anyVarOverlap(exp: Exp): Boolean {
@@ -3143,7 +3154,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     //only works c smooth nodes
     @JvmOverloads
     fun getSatCount(parentVars: VarSet, picVars: VarSet = _space.mkEmptyVarSet()): BigInteger {
-        if(isFalse) return 0.toBigInteger()
+        if (isFalse) return 0.toBigInteger()
         val baseSatCount = satCount
         val dcVars = parentVars.minus(picVars).minus(vars)
         return Csp.computeDcVars(baseSatCount, dcVars.size)
@@ -3659,6 +3670,10 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
 
     companion object {
+
+        fun th(msg: String? = null): Nothing = throw IllegalStateException(msg)
+        fun thStateEx(msg: String? = null): Nothing = throw IllegalStateException(msg)
+        fun thStateEx(cls: KClass<*>): Nothing = thStateEx(cls.simpleName)
 
         fun getFirstAnd(args: Iterable<Exp>): Exp? {
             for (e in args) {

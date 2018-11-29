@@ -3,8 +3,8 @@ package com.smartsoft.inv;
 import com.google.common.collect.ImmutableSet;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.dnnf.products.Cube;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 
 import java.util.Set;
 

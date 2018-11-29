@@ -6,8 +6,8 @@ import com.smartsoft.csp.ssutil.TT;
 import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.util.MetaVarParserDom4j;
 import com.smartsoft.csp.util.VarMetaDataUtil;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 import org.dom4j.Element;
 import org.junit.Test;
 

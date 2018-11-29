@@ -2,7 +2,7 @@ package com.smartsoft.csp.util;
 
 import com.smartsoft.csp.ast.*;
 import com.smartsoft.csp.dnnf.products.AbstractCube;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

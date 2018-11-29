@@ -19,7 +19,7 @@ inline fun <T> tt(lbl: String? = null, block: () -> T): T {
     val ret = block()
     val t2 = millis
     val prefix = if (lbl == null) "" else "$lbl "
-    System.err.println("${prefix}delta: ${t2 - t1}")
+    println("${prefix}delta: ${t2 - t1}")
     return ret
 }
 

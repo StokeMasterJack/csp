@@ -1,17 +1,16 @@
 package com.smartsoft.csp.ast;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Iterators;
-import com.smartsoft.csp.util.it.ExpArrayTo;
 import com.smartsoft.csp.dnnf.products.AbstractCube;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.CubesK;
 import com.smartsoft.csp.parse.Head;
 import com.smartsoft.csp.util.Bit;
 import com.smartsoft.csp.util.HasVarId;
-import com.smartsoft.csp.util.XorCube;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.util.it.ExpArrayTo;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSetK;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -361,46 +360,25 @@ public class DynCube extends AbstractCube {
         return retVal;
     }
 
+    public boolean eqVars(DynCube o) {
+        VarSet v1 = this.v;
+        VarSet v2 = o.v;
+
+        return VarSetK.eq(v, o.v);
+    }
+
     @Override
     final public boolean equals(Object o) {
 
         if (this == o) return true;
         if (o == null) return false;
+        if (!(o instanceof Cube)) return false;
 
+        Cube c1 = this;
+        Cube c2 = (Cube) o;
 
-        Cube that = (Cube) o;
+        return CubesK.eq(c1, c2);
 
-        assert this.space == that.getSpace();
-
-        if (getVarCount() != that.getVarCount()) return false;
-        if (getTrueVarCount() != that.getTrueVarCount()) return false;
-
-        VarSet thisVars = getVars();
-        VarSet thatVars = that.getVars();
-
-        if (thisVars == null && thatVars != null) return false;
-        if (thisVars != null && thatVars == null) return false;
-        if (thisVars == null && thatVars == null) return true;
-
-        assert thisVars != null && thatVars != null;
-
-        if (!thisVars.equals(thatVars)) {
-            return false;
-        }
-
-        if (!Objects.equal(thisVars, that.getVars())) return false;
-
-
-        if (that instanceof DynCube) {
-            return Objects.equal(getTrueVars(), that.getTrueVars());
-        }
-
-        if (that instanceof XorCube) {
-            Lit firstLit = that.getFirstLit();
-            return containsLit(firstLit);
-        }
-
-        throw new UnsupportedOperationException();
     }
 
 

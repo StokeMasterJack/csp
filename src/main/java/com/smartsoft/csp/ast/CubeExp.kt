@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.dnnf.DAnd
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 
 class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), Cube {
 

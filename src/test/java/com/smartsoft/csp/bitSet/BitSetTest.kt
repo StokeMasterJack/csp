@@ -1,8 +1,5 @@
-package com.smartsoft.csp.varSets
+package com.smartsoft.csp.bitSet
 
-import com.smartsoft.csp.ssutil.BitSet
-import com.smartsoft.csp.ssutil.bitSetOf
-import com.smartsoft.csp.ssutil.mutableBitSetOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -11,7 +8,7 @@ class BitSetTest {
 
     @Test
     fun testAddAll() {
-        val s1 = mutableBitSetOf("15 16 17")
+        val s1 = mutableBitSet32Of("15 16 17")
         s1.assertSer("15 16 17")
 
         s1.add(18)
@@ -42,7 +39,7 @@ class BitSetTest {
 
     @Test
     fun testBadIndex() {
-        val x1 = mutableBitSetOf()
+        val x1 = mutableBitSet32Of()
         assertFailsWith<IndexOutOfBoundsException> { x1.set(-1) }
         assertFailsWith<IndexOutOfBoundsException> { x1.set(32) }
     }
@@ -51,7 +48,7 @@ class BitSetTest {
     @Test
     fun testSizeEmptySer() {
 
-        val x1 = mutableBitSetOf()
+        val x1 = mutableBitSet32Of()
 
         assertEquals(0, x1.size)
         assert(x1.isEmpty)
@@ -68,7 +65,7 @@ class BitSetTest {
         x1.assertSet(0)
         x1.assertSet(31)
 
-        val x2 = mutableBitSetOf("0 15 31")
+        val x2 = mutableBitSet32Of("0 15 31")
         assertEquals(3, x2.size)
         assert(x2.isNotEmpty)
         x2.assertSer("0 15 31")
@@ -82,16 +79,16 @@ class BitSetTest {
     @Test
     fun testUnion() {
 
-        val s1 = bitSetOf(15, 16, 17)
+        val s1 = bitSet32Of(15, 16, 17)
         s1.assertSer("15 16 17")
 
-        val s2 = bitSetOf(1, 15, 17)
+        val s2 = bitSet32Of(1, 15, 17)
         s2.assertSer("1 15 17")
 
-        val s3 = BitSet.union(s1, s2)
+        val s3 = BitSet32.plus(s1, s2)
         s3.assertSer("1 15 16 17")
 
-        val s4 = BitSet.union(s1, s2, s3)
+        val s4 = BitSet32.plus(s1, s2, s3)
         s4.assertSer("1 15 16 17")
 
     }

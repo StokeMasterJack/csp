@@ -10,7 +10,7 @@ import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 
 class ExpFactory(val space: Space) {
 
@@ -595,7 +595,7 @@ class ExpFactory(val space: Space) {
 
     }
 
-    data class MinMax(val min: Exp, val max: Exp) {
+    data class ExpMinMax(val min: Exp, val max: Exp) {
 
         fun createExpArray(): Array<Exp> {
             return arrayOf(min, max)
@@ -603,11 +603,11 @@ class ExpFactory(val space: Space) {
 
         companion object {
             @JvmStatic
-            fun mk(e1: Exp, e2: Exp): MinMax {
+            fun mk(e1: Exp, e2: Exp): ExpMinMax {
                 return if (e1.expId < e2.expId) {
-                    MinMax(e1, e2)
+                    ExpMinMax(e1, e2)
                 } else {
-                    MinMax(e2, e1)
+                    ExpMinMax(e2, e1)
                 }
             }
 
@@ -673,7 +673,7 @@ class LitPairDCubeBuilder(val arg1: Lit, val arg2: Lit) : IArgBuilder {
 //        assert(arg1.vr != arg2.vr)
 //    }
 
-    val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
+    val a: Array<Exp> = ExpFactory.ExpMinMax.mkArray(arg1, arg2)
     val space: Space = arg1.space
 
     override val fcc: FccState get() = Open()
@@ -693,7 +693,7 @@ class LitPairBuilder(override val op: Op, val arg1: Lit, val arg2: Lit) : IArgBu
 //        assert(arg1.vr != arg2.vr)
 //    }
 
-    val a: Array<Exp> = ExpFactory.MinMax.mkArray(arg1, arg2)
+    val a: Array<Exp> = ExpFactory.ExpMinMax.mkArray(arg1, arg2)
     val space: Space = arg1.space
 
     override val fcc: FccState get() = Open()
@@ -713,7 +713,7 @@ class LitCubeDAndBuilder(val lit: Lit, val cube: CubeExp) : IArgBuilder {
 //        assert(!cube.containsVar(lit.vr))
 //    }
 
-    val a: Array<Exp> = ExpFactory.MinMax.mkArray(lit, cube)
+    val a: Array<Exp> = ExpFactory.ExpMinMax.mkArray(lit, cube)
     val space: Space = lit.space
 
     override val fcc: FccState get() = Open()
@@ -733,7 +733,7 @@ class CubeCubeDAndBuilder(val cube1: CubeExp, val cube2: CubeExp) : IArgBuilder 
 //        assert(cube1.isVarDisjoint(cube2.vars))
     }
 
-    val a: Array<Exp> = ExpFactory.MinMax.mkArray(cube1, cube2)
+    val a: Array<Exp> = ExpFactory.ExpMinMax.mkArray(cube1, cube2)
     val space: Space = cube2.space
 
     override val fcc: FccState get() = Open()

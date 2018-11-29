@@ -1,4 +1,4 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 import com.google.common.collect.*;
 import com.smartsoft.csp.VarInfo;
@@ -9,7 +9,7 @@ import com.smartsoft.csp.dnnf.products.VarPredicate;
 import com.smartsoft.csp.dnnf.vars.IntFilter;
 import com.smartsoft.csp.dnnf.vars.VarFilter;
 import com.smartsoft.csp.parse.VarSpace;
-import com.smartsoft.csp.util.BadVarCodeException;
+import com.smartsoft.csp.ssutil.Strings;
 import com.smartsoft.csp.util.BadVarIdException;
 import com.smartsoft.csp.util.DynComplex;
 import com.smartsoft.csp.util.ints.IntIterator;
@@ -22,9 +22,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-import static com.smartsoft.csp.ssutil.Strings.getSimpleName;
-
 public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
+
+    @NotNull
+    public final String getSimpleName() {
+        return getClass().getSimpleName();
+    }
 
     public static VarSet empty() {
         return EmptyVarSet.getInstance();
@@ -41,12 +44,19 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public boolean containsVar(@NotNull String varCode) {
-        Var vr = getSpace().getVar(varCode);
-        return containsVarId(vr.varId);
+        return VarSetContainsKt._containsVarCode(this, varCode);
     }
 
     public boolean notContainsVar(@NotNull String varCode) {
-        return !containsVar(varCode);
+        return VarSetContainsKt._notContainsVarCode(this, varCode);
+    }
+
+    public boolean notContains(@NotNull Var vr) {
+        return VarSetContainsKt._notContains(this, vr);
+    }
+
+    public boolean notContains(@NotNull VarSet vs) {
+        return VarSetContainsKt._notContains(this, vs);
     }
 
     public int getVarCount() {
@@ -57,17 +67,6 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return getVarSpace().varSetBuilder();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
-        VarSet that = (VarSet) o;
-        if (size() != that.size()) {
-            return false;
-        }
-        assert this.getSpace() == that.getSpace();
-        return this.containsAllVars(that);
-    }
 
     public int hashCode() {
         return computeContentHash();
@@ -81,11 +80,25 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return a.toString();
     }
 
+    @Override
     public String toString() {
         return ser();
     }
 
-    public abstract void serialize(Ser a);
+    public String toStringDetail() {
+        return getSimpleName() + "  size:" + size() + "  " + ser();
+    }
+
+    public void serialize(Ser a) {
+        Iterator<Var> it = varIter();
+        while (it.hasNext()) {
+            Var next = it.next();
+            a.append(next.getVarCode());
+            if (it.hasNext()) {
+                a.argSep();
+            }
+        }
+    }
 
     public static int computeVarCount(long[] words) {
         int varCount = 0;
@@ -144,41 +157,48 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return a;
     }
 
-    public boolean containsVarCode(String varCode) throws BadVarCodeException {
-        Var var = getSpace().getVar(varCode);
-        boolean b = containsVar(var);
-        return b;
-    }
-
-    public boolean contains(String varCode) {
-        return containsVarCode(varCode);
-    }
 
     @Override
     final public boolean contains(Object o) {
-        if (o instanceof Var) {
-            Var var = (Var) o;
-            return containsVar(var);
-        }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "  " + toString());
     }
 
-    public abstract boolean containsVarId(int varId);
+    final public boolean containsVarId(int varId) {
+        return VarSetContainsKt._containsVarId(this, varId);
+    }
 
     final public boolean containsVar(Var vr) {
-        return containsVarId(vr.getVarId());
+        return VarSetContainsKt._contains(this, vr);
     }
 
-    final public boolean containsVars(Var vr1, Var vr2) {
-        return containsVarId(vr1.getVarId()) && containsVarId(vr2.getVarId());
+    final public boolean containsBothVars(Var vr1, Var vr2) {
+        return VarSetContainsKt._containsBothVars(this, vr1, vr2);
+
+    }
+
+    final public boolean containsBothVarIds(int vr1, int vr2) {
+        return VarSetContainsKt._containsBothVarIds(this, vr1, vr2);
+    }
+
+    final public boolean containsBoth(VarPair vs) {
+        return VarSetContainsKt._containsBoth(this, vs);
+    }
+
+    final public boolean containsNeither(VarPair vs) {
+        return VarSetContainsKt._containsNeither(this, vs);
+    }
+
+
+    final public boolean containsEitherVarId(int vr1, int vr2) {
+        return VarSetContainsKt._containsEitherVarId(this, vr1, vr2);
     }
 
     final public boolean containsVars(VarPair pair) {
-        return containsVar(pair.var1) && containsVar(pair.var2);
+        return VarSetContainsKt._contains(this, pair);
     }
 
     final public boolean containsVar(Lit lit) {
-        return containsVarId(lit.getVarId());
+        return VarSetContainsKt._containsVar(this, lit);
     }
 
 
@@ -187,14 +207,22 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
      * <p>
      * Throws a NoSuchElementException if this set is empty.
      */
-    public abstract int min() throws NoSuchElementException;
+    public abstract int minVrId() throws NoSuchElementException;
+
+    public Var getMinVar() throws NoSuchElementException {
+        return getSpace().getVar(minVrId());
+    }
+
+    public Var getMaxVar() throws NoSuchElementException {
+        return getSpace().getVar(maxVrId());
+    }
 
     /**
      * Returns the largest varId in this set.
      * <p>
      * Throws a NoSuchElementException if this set is empty.
      */
-    public abstract int max() throws NoSuchElementException;
+    public abstract int maxVrId() throws NoSuchElementException;
 
     /**
      * Returns the smallest varId formula this set that
@@ -204,7 +232,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
      * @return {j: this.ints | j >= i && no k: this.ints - j | k < j && k >= i}
      * @throws java.util.NoSuchElementException no this.ints || i > this.max()
      */
-    public int min(int varId) throws NoSuchElementException {
+    public int minVrId(int varId) throws NoSuchElementException {
         throw new UnsupportedOperationException();
     }
 
@@ -215,7 +243,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
      *
      * @throws java.util.NoSuchElementException no this.ints || i < this.min()
      */
-    public int max(int varId) throws NoSuchElementException {
+    public int maxVrId(int varId) throws NoSuchElementException {
         throw new UnsupportedOperationException();
     }
 
@@ -238,20 +266,22 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return new FilteredVarIterator(filter);
     }
 
-    public static boolean eq(VarSet s1, VarSet s2) {
-        if (s1 == null && s2 == null) {
-            return true;
-        }
-        if (s1 == s2) {
-            return true;
-        }
-
-        if (s1 != null && s2 != null) {
-            return s1.equals(s2);
-        }
-
-        return false;
+    public boolean eqVarSet(VarSet o) {
+        if (this == o) return true;
+        return VarSetK.eqNullSafe(this, o);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        VarSet that = (VarSet) o;
+        assert this.getSpace() == that.getSpace();
+
+        return eqVarSet(that);
+    }
+
 
     public static int size(VarSet vars) {
         if (vars == null) return 0;
@@ -322,6 +352,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     public void addVarCode(String varCode) {
         Var var = getSpace().getVar(varCode);
         addVar(var);
+    }
+
+    @NotNull
+    public Boolean containsVarCode(@NotNull String varCode) {
+        return VarSetContainsKt._containsVarCode(this, varCode);
     }
 
     public class FilteredVarIterator extends UnmodifiableIterator<Var> {
@@ -541,24 +576,14 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public abstract boolean isEmpty();
 
-
     public boolean containsAllVars(VarSet that) {
-        if (that.isEmpty()) return true;
-        if (that.isSingleton()) {
-            return containsVarId(that.min());
-        }
-        if (that.isVarPair()) {
-            return containsVarIds(that.min(), that.max());
-        }
-        if (that.isVarSetBuilder()) {
-            VarSetBuilder b = that.asVarSetBuilder();
-            return containsAllBitSet(b);
-        }
-
-        throw new IllegalStateException();
+        return VarSetContainsKt._contains(this, that);
     }
 
-    abstract public boolean containsAllBitSet(VarSetBuilder other);
+    public boolean containsVarSet(VarSet that) {
+        return VarSetContainsKt._contains(this, that);
+    }
+
 
 //    abstract public boolean containsAllBitSet(VarNSet other);
 
@@ -567,13 +592,11 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public VarSet mutableCopy() {
-        VarSetBuilder b = getSpace().newMutableVarSet();
-        b.addVarSet(this);
-        return b;
+        return copyToVarSetBuilder();
     }
 
     public VarSet copy() {
-        return mutableCopy();
+        return VarSetK.copy(this);
     }
 
     public boolean anyVarOverlap(Cube cube) {
@@ -589,47 +612,24 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return vars.anyVarOverlap(this);
     }
 
-    final public boolean anyVarOverlap(VarSet that) {
-        if (that == null || that.isEmpty() || this.isEmpty()) {
-            return false;
-        }
-
-        if (that.isSingleton()) {
-            return this.containsVarId(that.min());
-        }
-        if (this.isSingleton()) {
-            return that.containsVarId(this.min());
-        }
-
-        if (that.isVarPair()) {
-            return this.containsVarId(that.min()) || this.containsVarId(that.max());
-        }
-        if (this.isVarPair()) {
-            return that.containsVarId(this.min()) || that.containsVarId(this.max());
-        }
-
-        if (that.isVarSetBuilder() && this.isVarSetBuilder()) {
-            return VarSetBuilder.anyIntersection(this.asVarSetBuilder(), that.asVarSetBuilder());
-        }
-
-        throw new UnsupportedOperationException(getClass().getSimpleName());
-
-    }
-
 
 //    public abstract boolean anyIntersection(VarSetBuilder that);
 
     final public VarSet minus(Var varToRemove) {
-        return minus(varToRemove.getVarId());
+        return VarSetMinusKt.minus(this, varToRemove);
     }
 
-    public VarSet minus(int varIdToRemove) {
-        throw new UnsupportedOperationException(getClass().getName());
+    final public VarSet minus(int varIdToRemove) {
+        return VarSetMinusKt.minus(this, varIdToRemove);
     }
 
-    public VarSet minus(String varCode) {
+    final public VarSet minus(String varCode) {
         Var vr = getSpace().getVar(varCode);
         return minus(vr);
+    }
+
+    final public VarSet minus(VarSet varsToRemove) {
+        return VarSetMinusKt.minus(this, varsToRemove);
     }
 
 
@@ -637,32 +637,31 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return VarSetK.copyToVarSetBuilder(this);
     }
 
+    public VarSetBuilder copyToVarSetBuilder(VarSet vs) {
+        return VarSetK.copyToVarSetBuilder(this, Adjust.add(vs));
+    }
+
+    public VarSetBuilder copyToVarSetBuilder(Var vr) {
+        return VarSetK.copyToVarSetBuilder(this, Adjust.add(vr));
+    }
+
+    public VarSetBuilder copyToVarSetBuilder(Adjust adjust) {
+        return VarSetK.copyToVarSetBuilder(this, adjust);
+    }
+
 //    public VarSet plus(String varCode) {
 //        Var vr = getSpace().getVar(varCode);
 //        return plus(vr);
 //    }
 
-//    public VarSet plus(Var vr) {
-//        VarSetBuilder bb = copyToVarSetBuilder();
-//        bb.addVar(vr);
-//        return bb;
-//    }
-
-//    public VarSet plus(VarSet varSet) {
-//        return VarSetK.
-//        return union(varSet);
-//    }
-
-    abstract public VarSet plus(VarSet that);
-
-    public VarSet plus(String varCode) {
-        Var vr = getSpace().getVar(varCode);
-        return plus(vr);
+    final public VarSet plus(Var vr) {
+        return VarSetPlusKt.plus(this, vr);
     }
 
-    public VarSet plus(Var var) {
-        throw new UnsupportedOperationException(getClass().getName());
+    final public VarSet plus(VarSet varSet) {
+        return VarSetPlusKt.plus(this, varSet);
     }
+
 
 //    public static VarSet union(VarSet... that) {
 //        Space space = that[0].getSpace();
@@ -670,16 +669,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 //    }
 
     public static VarSet plus(Space space, VarSet... that) {
-        VarSetBuilder b = space.varSetBuilder();
-        for (VarSet vars : that) {
-            b.addVarSet(vars);
-        }
-        return b.build();
-    }
-
-
-    public VarSet minus(VarSet varsToRemove) {
-        throw new UnsupportedOperationException(getSimpleName(this) + "  " + getSimpleName(varsToRemove));
+        return VarSetPlusKt.plusVarSets(space, that);
     }
 
 
@@ -690,6 +680,14 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public int indexOf(int varId) {
         throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    final public boolean anyVarOverlap(VarSet s) {
+        return VarSetOverlapKt._anyOverlap(this, s);
+    }
+
+    final public VarSet overlap(VarSet that) {
+        return VarSetOverlapKt._overlap(this, that);
     }
 
     final public boolean isVarDisjoint(VarSet s) {
@@ -729,27 +727,6 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return false;
     }
 
-    public VarSet overlap(VarSet that) {
-        if (that == null || that.isEmpty()) {
-            return mkEmptyVarSet();
-        }
-        if (that.isSingleton()) {
-            Var v = that.getFirstVar();
-            if (containsVar(v)) {
-                return that.asSingleton();
-            } else {
-                return mkEmptyVarSet();
-            }
-        }
-
-        VarSetBuilder b = builder();
-        for (Var var : this) {
-            if (that.contains(var)) {
-                b.add(var);
-            }
-        }
-        return b.build();
-    }
 
     public VarSet mkEmptyVarSet() {
         return getVarSpace().mkEmptyVarSet();
@@ -850,7 +827,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     final public int getFirstVarId() {
-        return min();
+        return minVrId();
     }
 
     public int getSecondVarId() {
@@ -928,7 +905,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return removeVar(var);
     }
 
-    final public boolean removeVar(Var vr) {
+    public boolean removeVar(Var vr) {
         int varId = vr.getVarId();
         return removeVarId(varId);
     }
@@ -949,7 +926,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     @Override
     public boolean add(Var var) {
-        throw new UnsupportedOperationException(getSimpleName(this));
+        throw new UnsupportedOperationException(Strings.getSimpleName(this));
     }
 
     @Override
@@ -1110,7 +1087,12 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
     public void assertSer(String ser) {
         String ser1 = toString();
-        assert ser.equals(ser1);
+        if (!ser.equals(ser1)) {
+            System.err.println("Expected: " + ser);
+            System.err.println("Actual: " + ser1);
+            System.err.println("Actual: " + getSimpleName());
+            throw new AssertionError("Expected: " + ser + "   actual: " + ser1);
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package com.smartsoft.csp.common;
 
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 
 public class YearModelAcy implements Comparable<YearModelAcy> {
 

@@ -3,7 +3,7 @@ package com.smartsoft.csp.ast
 import com.google.common.collect.Iterators
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 
 class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
 
@@ -201,10 +201,10 @@ class Not(pos: Exp, expId: Int) : Complex(pos.space, expId) {
         return nnf.toDnnf()
     }
 
-    override val satCountPL: Long get() {
-        if(true) throw IllegalStateException()
-        return toNnf().satCountPL
-    }
+    override val satCountPL: Long
+        get() {
+            return toNnf(keepXors = true).satCountPL
+        }
 
     override val argIter: Iterator<Exp> get() = Iterators.singletonIterator(pos)
 

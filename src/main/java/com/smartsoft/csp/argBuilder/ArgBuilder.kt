@@ -8,7 +8,7 @@ import com.smartsoft.csp.util.ints.TreeSequence
 import com.smartsoft.csp.util.it.ExpIt
 import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.util.it.TreeSeqTo
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 
 /**
  * builder for and args and or args

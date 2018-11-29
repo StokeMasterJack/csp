@@ -8,7 +8,7 @@ import com.smartsoft.csp.ast.PLConstants.RPAREN
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 import java.util.*
 
 abstract class PosComplexMultiVar(space: Space, expId: Int, internal val _args: Array<Exp>) : PosComplex(space, expId) {

@@ -21,9 +21,9 @@ import com.smartsoft.csp.ssutil.SingleLineLogFormatter;
 import com.smartsoft.csp.util.*;
 import com.smartsoft.csp.util.ints.IntIterator;
 import com.smartsoft.csp.varCodes.IVar;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
-import com.smartsoft.csp.varSets.VarSetK;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSetK;
 import kotlin.sequences.Sequence;
 import org.jetbrains.annotations.NotNull;
 

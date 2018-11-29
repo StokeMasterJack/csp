@@ -1,7 +1,7 @@
 package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 
 abstract class Constant(space: Space, expId: Int) : Exp(space, expId) {
 

@@ -7,8 +7,8 @@ import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.dnnf.products.LitCube
 import com.smartsoft.csp.ssutil.Strings.lpad
 import com.smartsoft.csp.util.Bit
-import com.smartsoft.csp.varSets.VarSet
 import com.smartsoft.csp.varCodes.VarCode
+import com.smartsoft.csp.varSet.VarSet
 import java.math.BigInteger
 
 class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(vr.space, expId), ConditionOn {
@@ -247,13 +247,14 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
         return this
     }
 
-    override val hasFlip: Boolean get() {
-        return if (isPos) {
-            vr.hasNegLit()
-        } else {
-            vr.hasPosLit()
+    override val hasFlip: Boolean
+        get() {
+            return if (isPos) {
+                vr.hasNegLit()
+            } else {
+                vr.hasPosLit()
+            }
         }
-    }
 
 
     override fun computeValue(cube: Cube): Int {

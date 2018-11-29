@@ -3,8 +3,6 @@ package com.smartsoft.csp.ssutil;
 
 import java.io.IOException;
 
-import static com.smartsoft.csp.ssutil.Strings.indent;
-
 public class Console {
 
     public static void prindent(int depth, Object msg) {
@@ -12,7 +10,7 @@ public class Console {
     }
 
     public static void prindent(int depth, String msg) {
-        System.err.println(Strings.indent(depth) + msg);
+        System.out.println(Strings.indent(depth) + msg);
     }
 
     public static void prindent(int depth, int msg) {

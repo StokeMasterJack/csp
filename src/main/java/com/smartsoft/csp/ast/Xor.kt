@@ -4,9 +4,10 @@ import com.google.common.base.Preconditions.checkNotNull
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
+import com.smartsoft.csp.dnnf.products.toStringDetail
 import com.smartsoft.csp.util.Range
 import com.smartsoft.csp.util.XorCube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 import java.math.BigInteger
 
 
@@ -121,11 +122,31 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     private fun conditionNegLit(vr: Var): Exp {
         val vs1 = vars
         val vs2 = vs1.minus(vr)
-        assert(vs2.size == vs1.size - 1)
+        if (vs2.size != vs1.size - 1) {
+            println("$vs1 minus $vr")
+            println(" vs1: ${vs1.size} $vs1")
+            println(" vr: $vr")
+            println(" vs2:  ${vs2.size} $vs2")
+            throw AssertionError()
+        }
+
         return _space.mkXor(vs2)
     }
 
     override fun condition(lit: Lit): Exp {
+        val bContains = vars.containsVar(lit.vr)
+        if (!bContains) {
+            return this;
+        }
+        if (lit.toString() == "!MDL_6953" && vars.toString() == "XCOL_08S6 XCOL_0070 XCOL_0202 XCOL_0040 XCOL_01H1 XCOL_02KQ XCOL_08V1 XCOL_02KD XCOL_0058 XCOL_03L5 XCOL_03R0 XCOL_0218 XCOL_08T7 XCOL_0082 XCOL_01G3 XCOL_06T7 XCOL_06V2 XCOL_04T3 XCOL_0788 XCOL_04T8 XCOL_03P0 XCOL_08U6 XCOL_03R3 XCOL_03Q3 XCOL_08V5 XCOL_04V7 XCOL_01D6 XCOL_0781 XCOL_02KB XCOL_0785 XCOL_01E7") {
+            println("contains: ${bContains}")
+            println("  vars: ${vars.simpleName} $vars")
+            println("  lit: ${lit}")
+            println("  vr: ${lit.vr}")
+            println("  varId: ${lit.varId}")
+
+        }
+
         val ret = conditionInternal(lit)
         if (ret is Xor) {
             ret.score = this.score
@@ -135,9 +156,6 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
 
     private fun conditionInternal(lit: Lit): Exp {
         val vr = lit.vr
-        if (!containsVarId(vr.vrId)) {
-            return this
-        }
         val sign = lit.sign()
         return if (sign) {
             conditionPosLit(vr)
@@ -155,7 +173,6 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     }
 
     private fun conditionInternal(ctx: Cube): Exp {
-
         if (isVarDisjoint(ctx)) {
             return this
         }
@@ -166,6 +183,7 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
         var fCount = 0
         var oCount = 0
 
+        assert(vars.size == _args.size)
         for (vr in vars) {
             val v = ctx.getValue(vr)
 
@@ -208,7 +226,9 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
                 return mkFalse()
             } else {
                 //0 true, some opens
-                assert(fCount > 0)
+                assert(fCount > 0) {
+                    "fCount > 0: ${this.toStringDetail()}  ${vars.toStringDetail()}   cube: ${ctx.toStringDetail()}"
+                }
                 val thisVars = vars
                 val varsToRemove = ctx.vars
                 val opens = thisVars.minus(varsToRemove)
@@ -399,9 +419,10 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     }
 
 
-    override val satCountPL: Long get() {
-        return argCount.toLong()
-    }
+    override val satCountPL: Long
+        get() {
+            return argCount.toLong()
+        }
 
     companion object {
 

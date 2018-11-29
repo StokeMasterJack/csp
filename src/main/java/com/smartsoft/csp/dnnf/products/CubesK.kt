@@ -2,8 +2,8 @@ package com.smartsoft.csp.dnnf.products
 
 import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.FccState
-import com.smartsoft.csp.ast.Open
+import com.smartsoft.csp.util.XorCube
+import com.smartsoft.csp.varSet.VarSetK
 
 object CubesK {
 
@@ -61,7 +61,8 @@ object CubesK {
                 val it: Iterable<Exp> = Iterable { kotlin.jvm.internal.iterator(argArray) }
                 val b = object : IArgBuilder {
                     init {
-                                            }
+                    }
+
                     override val argIt: Iterable<Exp> get() = it
                     override val size: Int = argArray.size
                     override val fcc: FccState get() = Open()
@@ -88,11 +89,8 @@ object CubesK {
         println("c2: " + c2::class)
         println("eqSpace: " + eqSpace(c1, c2))
         println("eqClass: " + eqClass(c1, c2))
-        println("eqVarSets: " + eqVarSets(c1, c2))
-        println("eqVarCodes: " + eqVarCodes(c1, c2))
-        println("eqTrueVarCodes: " + eqTrueVarCodes(c1, c2))
-        println("eqFalseVarCodes: " + eqFalseVarCodes(c1, c2))
-        println("eqTFVarCodes: " + eqTFVarCodes(c1, c2))
+        println("eqVars: " + VarSetK.eq(c1.vars, c2.vars))
+        println("eqTrueVars: " + VarSetK.eq(c1.trueVars, c2.trueVars))
         println("bothDynCube: " + bothDynCube(c1, c2))
         println("eq: " + eq(c1, c2))
 
@@ -103,32 +101,47 @@ object CubesK {
 
     fun eqClass(c1: Cube, c2: Cube) = c1::class == c2::class
 
-    fun eqVarSets(c1: Cube, c2: Cube) = c1.vars == c2.vars
-    fun eqTrueVarSets(c1: Cube, c2: Cube) = c1.trueVars == c2.trueVars
-    fun eqTV(c1: Cube, c2: Cube) = c1.trueVars == c2.trueVars && c1.vars == c2.vars
+    private fun eqDynCubeDynCube(c1: DynCube, c2: DynCube): Boolean {
+        return VarSetK.eqNullSafe(c1.v, c2.v) && VarSetK.eqNullSafe(c1.t, c2.t)
+    }
 
-    fun eqVarCodes(c1: Cube, c2: Cube) = c1.varCodesSorted() == c2.varCodesSorted()
-    fun eqTrueVarCodes(c1: Cube, c2: Cube) = c1.trueVarCodes == c2.trueVarCodes
-    fun eqFalseVarCodes(c1: Cube, c2: Cube) = c1.falseVarCodes == c2.falseVarCodes
+    private fun eqXorCubeXorCube(c1: XorCube, c2: XorCube): Boolean {
+        return c1.xor === c2.xor && c1.trueVar === c2.trueVar;
+    }
 
+    private fun eqDynCubeCube(c1: DynCube, c2: Cube): Boolean {
+        return VarSetK.eqNullSafe(c1.v, c2.vars) && VarSetK.eqNullSafe(c1.t, c2.trueVars)
+    }
+
+    private fun eqCubeDynCube(c1: Cube, c2: DynCube): Boolean {
+        return VarSetK.eqNullSafe(c1.vars, c2.v) && VarSetK.eqNullSafe(c1.trueVars, c2.t)
+    }
+
+    private fun eqCubeCube(c1: Cube, c2: Cube): Boolean {
+        return VarSetK.eq(c1.vars, c2.vars) && VarSetK.eqNullSafe(c1.trueVars, c2.trueVars)
+    }
+
+    @JvmStatic
     fun eq(c1: Cube, c2: Cube): Boolean {
-        return if (bothDynCube(c1, c2)) {
-            eqVarSets(c1, c2) && eqTrueVarSets(c1, c2)
-        } else {
-            eqVarCodes(c1, c2) && eqTrueVarCodes(c1, c2)
+        assert(eqSpace(c1, c2));
+        return when {
+            c1 is DynCube && c2 is DynCube -> eqDynCubeDynCube(c1, c2)
+            c1 is XorCube && c2 is XorCube -> eqXorCubeXorCube(c1, c2)
+            c1 is DynCube && c2 !is DynCube -> eqDynCubeCube(c1, c2)
+            c1 !is DynCube && c2 is DynCube -> eqCubeDynCube(c1, c2)
+            else -> eqCubeCube(c1, c2)
         }
     }
 
     fun bothDynCube(c1: Cube, c2: Cube) = c1 is DynCube && c2 is DynCube
 
 
-    fun eqTFVarCodes(c1: Cube, c2: Cube) = eqTrueVarCodes(c1, c2) && eqFalseVarCodes(c1, c2)
+
+
+
 }
 
-
-
-
-fun Iterable<Cube>.print(cols:Int = 20) {
+fun Iterable<Cube>.print(cols: Int = 20) {
     CubesK.printCubes(cols = cols, cubes = this)
 }
 

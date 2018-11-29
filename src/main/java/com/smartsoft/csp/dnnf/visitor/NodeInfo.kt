@@ -59,7 +59,7 @@ class NodeInfo : NodeHandler() {
 
         val classes = mm.elementSet()
         classes.toList().map { "${it.simpleName}: ${mm.count(it)}" }.sorted().joinToString("   ").let {
-            prindent(depth,"  NodeCounts: $it")
+            prindent(depth, "  NodeCounts: $it")
         }
 //        for (cls in classes) {
 //            val count = mm.count(cls)

@@ -14,8 +14,8 @@ import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.Cubes;
 import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.Bit;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;

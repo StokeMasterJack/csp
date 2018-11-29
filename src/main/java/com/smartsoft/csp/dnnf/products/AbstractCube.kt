@@ -6,8 +6,8 @@ import com.google.common.collect.Sets
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.ints.Ints
-import com.smartsoft.csp.varSets.VarSet
 import com.smartsoft.csp.varCodes.VarCode
+import com.smartsoft.csp.varSet.VarSet
 import java.util.*
 
 abstract class AbstractCube : Cube {
@@ -123,7 +123,6 @@ abstract class AbstractCube : Cube {
     }
 
 
-
     override fun serializeTrueVars(a: Ser, sep: Char) {
         Cubes.serializeCubeTrueVars(a, this)
     }
@@ -159,6 +158,8 @@ abstract class AbstractCube : Cube {
         serializeSingleLine(a)
         return a.toString().trim { it <= ' ' }
     }
+
+
 
     override fun isTrue(varCode: String): Boolean {
         val vr = space.getVar(varCode)

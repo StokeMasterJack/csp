@@ -1,4 +1,4 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 import com.smartsoft.csp.ast.Ser;
 import com.smartsoft.csp.ast.Space;
@@ -43,18 +43,15 @@ public class EmptyVarSet extends VarSet {
         return 0;
     }
 
-    @Override
-    public boolean containsVarId(int varId) {
-        return false;
-    }
+
 
     @Override
-    public int min() throws NoSuchElementException {
+    public int minVrId() throws NoSuchElementException {
         throw new NoSuchElementException();
     }
 
     @Override
-    public int max() throws NoSuchElementException {
+    public int maxVrId() throws NoSuchElementException {
         throw new NoSuchElementException();
     }
 
@@ -78,35 +75,12 @@ public class EmptyVarSet extends VarSet {
         return true;
     }
 
-    @Override
-    public boolean containsAllVars(VarSet that) {
-        return false;
-    }
+
 
 //    @Override
 //    public boolean anyIntersection(VarSet that) {
 //        return false;
 //    }
-
-    @Override
-    public VarSet minus(int varIdToRemove) {
-        return this;
-    }
-
-    @Override
-    public VarSet plus(VarSet that) {
-        return that;
-    }
-
-    @Override
-    public VarSet plus(Var var) {
-        return var.mkSingletonVarSet();
-    }
-
-    @Override
-    public VarSet minus(VarSet varsToRemove) {
-        return this;
-    }
 
     @Override
     public VarSet immutable() {
@@ -128,9 +102,6 @@ public class EmptyVarSet extends VarSet {
         return false;
     }
 
-    @Override
-    public boolean containsAllBitSet(VarSetBuilder other) {
-        return false;
-    }
+
 
 }

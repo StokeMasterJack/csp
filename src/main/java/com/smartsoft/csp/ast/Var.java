@@ -1,16 +1,17 @@
 package com.smartsoft.csp.ast;
 
 import com.smartsoft.csp.VarInfo;
+import com.smartsoft.csp.bitSet.HasIndex;
 import com.smartsoft.csp.parse.VarSpace;
 import com.smartsoft.csp.util.HasCode;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.ints.Ints;
-import com.smartsoft.csp.varSets.SingletonVarSet;
-import com.smartsoft.csp.varSets.VarPair;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.IVar;
 import com.smartsoft.csp.varCodes.VarCode;
+import com.smartsoft.csp.varSet.SingletonVarSet;
+import com.smartsoft.csp.varSet.VarPair;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstants {
+public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, PLConstants {
 
     public static final int MIN_VAR_ID = 1;
     public static final int INIT_PARTNER_TABLE_SIZE = 16;
@@ -66,8 +67,8 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
             return varPair;
         }
 
-        assert prev.var1 == this;
-        if (prev.var2.varId == var2.varId) {
+        assert prev.vr1 == this;
+        if (prev.vr2.varId == var2.varId) {
             return prev;
         }
 
@@ -80,11 +81,12 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
 
     }
 
-    public final int wordIndex() {
-        return varId >>> 6;
+    public final int getWordIndex() {
+        int varIndex = getVarIndex();
+        return varIndex >>> 6;
     }
 
-    public final long bitMask() {
+    public final long getBitMask() {
         return 1L << varId;
     }
 
@@ -95,16 +97,17 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
 
     public VarSet mkPartner(Var other) {
         int otherVarId = other.getVarId();
-        if (varId == otherVarId) return mkSingletonVarSet();
 
         Var var1;
         Var var2;
         if (otherVarId < this.varId) {
             var1 = other;
             var2 = this;
-        } else {
+        } else if (otherVarId > this.varId) {
             var1 = this;
             var2 = other;
+        } else {
+            return mkSingletonVarSet();
         }
 
         assert var1.getVarId() < var2.getVarId();
@@ -113,11 +116,11 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
             var1.partners = new VarPair[INIT_PARTNER_TABLE_SIZE];
         }
 
-        int bucket = Space.computeBucketIndex(var2.hashCode(), partners.length);
+        int bucket = Space.computeBucketIndex(var2.hashCode(), var1.partners.length);
 
-        VarPair prev = partners[bucket];
+        VarPair prev = var1.partners[bucket];
 
-        return mkPartner(bucket, prev, var2);
+        return var1.mkPartner(bucket, prev, var2);
 
     }
 
@@ -175,7 +178,11 @@ public class Var implements IVar, HasVarId, Comparable<Var>, HasCode, PLConstant
     }
 
     public int getVarIndex() {
-        return getVarId() - MIN_VAR_ID;
+        return getIndex();
+    }
+
+    public int getIndex() {
+        return getVarId() - 1;
     }
 
     public String getTinyId() {

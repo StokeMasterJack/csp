@@ -8,12 +8,12 @@ import com.smartsoft.csp.util.BadVarCodeException;
 import com.smartsoft.csp.util.BadVarIdException;
 import com.smartsoft.csp.util.HasVarId;
 import com.smartsoft.csp.util.it.Its;
-import com.smartsoft.csp.varSets.Converter;
-import com.smartsoft.csp.varSets.EmptyVarSet;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
 import com.smartsoft.csp.varCodes.VarCode;
 import com.smartsoft.csp.varCodes.VarCodes;
+import com.smartsoft.csp.varSet.Converter;
+import com.smartsoft.csp.varSet.EmptyVarSet;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -427,13 +427,6 @@ public class VarSpace implements PLConstants, Iterable<Var> {
         return getLit(varId, p);
     }
 
-    public int convertVarIndexToVarId(int varIndex) {
-        return varIndex + 1;
-    }
-
-    public int convertVarIdToVarIndex(int varId) {
-        return varId - 1;
-    }
 
     public VarSet mkVarSet(int... varIds) {
         setFreeze();
@@ -453,8 +446,15 @@ public class VarSpace implements PLConstants, Iterable<Var> {
     }
 
     public VarSet mkVarPair(Var var1, Var var2) {
+        assert !var1.eq(var2);
         setFreeze();
-        return var1.mkPartner(var2);
+
+        if (var1 == var2) {
+            return var1.mkSingletonVarSet();
+        } else {
+            return var1.mkPartner(var2);
+        }
+
     }
 
     public VarSet mkVarPair(int varId1, int varId2) {

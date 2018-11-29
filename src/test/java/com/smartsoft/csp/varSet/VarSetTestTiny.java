@@ -1,12 +1,9 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 import com.smartsoft.csp.util.CspBaseTest2;
 import com.smartsoft.csp.data.CspSample;
 import com.smartsoft.csp.ast.Csp;
 import com.smartsoft.csp.ast.Space;
-import com.smartsoft.csp.varSets.VarPair;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,18 +33,18 @@ public class VarSetTestTiny extends CspBaseTest2 {
         VarSet vs1 = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vs1.size());
 
-        assertTrue(vs1.contains("a"));
-        assertTrue(vs1.contains("b"));
-        assertTrue(vs1.contains("c"));
-        assertTrue(vs1.contains("d"));
+        assertTrue(vs1.containsVarCode("a"));
+        assertTrue(vs1.containsVarCode("b"));
+        assertTrue(vs1.containsVarCode("c"));
+        assertTrue(vs1.containsVarCode("d"));
 
         boolean removed = vs1.removeVar("b");
         assertTrue(removed);
 
-        assertTrue(vs1.contains("a"));
-        assertFalse(vs1.contains("b"));
-        assertTrue(vs1.contains("c"));
-        assertTrue(vs1.contains("d"));
+        assertTrue(vs1.containsVarCode("a"));
+        assertFalse(vs1.containsVarCode("b"));
+        assertTrue(vs1.containsVarCode("c"));
+        assertTrue(vs1.containsVarCode("d"));
 
     }
 
@@ -62,28 +59,28 @@ public class VarSetTestTiny extends CspBaseTest2 {
         VarSet vs1 = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vs1.size());
 
-        assertTrue(vs1.contains("a"));
-        assertTrue(vs1.contains("b"));
-        assertTrue(vs1.contains("c"));
-        assertTrue(vs1.contains("d"));
+        assertTrue(vs1.containsVarCode("a"));
+        assertTrue(vs1.containsVarCode("b"));
+        assertTrue(vs1.containsVarCode("c"));
+        assertTrue(vs1.containsVarCode("d"));
 
         VarSetBuilder vs2 = csp.getSpace().newMutableVarSet();
         vs2.addVar("a");
         vs2.addVar("c");
         vs2.addVar("d");
         assertEquals(3, vs2.size());
-        assertTrue(vs2.contains("a"));
-        assertFalse(vs2.contains("b"));
-        assertTrue(vs2.contains("c"));
-        assertTrue(vs2.contains("d"));
+        assertTrue(vs2.containsVarCode("a"));
+        assertFalse(vs2.containsVarCode("b"));
+        assertTrue(vs2.containsVarCode("c"));
+        assertTrue(vs2.containsVarCode("d"));
 
         VarSet vs3 = vs1.minus(vs2);
 
 
-        assertFalse(vs3.contains("a"));
-        assertTrue(vs3.contains("b"));
-        assertFalse(vs3.contains("c"));
-        assertFalse(vs3.contains("d"));
+        assertFalse(vs3.containsVarCode("a"));
+        assertTrue(vs3.containsVarCode("b"));
+        assertFalse(vs3.containsVarCode("c"));
+        assertFalse(vs3.containsVarCode("d"));
 
 
     }
@@ -149,10 +146,10 @@ public class VarSetTestTiny extends CspBaseTest2 {
         VarSet vars = csp.getSpace().getVars();
         assertEquals(expectedVarCount1, vars.size());
 
-        assertTrue(vars.contains("a"));
-        assertTrue(vars.contains("b"));
-        assertTrue(vars.contains("c"));
-        assertTrue(vars.contains("d"));
+        assertTrue(vars.containsVarCode("a"));
+        assertTrue(vars.containsVarCode("b"));
+        assertTrue(vars.containsVarCode("c"));
+        assertTrue(vars.containsVarCode("d"));
 
 
         VarSetBuilder b1 = csp.newMutableVarSet();
@@ -160,17 +157,17 @@ public class VarSetTestTiny extends CspBaseTest2 {
         b1.addVar("b");
         b1.addVar("c");
         assertEquals(3, b1.size());
-        assertTrue(b1.contains("a"));
-        assertTrue(b1.contains("b"));
-        assertTrue(b1.contains("c"));
-        assertFalse(b1.contains("d"));
+        assertTrue(b1.containsVarCode("a"));
+        assertTrue(b1.containsVarCode("b"));
+        assertTrue(b1.containsVarCode("c"));
+        assertFalse(b1.containsVarCode("d"));
 
         VarSet v1 = b1.build();
         assertEquals(3, v1.size());
-        assertTrue(v1.contains("a"));
-        assertTrue(v1.contains("b"));
-        assertTrue(v1.contains("c"));
-        assertFalse(v1.contains("d"));
+        assertTrue(v1.containsVarCode("a"));
+        assertTrue(v1.containsVarCode("b"));
+        assertTrue(v1.containsVarCode("c"));
+        assertFalse(v1.containsVarCode("d"));
 
 
         VarSetBuilder b2 = csp.getSpace().newMutableVarSet();
@@ -178,17 +175,17 @@ public class VarSetTestTiny extends CspBaseTest2 {
         b2.addVar("c");
         b2.addVar("d");
         assertEquals(3, b2.size());
-        assertTrue(b2.contains("a"));
-        assertFalse(b2.contains("b"));
-        assertTrue(b2.contains("c"));
-        assertTrue(b2.contains("d"));
+        assertTrue(b2.containsVarCode("a"));
+        assertFalse(b2.containsVarCode("b"));
+        assertTrue(b2.containsVarCode("c"));
+        assertTrue(b2.containsVarCode("d"));
 
         VarSet v2 = b2.build();
         assertEquals(3, v2.size());
-        assertTrue(v2.contains("a"));
-        assertFalse(v2.contains("b"));
-        assertTrue(v2.contains("c"));
-        assertTrue(v2.contains("d"));
+        assertTrue(v2.containsVarCode("a"));
+        assertFalse(v2.containsVarCode("b"));
+        assertTrue(v2.containsVarCode("c"));
+        assertTrue(v2.containsVarCode("d"));
 
         assertTrue(b1.anyVarOverlap(b2));
         assertTrue(v1.anyVarOverlap(v2));

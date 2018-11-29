@@ -6,8 +6,8 @@ import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
 import com.smartsoft.csp.dnnf.products.Cube;
 import com.smartsoft.csp.dnnf.products.DcPermCube;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

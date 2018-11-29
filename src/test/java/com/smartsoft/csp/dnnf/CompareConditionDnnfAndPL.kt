@@ -3,7 +3,7 @@ package com.smartsoft.csp.dnnf
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.data.CspSample
 import com.smartsoft.csp.dnnf.products.Cube
-import com.smartsoft.csp.varSets.VarSet
+import com.smartsoft.csp.varSet.VarSet
 import kotlin.test.Test
 
 class CompareConditionDnnfAndPL {

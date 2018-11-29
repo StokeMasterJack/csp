@@ -4,7 +4,7 @@ import com.google.common.collect.Iterators;
 import com.smartsoft.csp.ast.Prefix;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.ast.Var;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 
 import java.util.EnumSet;
 import java.util.Iterator;

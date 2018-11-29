@@ -1,4 +1,4 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 public class NSets {
 

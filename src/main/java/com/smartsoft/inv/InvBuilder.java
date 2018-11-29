@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.smartsoft.csp.ast.Space;
 import com.smartsoft.csp.util.BadVarCodeException;
-import com.smartsoft.csp.varSets.VarSet;
-import com.smartsoft.csp.varSets.VarSetBuilder;
+import com.smartsoft.csp.varSet.VarSet;
+import com.smartsoft.csp.varSet.VarSetBuilder;
 
 import java.util.Collection;
 import java.util.HashSet;

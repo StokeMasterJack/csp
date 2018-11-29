@@ -1,4 +1,4 @@
-package com.smartsoft.csp.varSets;
+package com.smartsoft.csp.varSet;
 
 import com.smartsoft.csp.ast.Ser;
 import com.smartsoft.csp.ast.Space;
@@ -35,6 +35,12 @@ public class SingletonVarSet extends VarSet {
         return vr;
     }
 
+    public int getVrId() {
+        return vr.varId;
+    }
+
+
+
     @Override
     public int getVarId(int index) throws IndexOutOfBoundsException {
         if (index == 0) return vr.varId;
@@ -51,10 +57,6 @@ public class SingletonVarSet extends VarSet {
         return this;
     }
 
-    @Override
-    public boolean containsVarId(int varId) {
-        return vr.varId == varId;
-    }
 
     @Override
     final public Space getSpace() {
@@ -62,12 +64,12 @@ public class SingletonVarSet extends VarSet {
     }
 
     @Override
-    final public int min() {
+    final public int minVrId() {
         return vr.getVarId();
     }
 
     @Override
-    final public int max() {
+    final public int maxVrId() {
         return vr.getVarId();
     }
 
@@ -87,17 +89,6 @@ public class SingletonVarSet extends VarSet {
         return false;
     }
 
-    @Override
-    public boolean containsAllVars(VarSet that) {
-        if (that == null || that.isEmpty()) {
-            return true;
-        } else if (that.size() == 1) {
-            int v = that.min();
-            return vr.varId == v;
-        } else {
-            return false;
-        }
-    }
 
 //    @Override
 //    public boolean anyIntersection(VarSet other) {
@@ -108,58 +99,7 @@ public class SingletonVarSet extends VarSet {
 //        }
 //    }
 
-    @Override
-    public VarSet minus(int varIdToRemove) {
-        if (varIdToRemove == vr.varId) return getSpace().mkEmptyVarSet();
-        return this;
-    }
 
-    @Override
-    public VarSet plus(VarSet that) {
-        if (that instanceof EmptyVarSet) {
-            return this;
-        } else if (that instanceof SingletonVarSet) {
-            SingletonVarSet singleton = that.asSingleton();
-            if (this.vr == singleton.vr) {
-                return this;
-            } else {
-                return new VarPair(this.vr, singleton.vr);
-            }
-        } else if (that instanceof VarPair) {
-            if (that.containsVar(vr)) {
-                return that;
-            } else {
-                VarSetBuilder b = that.copyToVarSetBuilder();
-                b.add(vr);
-                return b;
-            }
-        } else if (that instanceof VarSetBuilder) {
-            if (that.containsVar(vr)) {
-                return that;
-            } else {
-                VarSetBuilder b = that.copyToVarSetBuilder();
-                b.add(vr);
-                return b;
-            }
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    @Override
-    public VarSet plus(Var var) {
-        if (var == this.vr) return this;
-        return new VarPair(var, this.vr);
-    }
-
-    @Override
-    public VarSet minus(VarSet varsToRemove) {
-        if (varsToRemove.containsVarId(vr.varId)) {
-            return vr.getSpace().mkEmptyVarSet();
-        } else {
-            return this;
-        }
-    }
 
     @Override
     public VarSet immutable() {
@@ -203,13 +143,6 @@ public class SingletonVarSet extends VarSet {
     @Override
     public boolean checkMutable() {
         return false;
-    }
-
-    @Override
-    public boolean containsAllBitSet(VarSetBuilder s) {
-        if (s == null || s.isEmpty()) return true;
-        if (s.size() > 1) return false;
-        return s.containsVar(vr);
     }
 
 

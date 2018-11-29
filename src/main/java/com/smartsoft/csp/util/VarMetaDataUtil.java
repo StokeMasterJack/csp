@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.smartsoft.csp.ast.Var;
 import com.smartsoft.csp.ast.Xor;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 

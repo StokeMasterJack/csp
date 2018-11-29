@@ -2,7 +2,7 @@ package com.smartsoft.csp.ast;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;

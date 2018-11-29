@@ -1,6 +1,6 @@
 package com.smartsoft.csp.dnnf.products;
 
-import com.smartsoft.csp.varSets.VarSet;
+import com.smartsoft.csp.varSet.VarSet;
 
 import java.util.Comparator;
 
