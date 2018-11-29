@@ -2,6 +2,9 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.ast.PLConstants.*
+import com.smartsoft.csp.litImp.ImpliedLitException
+import com.smartsoft.csp.litImp.Kb
+import com.smartsoft.csp.litImp.VarImps
 import com.smartsoft.csp.ssutil.millis
 import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.varSet.VarSet
@@ -38,14 +41,14 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
     //cache computed values
 
 
-    private var _litImps: LitImps? = null
+    private var _litImps: Kb? = null
 
     private var dnnf: Exp? = null
 
     private var _bb: DynCube? = null
 
 
-    val litImps: LitImps
+    val litImps: Kb
         get() {
             if (_litImps == null) {
                 _litImps = computeLitImps()
@@ -233,9 +236,9 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
     }
 
 
-    private fun computeLitImps(): LitImps {
+    private fun computeLitImps(): Kb {
         val t1 = millis
-        val ret = LitImps.fromFormula(this)
+        val ret = Kb.fromFormula(this)
         ret.getBestXor()
         val t2 = millis
         val delta = t2 - t1

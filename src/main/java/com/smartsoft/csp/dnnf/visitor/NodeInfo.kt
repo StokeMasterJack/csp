@@ -2,11 +2,14 @@ package com.smartsoft.csp.dnnf.visitor
 
 import com.google.common.collect.HashMultiset
 import com.smartsoft.csp.ast.Exp
+import com.smartsoft.csp.ast.Space
 
 import com.smartsoft.csp.ssutil.Console.prindent
 
 
 class NodeInfo : NodeHandler() {
+
+    var space: Space? = null
 
     internal var mm: HashMultiset<Class<*>> = HashMultiset.create()
 
@@ -19,6 +22,9 @@ class NodeInfo : NodeHandler() {
     internal var nodesWithMoreThan05Vars: Int = 0
 
     override fun onHead(n: Exp) {
+        if (space == null) {
+            space = n.space
+        }
 
         mm.add(n.javaClass)
 
@@ -60,6 +66,11 @@ class NodeInfo : NodeHandler() {
         val classes = mm.elementSet()
         classes.toList().map { "${it.simpleName}: ${mm.count(it)}" }.sorted().joinToString("   ").let {
             prindent(depth, "  NodeCounts: $it")
+        }
+
+        if (space != null) {
+            println("  Node count: ${space!!._nodes.size}")
+
         }
 //        for (cls in classes) {
 //            val count = mm.count(cls)

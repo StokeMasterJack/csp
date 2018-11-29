@@ -74,7 +74,7 @@ class SatCountTest {
 
             val satCountPL = csp.satCountPL().toBigInteger()
 
-//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
             if (it.expectedSatCount != satCountPL) {
                 println("satCountPL failed on $name")
@@ -96,7 +96,7 @@ class SatCountTest {
 
                 val satCountPL = csp.satCountPL().toBigInteger()
 
-//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+                assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
                 if (it.expectedSatCount != satCountPL) {
                     println("satCountPL failed on $name")
@@ -119,7 +119,7 @@ class SatCountTest {
 
                 val satCountPL = csp.satCountPL().toBigInteger()
 
-//            assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
+                assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
                 if (it.expectedSatCount != satCountPL) {
                     println("satCountPL failed on $name")
@@ -251,7 +251,7 @@ Processing Tundra:
             val satCount = tt("  sat count") { smooth.satCount }
 
             smooth.printNodeInfo()
-            println("  Node count: ${csp.space._nodes.size}")
+
 
             assertEquals(it.expectedSatCount, satCount, "SatCount Failed on $name")
 
@@ -314,6 +314,7 @@ Processing Tundra:
             val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
 
             smooth.printNodeInfo(1)
+
             assertEquals(it.expectedSatCount, satCount)
         }
     }

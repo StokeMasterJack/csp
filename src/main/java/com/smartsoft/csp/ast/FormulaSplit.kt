@@ -1,5 +1,7 @@
 package com.smartsoft.csp.ast
 
+import com.smartsoft.csp.litImp.VarImps
+
 class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: VarImps? = null) {
 
 
@@ -37,7 +39,7 @@ class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: Var
     fun turbo(sign: Boolean): Boolean = Space.config.cspTurbo && decision != null && decision.hasImps(sign)
 
     fun mkCsp(sign: Boolean): Csp {
-        return if (turbo(sign)) {
+        return if (true && turbo(sign)) {
             mkCspTurbo(sign)
         } else {
             mkCspSimple(sign);
@@ -56,6 +58,7 @@ class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: Var
         checkNotNull(decision)
 
         val cube: ConditionOn = decision.impsCube(sign)
+
 
 //        println("mkCspTurbo decisionVar: ${decisionVar} cube:${cube.litCount}:${cube}")
 

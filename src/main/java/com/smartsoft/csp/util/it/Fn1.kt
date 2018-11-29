@@ -19,7 +19,6 @@ typealias VarFn = (Var) -> Var;
 typealias Entry = IndexedEntry<Exp>
 
 
-
 fun Iterable<Exp>.flipAll(): Iterable<Exp> = transform(Fn.flipper)
 
 fun Iterable<Exp>.transform(f: ExpFn): Iterable<Exp> {
@@ -130,6 +129,7 @@ class EntryToLit : (Entry) -> Lit {
 }
 
 
+
 object EntryIterTo {
 
     fun litIt(iter1: Iterator<Entry>): LitIt = IterTo.it(iter1, EntryToLit())
@@ -207,9 +207,6 @@ object Ex {
 enum class ContentModel {
     AllLits, AllComplex, Mixed, Empty, Unknown
 }
-
-
-
 
 
 enum class Structure {
