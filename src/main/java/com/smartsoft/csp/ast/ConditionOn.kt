@@ -4,8 +4,6 @@ import com.smartsoft.csp.dnnf.products.Cube
 
 interface ConditionOn {
 
-    fun conditionThat(that: Exp): Exp;
-
     val space: Space
         get() = when (this) {
             is Lit -> this.space
@@ -13,4 +11,14 @@ interface ConditionOn {
             else -> throw IllegalStateException()
         }
 
+
+    val litCount: Int
+        get() = when (this) {
+            is Lit -> 1
+            is Cube -> this.size
+            else -> throw IllegalStateException()
+        }
+
+
 }
+

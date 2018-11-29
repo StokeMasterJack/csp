@@ -24,4 +24,6 @@ data class SpaceConfig(
         val log: CfgLog = CfgLog(),
         val dnnfCompile: CfgDnnfCompile = CfgDnnfCompile()
 
-)
+) {
+    val cspTurbo: Boolean = true
+}

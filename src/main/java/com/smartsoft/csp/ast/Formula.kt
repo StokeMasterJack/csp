@@ -98,8 +98,8 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
             }
 
             fun decisionSplitSatCount(): Long {
-                val decisionVar: Var = li.getBestVar()
-                val split = FormulaSplit(this, decisionVar)
+                val best: VarImps = li.getBestVarImps()
+                val split = FormulaSplit(this, best)
                 return split.plSatCount()
             }
 
@@ -143,8 +143,8 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
             return XorSplit(this, xor2).isSat
         }
 
-        val vr = li.getBestVar()
-        return FormulaSplit(this, vr).isSat
+        val best = li.getBestVarImps()
+        return FormulaSplit(this, best).isSat
     }
 
     override fun print(heading: String) {
@@ -299,9 +299,9 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
             return XorSplit(this, xor).toDnnf()
         }
 
-        val vr = li.getBestVar()
+        val best: VarImps = li.getBestVarImps()
 
-        return FormulaSplit(this, vr).toDnnf()
+        return FormulaSplit(this, best).toDnnf()
 
 
     }

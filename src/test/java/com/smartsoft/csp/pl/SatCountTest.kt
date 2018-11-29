@@ -19,6 +19,11 @@ import kotlin.test.assertEquals
  *      cubes
  *      serialize tiny dnnf
  *      parse tiny dnnf
+ *
+ *      41s for whole thing
+ *      43s addConstraintLitOrNotClause1
+ *      42s addConstraintLitOrNotClause2
+ *      42s addConstraintLitOrNotClause1
  */
 class SatCountTest {
 

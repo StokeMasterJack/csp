@@ -45,6 +45,7 @@ enum class CspSample(
     //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564
     //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564
     //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564 Node count: 143206
+    //NodeCounts: CubeExp: 756   DAnd: 4702   DOr: 1858   DcOr: 235   Lit: 1564 Node count: 143145
     EfcOriginal("efcOriginal/factory.txt", expectedSatCount = "262420340940321044675939268"),
 
     EfcProdFactoryRules("g/ProdFactoryRules.txt", expectedSatCount = "529696075773177406915015081985"),

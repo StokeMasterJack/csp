@@ -949,6 +949,13 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
                 vars.size
         }
 
+    val isOrVv: Boolean
+        get() = isVv && isOr
+
+    val isOrPair: Boolean
+        get() = isOr && isPair
+
+
     val isVv: Boolean
         get() = this is PosComplexMultiVar && _args.size == 2 && _args[0] is Lit && _args[1] is Lit
 
@@ -2174,13 +2181,24 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             if (this is Not && arg.isClause) {
                 val b = ArgBuilder(space, Op.And)
                 for (lit in arg.args) {
-                    b.addLit(lit.asLit.flipLit)
+                    b.addLit(lit.asLit.flp)
                 }
                 return b.mk().asCubeExp
             } else {
                 throw IllegalStateException()
             }
 
+        }
+
+    val notClauseToDynCube: DynCube
+        get() {
+            assert(isNotClause)
+            val b = DynCube(space)
+            for (lit in arg.args) {
+                check(lit is Lit)
+                b.assign(lit.flp)
+            }
+            return b
         }
 
     val notOrToAnd: Exp
@@ -2202,7 +2220,7 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
             if (this is Not && arg.isCubeExp) {
                 val b = ArgBuilder(space, Op.Or)
                 for (lit in arg.args) {
-                    b.addLit(lit.asLit.flipLit)
+                    b.addLit(lit.asLit.flp)
                 }
                 return b.mk().asOr
             } else {
@@ -2247,16 +2265,6 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
     override fun hashCode(): Int {
         return expId
-    }
-
-    fun isAssignedValue(value: Boolean): Boolean {
-        return if (isTrue) {
-            value
-        } else if (isFalse) {
-            !value
-        } else {
-            false
-        }
     }
 
 

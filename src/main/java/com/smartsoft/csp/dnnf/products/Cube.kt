@@ -7,7 +7,7 @@ import com.smartsoft.csp.util.it.IterTo
 import com.smartsoft.csp.varSet.VarSet
 import java.util.*
 
-interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> {
+interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit>{
 
 
     override val space: Space
@@ -97,9 +97,9 @@ interface Cube : PLConstants, HasVars, VarPredicate, ConditionOn, Iterable<Lit> 
 //        serialize(a, this, cols);
 //    }
 
-    override fun conditionThat(that: Exp): Exp {
-        return that.condition(this)
-    }
+//    override fun conditionThat(that: Exp): Exp {
+//        return that.condition(this)
+//    }
 
     override fun iterator(): Iterator<Lit> = litIterator()
 

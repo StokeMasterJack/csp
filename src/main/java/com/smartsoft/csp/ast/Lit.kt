@@ -56,7 +56,7 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
     override val op: Op get() = Op.Lit
 
 
-    val flipLit: Lit
+    val flp: Lit
         get() = flip.asLit
 
     override val isSat: Boolean
@@ -392,9 +392,17 @@ class Lit(override val vr: Var, override val isPos: Boolean, expId: Int) : Exp(v
         return lpad(toString(), ' ', cols)
     }
 
-    override fun conditionThat(that: Exp): Exp {
-        return that.condition(this)
+    fun eqSign(bit: Bit): Boolean {
+        return when (bit) {
+            Bit.OPEN -> false
+            Bit.TRUE -> isPos
+            Bit.FALSE -> isNeg
+        }
     }
+
+//    override fun conditionThat(that: Exp): Exp {
+//        return that.condition(this)
+//    }
 
     override val satCountPL: Long get() = 1
 

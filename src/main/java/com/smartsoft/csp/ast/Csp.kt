@@ -253,7 +253,7 @@ class Csp @JvmOverloads constructor(
         if (cc is Not && cc.pos is Or && cc.pos.isAllLits) {
             cc.pos._args.forEach {
                 if (isFailed) return
-                assign(it.asLit.flipLit)
+                assign(it.asLit.flp)
                 if (isFailed) return
             }
             return
@@ -314,7 +314,7 @@ class Csp @JvmOverloads constructor(
         if (notClause.pos !is Or) throw IllegalArgumentException()
         for (lit2: Exp in notClause.pos._args) {
             if (lit2 !is Lit) throw IllegalArgumentException()
-            addConstraintOrVv(lit1, lit2.flipLit)
+            addConstraintOrVv(lit1, lit2.flp)
         }
     }
 

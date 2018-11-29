@@ -2,20 +2,9 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.ssutil.Strings.indent
+import com.smartsoft.csp.util.Bit
 import java.util.*
 
-
-fun Exp.litImpSimple(li: LitImps) {
-    if (isLitImp) {
-        when (this) {
-            is Or -> litImpSimple(li)
-            is Iff -> litImpSimple(li)
-            is Imp -> toOr.litImpSimple(li)
-            is Rmp -> toOr.litImpSimple(li)
-            is Nand -> toOr.litImpSimple(li)
-        }
-    }
-}
 
 private val ops: EnumSet<Op> = EnumSet.of(Op.Or, Op.Nand, Op.Imp, Op.Rmp, Op.Iff)
 
@@ -53,89 +42,54 @@ val Exp.isLitImp: Boolean
         false
     }
 
-//
-//private fun Or.litImpSimple(li: LitImps) {
-//    if (isPair) {
-//        val a1 = if (arg1.isNotClause) {
-////            println("notClause: $arg1")
-////            println("notClauseToCube: ${arg1.notClauseToCube}")
-//            arg1.notClauseToCube
-//        } else {
-//            arg1
-//        }
-//        val a2 = if (arg2.isNotClause) {
-////            println("notClause: $arg2")
-////            println("notClauseToCube: ${arg2.notClauseToCube}")
-//            arg2.notClauseToCube
-//        } else {
-//            arg2
-//        }
-//        when {
-//            a1 is Lit -> when {
-//                a2 is Lit -> {
-//                    li.imp(a1.flipLit, a2)
-//                    li.imp(a2.flipLit, a1)
-//                }
-//                a2 is Cube -> {
-////                    println(33333333)
-//                    li.imp(a1.flipLit, a2)
-//                }
-////                a2.isClause -> {println(111111);a2.args.forEach { li.imp(it.flip.asLit, a1) }}
-//            }
-//            a2 is Lit -> when {
-//                a1 is Cube -> {
-////                    println(44444444)
-//                    li.imp(a2.flipLit, a1)
-//                }
-////                a1.isClause ->  {println(111111);a1.args.forEach { li.imp(it.flip.asLit, a2) }}
-//            }
-//        }
-//    }
-//}
 
-//
-//fun Iff.litImpSimple(li: LitImps) {
-//    val a1 = if (arg1.isNotClause) arg1.notClauseToCube else if (arg1.isNotCube) arg1.notCubeToClause else arg1
-//    val a2 = if (arg2.isNotClause) arg2.notClauseToCube else if (arg2.isNotCube) arg2.notCubeToClause else arg2
-//    when {
-//        a1 is Lit -> when {
-//            a2 is Lit -> {
-//                li.imp(a1, a2)
-//                li.imp(a2.flipLit, a1.flipLit)
-//            }
-//            a2 is Cube -> li.imp(a1, a2)
-//            a2.isClause -> a2.args.forEach { li.imp(it.flip.asLit, a1.flipLit) }
-//        }
-//        a2 is Lit -> when {
-//            a1 is Cube -> li.imp(a2, a1)
-//            a1.isClause -> a1.args.forEach { li.imp(it.flip.asLit, a2.flipLit) }
-//        }
-//    }
-//}
+class Assignments(decisionLit: Lit) {
 
-
-class Assignments {
+    private var _space: Space? = null
 
     private var map: MutableMap<Var, Boolean>? = null
 
-    fun assign(vr: Var, newValue: Boolean) {
+    val space: Space get() = _space!!
+
+    init {
+        assign(decisionLit);
+    }
+
+    fun eq(o: Assignments): Boolean {
+        return Objects.equals(map, o.map)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return eq(other!! as Assignments)
+    }
+
+    @Throws(ConflictingAssignmentException::class)
+    fun assign(lit: Lit): Boolean {
+        return assign(lit.vr, lit.sign())
+    }
+
+    @Throws(ConflictingAssignmentException::class)
+    fun assign(vr: Var, newValue: Boolean): Boolean {
+        if (_space == null) _space = vr.space
         if (map == null) map = mutableMapOf()
         val oldValue = map!!.put(vr, newValue)
-        when (oldValue) {
-            null -> {
-                //new entry
-            }
-            newValue -> {
-                //dup entry
-            }
-            else -> throw ConflictingAssignmentException()
+        return when (oldValue) {
+            null -> true //new entry
+            newValue -> false //dup
+            !newValue -> throw ConflictingAssignmentException()
+            else -> throw IllegalStateException()
         }
     }
 
-    fun assignAll(cube: Cube) {
+    val isEmpty: Boolean get() = map == null || map!!.isEmpty()
+
+    fun assignAll(cube: Cube): Boolean {
+        var anyChange = false
         for (lit in cube) {
-            assign(lit.vr, lit.sign())
+            val ch = assign(lit.vr, lit.sign())
+            if (ch) anyChange = true
         }
+        return anyChange
     }
 
     fun assignToDynCube(cc: DynCube) {
@@ -147,11 +101,38 @@ class Assignments {
         }
     }
 
+    operator fun get(vr: Var): Bit {
+        return if (map == null) Bit.OPEN
+        else {
+            val b: Boolean? = map!![vr]
+            when (b) {
+                null -> Bit.OPEN
+                true -> Bit.TRUE
+                false -> Bit.FALSE
+            }
+        }
+    }
+
+    fun contains(lit: Lit): Boolean {
+        val bit = this[lit.vr]
+        return lit.eqSign(bit);
+    }
+
     val size: Int get() = map?.size ?: 0
 
     override fun toString(): String {
         if (map == null) return ""
         return map!!.entries.joinToString(" ") { "${if (it.value) "" else "!"}${it.key}" }
+    }
+
+    fun toCube(decisionLit: Lit): DynCube {
+        if (isEmpty) {
+            throw IllegalStateException()
+        }
+        val d = DynCube(space)
+        assignToDynCube(d)
+        assert(contains(decisionLit))
+        return d
     }
 
 
@@ -169,8 +150,8 @@ class ImpliedLitException(val lit: Lit) : RuntimeException() {
 
 class VarImps(val vr: Var) {
 
-    private var pImps: Assignments = Assignments()
-    private var nImps: Assignments = Assignments()
+    private var pImps: Assignments = Assignments(vr.pLit())
+    private var nImps: Assignments = Assignments(vr.nLit())
 
     val pImpCount: Int get() = pImps.size
     val nImpCount: Int get() = nImps.size
@@ -189,23 +170,44 @@ class VarImps(val vr: Var) {
                 complexNVar.size * 100 +
                 vr.vrId
 
+    fun eqImps(o: VarImps): Boolean {
+        val e1 = pImps.eq(o.pImps)
+        val e2 = nImps.eq(o.nImps)
+        return e1 && e2
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return eqImps(other!! as VarImps)
+    }
+
+    override fun hashCode(): Int {
+        var result = vr.hashCode()
+        result = 31 * result + pImps.hashCode()
+        result = 31 * result + nImps.hashCode()
+        return result
+    }
+
 
     @Throws(ImpliedLitException::class)
-    fun addPImp(lit: Lit) {
-        try {
-            pImps.assign(lit.vr, lit.sign())
+    fun addPImp(lit: Lit): Boolean {
+        return try {
+            pImps.assign(lit)
         } catch (e: ConflictingAssignmentException) {
             throw ImpliedLitException(vr.nLit())
         }
+
+
     }
 
     @Throws(ImpliedLitException::class)
-    fun addNImp(lit: Lit) {
-        try {
-            nImps.assign(lit.vr, lit.sign())
+    fun addNImp(lit: Lit): Boolean {
+        return try {
+            nImps.assign(lit)
         } catch (e: ConflictingAssignmentException) {
             throw ImpliedLitException(vr.pLit())
         }
+
+
     }
 
     override fun toString(): String {
@@ -213,7 +215,7 @@ class VarImps(val vr: Var) {
     }
 
     //not xors and not vvs
-    fun addOtherComplex(cc: Exp) {
+    fun addOtherComplex(cc: Exp): Boolean {
         assert(!cc.isVv)
         assert(!cc.isXor)
         when {
@@ -221,6 +223,8 @@ class VarImps(val vr: Var) {
             cc.varCount == 4 -> complex4Var.add(cc)
             else -> complexNVar.add(cc)
         }
+
+        return true
     }
 
 //    fun toVvs():List<Exp>{
@@ -247,71 +251,130 @@ class VarImps(val vr: Var) {
     }
 
     fun hasImps(sign: Boolean): Boolean = if (sign) pImpCount > 0 else nImpCount > 0
+
+
+    fun impsCube(sign: Boolean): ConditionOn {
+        return if (sign) {
+            pImps.toCube(vr.pLit())
+        } else {
+            nImps.toCube(vr.nLit())
+        }
+    }
+
 }
 
 
-class LitImps {
+class LitImps() {
 
     private val map: MutableMap<Var, VarImps> = mutableMapOf()
+
 
     private val xors: MutableList<Xor> = mutableListOf<Xor>()
 
     private var best: VarImps? = null
     private var bestXor: Xor? = null
 
+    constructor(complex: Array<Exp>) : this() {
+        addAll(complex)
+    }
+
     @Throws(ImpliedLitException::class)
-    fun addComplex(cc: Exp): LitImps {
-        if (cc is Or && cc.isVv) {
-            addVv(cc)
-        } else if (cc is Or && cc.isPair) {
+    fun addComplex(cc: Exp): Boolean {
+        return if (cc is Xor) {
+            addXor(cc.asXor)
+        } else if (cc.isOrVv) {
+            addVvOr(cc.asOr)
+        } else if (cc is Or && cc.isPair && cc !is Xor) {
             val a1: Exp = cc._args[0]
             val a2: Exp = cc._args[1]
             if (a1 is Lit && a2 is Cube) {
-                addConstraintOrVvs(a1, a2)
+                addConstraintLitOrCube(a1, a2)
             } else if (a1 is Cube && a2 is Lit) {
-                addConstraintOrVvs(a2, a1)
-                for (lit1 in a1) {
-                    addImp(lit1.flipLit, a2)
-                    addImp(lit1, a2.flipLit)
-                }
-            } else if (a1 is Lit && a2 is Not && a2.pos.isClause) {
-                for (lit2 in a2.pos._args) {
-                    addImp(a1.flipLit, lit2.asLit.flipLit)
-                    addImp(a1, lit2.asLit)
-                }
-
-            } else if (a1 is Not && a1.pos.isClause && a2 is Lit) {
-                addConstraintOrVvs(a2, a1)
+                addConstraintLitOrCube(a2, a1)
+            } else if (a1 is Lit && a2.isNotClause) {
+                addConstraintLitOrNotClause(a1, a2 as Not)
+            } else if (a1.isNotClause && a2 is Lit) {
+                addConstraintLitOrNotClause(a2, a1 as Not)
+            } else {
+                addOtherComplex(cc)
             }
-        } else if (cc is Xor) {
-            addXor(cc.asXor)
         } else {
             //not xors and not vvs
             addOtherComplex(cc)
         }
-
-        return this
     }
-
 
     //lit imp
-    private fun addConstraintOrVvs(lit1: Lit, cube: Cube) {
-        for (lit2: Lit in cube) {
-            addConstraintOrVv(lit1, lit2)
+    private fun addConstraintLitOrCube(lit: Lit, cube: Cube): Boolean {
+
+        var anyChange = false
+
+        //!lit imps cube
+        val nLit = lit.flp
+
+        for (cubeLit: Lit in cube) {
+            val ch = addImp(nLit, cubeLit)
+            if (ch) anyChange = true
         }
+
+        //!cube imps lit
+        for (cubeLit: Lit in cube) {
+            val ch = addImp(cubeLit.flp, lit)
+            if (ch) anyChange = true
+        }
+
+        return anyChange
     }
 
-    private fun addConstraintOrVvs(lit1: Lit, notClause: Not) {
-        if (notClause.pos !is Or) throw IllegalArgumentException()
-        for (lit2: Exp in notClause.pos._args) {
-            if (lit2 !is Lit) throw IllegalArgumentException()
-            addConstraintOrVv(lit1, lit2.flipLit)
+    private fun addConstraintLitOrNotClause(lit: Lit, notClause: Not): Boolean {
+//        return addConstraintLitOrNotClause1(lit, notClause)
+        return addConstraintLitOrNotClause2(lit, notClause)
+    }
+
+    private fun print() {
+        println(map)
+    }
+
+
+    override fun equals(other: Any?): Boolean {
+        return eq(other!! as LitImps)
+    }
+
+    private fun eq(o: LitImps): Boolean {
+        return Objects.equals(map, o.map)
+    }
+
+    private fun addConstraintLitOrNotClause1(lit: Lit, notClause: Not): Boolean {
+
+        var anyChange = false
+
+        //!lit imps cube
+        val nLit = lit.flp
+        for (clauseLit in notClause.pos.args) {
+            check(clauseLit is Lit)
+            val ch = addImp(nLit, clauseLit.flp)
+            if (ch) anyChange = true
         }
+
+        //!cube imps lit
+        for (clauseLit in notClause.pos.args) {
+            check(clauseLit is Lit)
+            val ch = addImp(clauseLit, lit)
+            if (ch) anyChange = true
+        }
+
+        return anyChange
+
+    }
+
+    private fun addConstraintLitOrNotClause2(lit: Lit, notClause: Not): Boolean {
+        val cube = notClause.notClauseToCube
+        return addConstraintLitOrCube(lit, cube)
     }
 
     private fun addConstraintOrVv(lit1: Lit, lit2: Lit) {
-        addImp(lit1.flipLit, lit2)
-        addImp(lit1, lit2.flipLit)
+        addImp(lit1.flp, lit2)
+        addImp(lit1, lit2.flp)
     }
 
 
@@ -350,6 +413,7 @@ class LitImps {
         return varImps
     }
 
+
     private fun mkXorCounts(vr: Var): VarImps {
         var varImps = map[vr]
         if (varImps == null) {
@@ -360,27 +424,28 @@ class LitImps {
     }
 
     @Throws(ImpliedLitException::class)
-    fun addImp(lit1: Lit, lit2: Lit): LitImps {
+    fun addImp(lit1: Lit, lit2: Lit): Boolean {
         val vi = mkVarImps(lit1.vr)
-        if (lit1.isPos) {
+        val ch = if (lit1.isPos) {
             vi.addPImp(lit2)
         } else {
             vi.addNImp(lit2)
         }
-
         maybeUpdateBestVar(vi)
-
-        return this
+        return ch
     }
 
+
     //not xors and not vvs
-    private fun addOtherComplex(complex: Exp) {
-        val vars = complex.vars
-        vars.forEach {
+    private fun addOtherComplex(complex: Exp): Boolean {
+        var anyChange = false
+        complex.vars.forEach {
             val vi = mkVarImps(it)
-            vi.addOtherComplex(complex)
+            val ch = vi.addOtherComplex(complex)
+            if (ch) anyChange = true
             maybeUpdateBestVar(vi)
         }
+        return anyChange
     }
 
     private fun maybeUpdateBestVar(vi: VarImps) {
@@ -389,11 +454,11 @@ class LitImps {
         }
     }
 
-    private fun addXor(xor: Xor) {
+    private fun addXor(xor: Xor): Boolean {
         for (xorChild in xor.args) {
             xorChild.vr.xorParent = xor
         }
-        xors.add(xor)
+        return xors.add(xor)
     }
 
     //after LitImps is fully populated
@@ -428,19 +493,21 @@ class LitImps {
     }
 
     @Throws(ImpliedLitException::class)
-    fun addVv(vv: Or) {
-
+    fun addVvOr(vv: Or): Boolean {
         val a1 = vv._args[0]
         val a2 = vv._args[1]
 
-        if (a1 !is Lit) throw IllegalArgumentException()
-        if (a2 !is Lit) throw IllegalArgumentException()
 
-        addImp(a1.flipLit, a2)
-        addImp(a2.flipLit, a1)
+        check(a1 is Lit)
+        check(a2 is Lit)
+
+        val ch1 = addImp(a1.flp, a2)
+        val ch2 = addImp(a2.flp, a1)
+
+        return ch1 || ch2
     }
 
-    fun bestVarImps(): VarImps {
+    fun getBestVarImps(): VarImps {
         return best!!
     }
 
@@ -459,7 +526,7 @@ class LitImps {
     }
 
     fun getBestVar(): Var {
-        return bestVarImps().vr
+        return getBestVarImps().vr
     }
 
 //    fun bestXor(): Xor? {
@@ -487,10 +554,10 @@ class LitImps {
     companion object {
 
         @Throws(ImpliedLitException::class)
-        fun fromFormula(formula: Formula): LitImps = LitImps().addAll(formula._args)
+        fun fromFormula(formula: Formula): LitImps = LitImps(formula._args)
 
         @Throws(ImpliedLitException::class)
-        fun computeBest(formula: Formula): VarImps? = fromFormula(formula).bestVarImps()
+        fun computeBest(formula: Formula): VarImps? = fromFormula(formula).getBestVarImps()
 
         @Throws(ImpliedLitException::class)
         fun computeBestVar(formula: Formula): Var? = computeBest(formula)?.vr
