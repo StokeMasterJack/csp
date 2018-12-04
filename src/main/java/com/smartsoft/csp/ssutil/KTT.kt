@@ -14,12 +14,15 @@ tt.t("compileDnnf");
 val x = profile{ foo() }
  */
 
+
 inline fun <T> tt(lbl: String? = null, block: () -> T): T {
     val t1 = millis
     val ret = block()
     val t2 = millis
-    val prefix = if (lbl == null) "" else "$lbl "
-    println("${prefix}delta: ${t2 - t1}")
+    if (KTT.ttLogging) {
+        val prefix = if (lbl == null) "" else "$lbl "
+        println("${prefix}delta: ${t2 - t1}")
+    }
     return ret
 }
 
@@ -33,6 +36,10 @@ class KTT {
         ktlog.info("$lbl delta: $delta")
         t = System.currentTimeMillis()
         return delta
+    }
+
+    companion object {
+        val ttLogging = false
     }
 
 

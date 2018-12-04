@@ -233,6 +233,8 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     }
 
 
+    val xorsDeepCount: Int get() = xorsDeep.size
+
     val xorsDeep: List<Exp>
         get() {
             if (isConstant || isLit)
@@ -1732,12 +1734,12 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
     }
 
 
-    fun project(outVars: Set<Var>): Exp {
-        val space = _space
-        val b = space.newMutableVarSet()
-        b.addVars(outVars)
-        return project(b.build())
-    }
+//    fun project(outVars: Set<Var>): Exp {
+//        val space = _space
+//        val b = space.newMutableVarSet()
+//        b.addVars(outVars)
+//        return project(b.build())
+//    }
 
     /**
      * Inportant: projection does not preserve *determinism*.
@@ -1889,6 +1891,10 @@ abstract class Exp(override val space: Space, val expId: ExpId) : PLConstants, C
 
 
     open fun toDnnf(): Exp {
+        throw UnsupportedOperationException(javaClass.name + ": " + this)
+    }
+
+    open fun addParent(parent: PosComplexMultiVar) {
         throw UnsupportedOperationException(javaClass.name + ": " + this)
     }
 

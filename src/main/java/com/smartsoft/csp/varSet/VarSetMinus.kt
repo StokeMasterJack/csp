@@ -3,6 +3,7 @@ package com.smartsoft.csp.varSet
 import com.smartsoft.csp.ast.Exp
 import com.smartsoft.csp.ast.Var
 import com.smartsoft.csp.ast.VarId
+import com.smartsoft.csp.bitSet.BitSet32
 import com.smartsoft.csp.bitSet.BitSet64
 
 fun minus(s1: VarSet, varCode: String): VarSet {
@@ -37,39 +38,39 @@ fun minus(s1: VarPair, vr: Var): VarSet = when {
 fun minus(b: VarSetBuilder, vr: Var): VarSet = b.copyToVarSetBuilder(Adjust.rem(vr))
 fun minus(b: VarSetBuilder, vrId: VarId): VarSet = minus(b, b.space.getVar(vrId))
 
-fun minus(s1: VarNSet, vr: Var): VarSet {
-    return if (!s1.containsVar(vr)) {
-        s1
-    } else {
-
-        val aWordIndex = s1.getActiveWordIndexForVar(vr)
-        val oldWord = s1.words[aWordIndex]
-        val mask = VarSets.getMaskForLongWord(vr)
-
-        val newWord = oldWord and mask.inv()
-
-        val activeWords = if (newWord == 0L) {
-            s1.activeWords.minus(vr.varIndex)
-        } else {
-            s1.copyActiveWords()
-        }
-        val words: LongArray = if (newWord == 0L) {
-            s1.words.filter { it != 0L }.toLongArray()
-        } else {
-            val words = s1.copyWords()
-            words[aWordIndex] = newWord
-            words
-        }
-
-
-        VarNSet(s1.varSpace, activeWords = activeWords, words = words)
-
-
-    }
-
-
-}
-
+//fun minus(s1: VarNSet, vr: Var): VarSet {
+//    return if (!s1.containsVar(vr)) {
+//        s1
+//    } else {
+//
+//        val aWordIndex = s1.getActiveWordIndexForVar(vr)
+//        val oldWord = s1.words[aWordIndex]
+//        val mask = VarSets.getMaskForLongWord(vr)
+//
+//        val newWord = oldWord and mask.inv()
+//
+//        val activeWords = if (newWord == 0L) {
+//            s1.activeWords.minus(vr.varIndex)
+//        } else {
+//            s1.copyActiveWords()
+//        }
+//        val words: LongArray = if (newWord == 0L) {
+//            s1.words.filter { it != 0L }.toLongArray()
+//        } else {
+//            val words = s1.copyWords()
+//            words[aWordIndex] = newWord
+//            words
+//        }
+//
+//
+//        VarNSet(s1.varSpace, activeWords = activeWords, words = words)
+//
+//
+//    }
+//
+//
+//}
+//
 
 fun minus(s1: VarSet, s2: VarSet): VarSet {
     return when (s1) {
@@ -168,19 +169,32 @@ fun minus(s1: VarSetBuilder, s2: VarPair): VarSet {
 
 
 fun minus(s1: VarSetBuilder, s2: VarSetBuilder): VarSet {
-    s1.calculateSize();
-    s2.calculateSize();
+//    s1.maybeRecomputeSize();
+//    s2.maybeRecomputeSize();
     assert(s1.wordCount == s2.wordCount)
     val words = LongArray(s1.wordCount)
-    s1.wordIndexes.forEach {
+    val awi = BitSet32()
+
+//    s1.awi.forEach {
+//        val w1: Long = s1.words[it]
+//        val w2: Long = s2.words[it]
+//        val w: Long = BitSet64.minus(w1, w2)
+//        words[it] = w
+//        if (w == 0L) {
+//            awi.add(it)
+//        }
+//    }
+
+    s1.wordRange.forEach {
         val w1: Long = s1.words[it]
         val w2: Long = s2.words[it]
         val w: Long = BitSet64.minus(w1, w2)
         words[it] = w
+        if (w != 0L) {
+            awi.add(it)
+        }
     }
-    val ret = VarSetBuilder(s1.varSpace, words)
-    ret.calculateSize()
-    return ret;
+    return VarSetBuilder(s1.varSpace, words, awi)
 }
 
 /*

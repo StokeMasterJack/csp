@@ -11,6 +11,30 @@ import kotlin.test.assertTrue
 class VarSet32Test {
 
     @Test
+    fun testSize() {
+        val sp = Space("a b c d e f g h i j k")
+        val b0 = sp.mkVarSet("")
+        val b1 = sp.mkVarSet("a")
+        val b2 = sp.mkVarSet("a b")
+        val b3 = sp.mkVarSet("a b c")
+        val b4 = sp.mkVarSet("a b c d")
+
+        assertEquals(EmptyVarSet::class, b0::class)
+        assertEquals(SingletonVarSet::class, b1::class)
+        assertEquals(VarPair::class, b2::class)
+        assertEquals(VarSetBuilder::class, b3::class)
+        assertEquals(VarSetBuilder::class, b4::class)
+
+        assertEquals(0, b0.size)
+        assertEquals(1, b1.size)
+        assertEquals(2, b2.size)
+        assertEquals(3, b3.size)
+        assertEquals(4, b4.size)
+
+
+    }
+
+    @Test
     fun testEquals() {
         val sp = Space("a b c d e")
 
@@ -95,6 +119,31 @@ class VarSet32Test {
     }
 
     @Test
+    fun testPlus() {
+        val sp = Space("a b c d e f g h i j k")
+        val b1 = sp.mkVarSet("a b")
+        val b2 = sp.mkVarSet("c d")
+        val b3 = sp.mkVarSet("a b c d")
+        val b4 = sp.mkVarSet("c d e f g h i")
+
+
+        val b12 = b1.plus(b2)
+        val b21 = b2.plus(b1)
+
+        assertEquals(b12, b3)
+        assertEquals(b21, b3)
+        assertEquals(4, b12.size)
+        b12.assertSer("a b c d")
+
+
+        val b3Plus4 = b3.plus(b4)
+
+        b3Plus4.assertSer("a b c d e f g h i")
+
+    }
+
+
+    @Test
     fun testMinusPlus() {
         val sp = Space("a b c d e f g h i j k")
         val b1 = sp.mkVarSet("a b")
@@ -102,8 +151,10 @@ class VarSet32Test {
         val b3 = sp.mkVarSet("a b c d")
         val b4 = sp.mkVarSet("c d e f g h i")
 
+
         val b12 = b1.plus(b2)
         val b21 = b2.plus(b1)
+
         assertEquals(b12, b3)
         assertEquals(b21, b3)
         assertEquals(4, b12.size)

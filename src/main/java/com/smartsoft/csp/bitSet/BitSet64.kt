@@ -2,10 +2,10 @@ package com.smartsoft.csp.bitSet
 
 import com.smartsoft.csp.ast.bitCount
 
-typealias Entry = IndexedValue<Long>
-typealias EntryFilter = (e: Entry) -> Boolean
+typealias WordEntry = IndexedValue<Long>
+typealias EntryFilter = (e: WordEntry) -> Boolean
 
-fun entryFilterIdentity(e: Entry): Boolean = true
+fun entryFilterIdentity(e: WordEntry): Boolean = true
 
 class BitSet64 {
 
@@ -56,16 +56,17 @@ class BitSet64 {
         fun contains(word: Long, hasIndex: HasIndex): Boolean = contains(word, hasIndex.index)
 
 
-        @JvmStatic
-        fun activeWords(words: LongArray): BitSet32 {
-            val b = mutableBitSet32Of()
-            for (i in words.indices) {
-                if (words[i] != 0L) {
-                    b.add(i)
-                }
-            }
-            return b
-        }
+//        @JvmStatic
+//        fun activeWords(words: LongArray): BitSet32 {
+//            val b = bitSet32Of()
+//
+//            for (i in words.indices) {
+//                if (words[i] != 0L) {
+//                    b.add(i)
+//                }
+//            }
+//            return b
+//        }
 
         @JvmStatic
         fun size(word: Long): Int = word.bitCount
@@ -76,6 +77,22 @@ class BitSet64 {
         @JvmStatic
         fun isEmpty(word: Long): Boolean = word == 0L;
 
+
+        @JvmStatic
+        fun minBit(word: Long): Int {
+            return java.lang.Long.numberOfTrailingZeros(word)
+        }
+
+        @JvmStatic
+        fun maxBit(word: Long): Int {
+            return 63 - java.lang.Long.numberOfLeadingZeros(word)
+        }
+
+        @JvmStatic
+        fun computeMajorIndex(wordIndex: Int, bitIndex: Int): Int {
+            return (wordIndex shl 6) + bitIndex
+        }
     }
+
 
 }

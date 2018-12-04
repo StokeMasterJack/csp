@@ -5,7 +5,7 @@ import com.smartsoft.csp.ast.PLConstants.*
 import com.smartsoft.csp.litImp.ImpliedLitException
 import com.smartsoft.csp.litImp.Kb
 import com.smartsoft.csp.litImp.VarImps
-import com.smartsoft.csp.ssutil.millis
+import com.smartsoft.csp.ssutil.prident
 import com.smartsoft.csp.util.it.Structure
 import com.smartsoft.csp.varSet.VarSet
 
@@ -21,6 +21,13 @@ sealed class FccState {
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
+
+    val fccCount: Int
+        get() = when (this) {
+            is Fcc -> 1
+            is Fccs -> this.args.size
+            is Open -> -1
+        }
 }
 
 class Open : FccState()
@@ -40,21 +47,20 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
     //cache computed values
 
-
-    private var _litImps: Kb? = null
-
     private var dnnf: Exp? = null
 
     private var _bb: DynCube? = null
 
+    val litImps: Kb get() = lazyLitImps.value
 
-    val litImps: Kb
-        get() {
-            if (_litImps == null) {
-                _litImps = computeLitImps()
-            }
-            return _litImps!!
-        }
+    private val lazyLitImps: Lazy<Kb> = lazy { Kb.computeFromFormula(this) }
+
+    fun printXorInfo() {
+        println("Formula.xorInfo:")
+        println("   xors: ${xors}")
+        println("   xorsDeep: $xorsDeep")
+        println("   xorsDeepMinusTop: ${xorsDeep.map { it as Xor }.filterNot { it.isTop }.map { it.prefix }}")
+    }
 
 
     fun getTopXorSplit(): Xor? {
@@ -68,9 +74,13 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
     }
 
+    val xors: List<Exp> get() = Csp.computeXorConstraints(argIt)
+
     fun getXorConstraints(): List<Exp> {
         return Csp.computeXorConstraints(argIt)
     }
+
+    val xorCount: Int = xors.size
 
     override val satCountPL: Long
         get() {
@@ -91,7 +101,7 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
             val li = litImps
 
             fun bestXorSplitSatCount(): Long? {
-                val xor1: Xor? = li.getBestXor()
+                val xor1: Xor? = li.bestXor
                 return if (xor1 != null) {
                     val split = XorSplit(this, xor1.asXor)
                     split.plSatCount()
@@ -138,10 +148,10 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
         val li = try {
             litImps
         } catch (e: ImpliedLitException) {
-            return Csp(this.args, e.lit).isSat()
+            return Csp(this, e.lit).isSat()
         }
 
-        val xor2 = li.getBestXor()
+        val xor2 = li.bestXor
         if (xor2 != null) {
             return XorSplit(this, xor2).isSat
         }
@@ -159,12 +169,13 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
     private fun toDnnfTopXorSplit(): Exp? {
         val xor = getTopXorSplit()
         return if (xor != null) {
-//            println("topXorSplit[${xor.prefix}]..")
+//            prident(depth, "topXorSplit[${xor.prefix}]..")
             xorSplitToDnnf(xor)
         } else {
             null
         }
     }
+
 
     private fun xorSplitToDnnf(xor: Exp): Exp {
         val split = XorSplit(this, xor.asXor)
@@ -203,6 +214,9 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
     override fun toDnnf(): Exp {
         if (dnnf == null) {
             dnnf = toDnnfInternal()
+//            println("cacheMiss")
+        } else {
+//            println("cacheHit")
         }
         assert(dnnf != null)
         assert(dnnf!!.isDnnf) { dnnf!! }
@@ -211,6 +225,7 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
     private fun toDnnfInternal(): Exp {
 
+//        println("depth = ${depth}")
         val topXorSplit = toDnnfTopXorSplit()
 
         if (topXorSplit != null) {
@@ -218,32 +233,18 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
         }
 
         if (fcc is Open) {
-//            println("computeComplexFccs..")
+//            prident(depth, "computeComplexFccs..")
             fcc = computeFccs()
+//            prident(depth, "  fccCount[${fcc.fccCount}]")
         }
 
-        return if (fcc is Fcc) {
-//            println("fccToDnnf..")
-            fccToDnnf()
-        } else if (fcc is Fccs) {
-//            println("fccsToDnnf..")
-            fccsToDnnf(fcc as Fccs)
-        } else {
-            throw IllegalStateException()
+        return when (fcc) {
+            is Fcc -> fccToDnnf()
+            is Fccs -> fccsToDnnf(fcc as Fccs)
+            else -> throw IllegalStateException()
         }
 
 
-    }
-
-
-    private fun computeLitImps(): Kb {
-        val t1 = millis
-        val ret = Kb.fromFormula(this)
-        ret.getBestXor()
-        val t2 = millis
-        val delta = t2 - t1
-        globalDelta += delta
-        return ret
     }
 
 
@@ -254,7 +255,7 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
         _args.forEach { println("    $it") }
         println("  </constraints>")
         println("  <litImps>")
-        computeLitImps().varImpsList.forEach { println("    $it") }
+        litImps.varImpsList.forEach { println("    $it") }
         println("  </litImps>")
         println("</formula>")
     }
@@ -287,22 +288,24 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
 
     fun fccToDnnf(): Exp {
 
-        val li = try {
+        val kb: Kb = try {
             litImps
         } catch (e: ImpliedLitException) {
-            val csp = Csp(args, e.lit)
+//            prident(depth, "ImpliedLitException: ${e.lit}")
+            val csp = Csp(this, e.lit)
             return csp.toDnnf()
         }
 
 
-        val xor = li.getBestXor()
+        val xorInfo = kb.bestXorInfo
+//        prident(depth, "xorCount: $xorCount  xorDeepCount: $xorsDeepCount  BestXor: $xorInfo")
 
-
-        if (xor != null) {
-            return XorSplit(this, xor).toDnnf()
+        if (xorInfo != null) {
+            return XorSplit(this, xorInfo.xor).toDnnf()
         }
 
-        val best: VarImps = li.getBestVarImps()
+        val best: VarImps = kb.getBestVarImps()
+//        best.printLitImpsLite(depth)
 
         return FormulaSplit(this, best).toDnnf()
 
@@ -312,14 +315,15 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
     fun fccsToDnnf(fcc: Fccs): Exp {
         val b = ArgBuilder(space, Op.DAnd)
         for (f in fcc.args) {
+            f.addParent(this)
             val d = f.toDnnf()
+
             if (d.isFalse) return d
             if (d.isTrue) continue
             b.addExp(d)
         }
         return b.mk()
     }
-
 
     override fun isDirectlyRelated(c1: Int, c2: Int): Boolean {
         val complex1 = _args[c1]
@@ -506,6 +510,7 @@ class Formula(space: Space, expId: Int, args: Array<Exp>, var fcc: FccState = Op
                 )
                 bFcc.structure = Structure.Fcc
                 val fccExp = bFcc.mk()
+                fccExp.addParent(this)
                 list.add(fccExp)
             }
             return Fccs(list)

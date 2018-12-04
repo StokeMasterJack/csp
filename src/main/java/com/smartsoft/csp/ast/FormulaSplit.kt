@@ -2,6 +2,7 @@ package com.smartsoft.csp.ast
 
 import com.smartsoft.csp.litImp.VarImps
 
+
 class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: VarImps? = null) {
 
 
@@ -50,20 +51,19 @@ class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: Var
     fun mkCspSimple(sign: Boolean): Csp {
         val lit = decisionVar.lit(sign)
 //        println("mkCspSimple decisionVar: ${decisionVar} lit:${lit}")
-        return Csp(formula = formula.argIt, condition = lit)
+        return Csp(formula = formula, condition = lit)
     }
 
 
     fun mkCspTurbo(sign: Boolean): Csp {
         checkNotNull(decision)
 
+
+//        println("best = pImpCount: ${decision.pImpCount}  nImpCount: ${decision.nImpCount}  ")
         val cube: ConditionOn = decision.impsCube(sign)
+//        println("  ${decision.vr.lit(sign)} cube[$sign]: $cube")
 
-
-//        println("mkCspTurbo decisionVar: ${decisionVar} cube:${cube.litCount}:${cube}")
-
-
-        return Csp(formula = formula.argIt, condition = cube)
+        return Csp(formula = formula, condition = cube)
     }
 
 
@@ -76,3 +76,5 @@ class FormulaSplit(val formula: Formula, val decisionVar: Var, val decision: Var
     }
 
 }
+
+

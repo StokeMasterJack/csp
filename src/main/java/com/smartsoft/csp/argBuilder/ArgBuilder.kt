@@ -442,7 +442,6 @@ constructor(val sp: Space, override var op: Op = Op.And, var flatten: Boolean = 
             Op1.Or -> mkOr()
             Op1.Xor -> mkXor()
         }
-
         return retVal;
     }
 

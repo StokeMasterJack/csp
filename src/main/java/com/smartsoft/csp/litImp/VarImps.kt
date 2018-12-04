@@ -2,6 +2,7 @@ package com.smartsoft.csp.litImp
 
 import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.ssutil.Strings
+import com.smartsoft.csp.ssutil.prident
 
 class VarImps(val vr: Var) {
 
@@ -18,12 +19,15 @@ class VarImps(val vr: Var) {
     val complexNVar: MutableList<Exp> = mutableListOf()  //not xors and not vvs
 
     val score: Int
-        get() = Math.min(pImpCount, nImpCount) * 1000 +
-                impCount * 1000 +
-                complex3Var.size * 500 +
-                complex4Var.size * 300 +
-                complexNVar.size * 100 +
+        get() = avgImpCount * 10000 +
+                complex3Var.size * 100 +
+                complex4Var.size * 50 +
+                complexNVar.size * 20 +
                 vr.vrId
+
+    val minImpCount: Int get() = Math.min(pImpCount, nImpCount)
+    val maxImpCount: Int get() = Math.max(pImpCount, nImpCount)
+    val avgImpCount: Int get() = impCount / 2
 
     val space: Space get() = vr.space
 
@@ -100,6 +104,25 @@ class VarImps(val vr: Var) {
         println("${Strings.indent(depth)}  complexNvar:${complexNVar.size}")
         println("${Strings.indent(depth)}  score:${score}")
         println()
+    }
+
+
+    fun printLitImps(depth: Int) {
+        println("${Strings.indent(depth)}vr: $vr")
+        println("${Strings.indent(depth)}  impCount:${impCount}")
+        println("${Strings.indent(depth)}  minImpCount:${minImpCount}")
+        println("${Strings.indent(depth)}  maxImpCount:${maxImpCount}")
+        println("${Strings.indent(depth)}  avgImpCount:${avgImpCount}")
+        println("${Strings.indent(depth)}  pImps:${pImpCount}:${pImps}")
+        println("${Strings.indent(depth)}  nImps:${nImpCount}:${nImps}")
+        println("${Strings.indent(depth)}  score:${score}")
+        println()
+    }
+
+    fun printLitImpsLite(depth: Int) {
+        prident(depth, "DecisionVar: $vr  score:${score}")
+        prident(depth, "  pImps:${pImps}")
+        prident(depth, "  nImps:${nImps}")
     }
 
     fun imps(sign: Boolean): Assignments {

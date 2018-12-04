@@ -1,15 +1,15 @@
 package com.smartsoft.csp.ast
 
 import com.google.common.collect.ImmutableSet
-import com.smartsoft.csp.util.it.ExpFn
-import com.smartsoft.csp.util.it.ExpIt
-import com.smartsoft.csp.util.it.Fn
-import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.argBuilder.ArgBuilder
 import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.dnnf.products.Cube
 import com.smartsoft.csp.util.Bit
 import com.smartsoft.csp.util.DynComplex
+import com.smartsoft.csp.util.it.ExpFn
+import com.smartsoft.csp.util.it.ExpIt
+import com.smartsoft.csp.util.it.Fn
+import com.smartsoft.csp.util.it.It
 import com.smartsoft.csp.varSet.VarSet
 
 class ExpFactory(val space: Space) {
@@ -125,7 +125,7 @@ class ExpFactory(val space: Space) {
         return mkBinaryOr(arg1, arg2);
     }
 
-    fun mkXor(vararg args: Exp,condition: ConditionOn): Exp {
+    fun mkXor(vararg args: Exp, condition: ConditionOn): Exp {
         val b = this.argBuilder(Op.Xor)
         for (arg1 in args) {
             val arg2 = arg1.condition(condition)

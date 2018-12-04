@@ -1232,6 +1232,7 @@ public class Space implements PLConstants {
         return ImmutableList.copyOf(retVal);
     }
 
+
     public Exp getXor(String prefix) {
         VarSet vars = getVars(prefix);
         return mkXor(vars);

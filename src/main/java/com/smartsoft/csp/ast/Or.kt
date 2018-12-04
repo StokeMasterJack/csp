@@ -123,8 +123,6 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     }
 
 
-
-
     fun canVVSimplifyLocal(ll: PosComplexMultiVar.LL?): Boolean {
         if (ll == null) return false
         if (ll.tt()) {
@@ -193,7 +191,6 @@ open class Or(space: Space, expId: Int, fixedArgs: Array<Exp>) : PosComplexMulti
     }
 
     override val satCountPL: Long
-
         get() {
             val decisionVar = decide()
 

@@ -92,9 +92,10 @@ fun plus(s1: VarSetBuilder, s2: VarSetBuilder): VarSet {
     return VarSetBuilder(s1.varSpace, words)
 }
 
-fun plusVarSets(space: Space, that: Array<VarSet>): VarSet {
+fun plusVarSets(space: Space, that: Array<VarSet?>): VarSet {
     val b = space.varSetBuilder()
     for (vars in that) {
+        if (vars == null) continue
         b.addVarSet(vars)
     }
     return b.build()

@@ -120,6 +120,6 @@ class XorSplit(val formula: Formula, val xor: Xor) {
     //unique tp child level:trueVar
     internal fun mkCsp(trueVar: Var): Csp {
         val xorCube = XorCube(xor, trueVar)
-        return Csp(formula = formula.argIt, condition = xorCube)
+        return Csp(formula = formula, condition = xorCube)
     }
 }

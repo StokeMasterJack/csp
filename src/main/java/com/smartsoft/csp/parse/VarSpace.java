@@ -366,7 +366,16 @@ public class VarSpace implements PLConstants, Iterable<Var> {
 
     public int getWordCount() {
         int varCount = getVarCount();
-        return (varCount >>> 6) + 1;
+        int wc = (varCount >>> 6) + 1;
+        if ((varCount % 64) == 0) {
+            return wc - 1;
+        } else {
+            return wc;
+        }
+    }
+
+    public int getMaxWordIndex() {
+        return getWordCount() - 1;
     }
 
     public final long bitMask(int varId) {

@@ -12,6 +12,7 @@ import com.smartsoft.csp.varSet.SingletonVarSet;
 import com.smartsoft.csp.varSet.VarPair;
 import com.smartsoft.csp.varSet.VarSet;
 import com.smartsoft.csp.varSet.VarSetBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -67,17 +68,17 @@ public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, 
             return varPair;
         }
 
-        assert prev.vr1 == this;
-        if (prev.vr2.varId == var2.varId) {
+        assert prev.getVr1() == this;
+        if (prev.getVr2().varId == var2.varId) {
             return prev;
         }
 
-        if (prev.next == null) {
-            prev.next = new VarPair(this, var2);
-            return prev.next;
+        if (prev.getNext() == null) {
+            prev.setNext(new VarPair(this, var2));
+            return prev.getNext();
         }
 
-        return mkPartner(bucket, prev.next, var2);
+        return mkPartner(bucket, prev.getNext(), var2);
 
     }
 
@@ -247,6 +248,10 @@ public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, 
         return varCode.is(prefix);
     }
 
+    public boolean hasPrefix(String prefix) {
+        return varCode.is(prefix);
+    }
+
     @Override
     public boolean is(Prefix prefix) {
         return varCode.is((prefix));
@@ -274,10 +279,6 @@ public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, 
     @Override
     public String getPrefix() {
         return varCode.getPrefix();
-    }
-
-    public boolean hasPrefix() {
-        return varCode.hasPrefix();
     }
 
     public String getPrefixCode() {
@@ -531,23 +532,6 @@ public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, 
         return isXorChild();
     }
 
-    /**
-     * based c *initial* xor parent
-     */
-    public VarSet getAllXorSiblingsOld() {
-        assert isXorChild();
-        Xor xorParent = getXorParentInitial();
-        Iterable<Exp> args = xorParent.getArgs();
-
-        VarSetBuilder b = getSpace().newMutableVarSet();
-        for (Exp arg : args) {
-            assert arg.isPosLit();
-            Var var = arg.getVr();
-            b.add(var);
-        }
-
-        return b.build();
-    }
 
     /**
      * based c VarMeta
@@ -573,5 +557,9 @@ public class Var implements IVar, HasVarId, HasIndex, Comparable<Var>, HasCode, 
 
     public void setMeta(MetaVar meta) {
         this.meta = meta;
+    }
+
+    public boolean has(@NotNull String prefix) {
+        return is(prefix);
     }
 }

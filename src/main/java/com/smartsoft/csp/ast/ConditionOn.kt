@@ -19,6 +19,10 @@ interface ConditionOn {
             else -> throw IllegalStateException()
         }
 
+    val className: String get() = this::class.simpleName!!
+
+    val ser: String get() = "$className:$litCount:${toString()}"
+
 
 }
 

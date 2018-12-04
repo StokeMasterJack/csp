@@ -12,6 +12,10 @@ public class VarSets {
         return varIndex >>> 6;
     }
 
+    public static int getWordIndexForVarIndex(int varIndex) {
+        return varIndex >>> 6;
+    }
+
     public static int getWordIndexForVar(Var vr) {
         int varIndex = vr.getVarIndex();
         return varIndex >>> 6;
@@ -72,13 +76,13 @@ public class VarSets {
         return word3;
     }
 
-//    public static boolean isBitSet(int word, int varId) {
-//        int mask = getMaskForIntWord(varId);
-//        return (word & (mask)) != 0;
-//    }
+    public static boolean isBitSet(int word, int varId) {
+        int mask = getMaskForIntWord(varId);
+        return (word & (mask)) != 0;
+    }
 
     public static IntIterator bitIterator(long word) {
-        return new BitIteratorLong(word);
+        return new VarSetBuilder.BitIteratorLong(word);
     }
 
 
@@ -109,52 +113,38 @@ public class VarSets {
 
     public static int computeVarId(int wordIndex, int bitIndex) {
         int varIndex = (wordIndex << 6) + bitIndex;
-        int varId = varIndex + 1;
-        return varId;
+        return varIndex + 1;
     }
 
 
-    public static class BitIteratorLong implements IntIterator {
 
-        private long unseen;
 
-        public BitIteratorLong(long word) {
-            unseen = word;
-        }
-
-        public boolean hasNext() {
-            return (unseen != 0);
-        }
-
-        public int next() {
-            if (!hasNext()) throw new NoSuchElementException();
-            final long mask = Long.lowestOneBit(unseen);
-            unseen -= mask;
-            return Long.numberOfTrailingZeros(mask);
-        }
-
+    public int clearBit(int word, int varId) {
+        int mask = getMaskForIntWord(varId);
+        return word & ~mask;
     }
+
+    //1L << varIndex
+    public long clearBit(long word, Var vr) {
+        long mask = getMaskForLongWord(vr);
+        return word & ~(mask);
+    }
+
+    public long clearBit(long word, int bitIndex) {
+        return word & ~(1L << bitIndex);
+    }
+
+    public long clearBit(long[] words, int wordIndex, Var vr) {
+        long mask = getMaskForLongWord(vr);
+        return words[wordIndex] &= ~(mask);
+    }
+
+
 
 
 //    public static IntIterator bitIterator(int word) {
 //        return new VarNSet.BitIteratorInt(word);
 //    }
 
-
-    public static int minBit(int word) {
-        return Integer.numberOfTrailingZeros(word);
-    }
-
-    public static int maxBit(int word) {
-        return Integer.numberOfLeadingZeros(word);
-    }
-
-    public static int minBit(long word) {
-        return Long.numberOfTrailingZeros(word);
-    }
-
-    public static int maxBit(long word) {
-        return 63 - Long.numberOfLeadingZeros(word);
-    }
 
 }

@@ -94,10 +94,10 @@ class CnfTest : CspBaseTest2() {
         val exp = csp1.toDnnf().smooth
         val satCount = exp.satCount
 
-        System.err.println("satCount[$satCount]")
-        System.err.println()
-        System.err.println()
-        System.err.println(exp.serializeTinyDnnfSpace())
+//        System.err.println("satCount[$satCount]")
+//        System.err.println()
+//        System.err.println()
+//        System.err.println(exp.serializeTinyDnnfSpace())
 
 
     }

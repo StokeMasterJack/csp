@@ -38,9 +38,8 @@ fun _overlap(s1: VarSet, s2: VarSet): VarSet {
             else -> space.mkEmptyVarSet()
         }
     } else if (s1 is VarSetBuilder && s2 is VarSetBuilder) {
-        VarSetBuilderK.overlap(s1, s2)
-    } else if (s1 is VarNSet && s2 is VarNSet) {
-        VarNSet.overlap(s1, s2)
+        VarSetBuilder.overlap(s1, s2)
+//        s1.overlap(s2)
     } else {
         throw IllegalStateException()
     }
@@ -65,9 +64,9 @@ fun _anyOverlap(s1: VarSet, s2: VarSet): Boolean {
     } else if (s2 is VarPair) {
         s1.containsEitherVar(s2)
     } else if (s1 is VarSetBuilder && s2 is VarSetBuilder) {
-        return VarSetBuilderK.anyOverlap(s1, s2)
-    } else if (s1 is VarNSet && s2 is VarNSet) {
-        return VarNSet.anyOverlap(s1, s2)
+        return VarSetBuilder.anyOverlap(s1, s2)
+    } else if (s1 is VarSetBuilder && s2 is VarSetBuilder) {
+        return VarSetBuilder.anyOverlap(s1, s2)
     } else {
         throw IllegalStateException()
     }

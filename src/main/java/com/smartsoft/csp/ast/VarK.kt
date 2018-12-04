@@ -51,11 +51,6 @@ val Long.bitCount get() = java.lang.Long.bitCount(this)
 
 val Int.bitCount get() = java.lang.Integer.bitCount(this)
 
+val LongArray.bitCount: Int get() = this.sumBy { it.bitCount }
 
-val LongArray.bitCount: Int
-    get() {
-        var s = 0
-        this.forEach { s += it.bitCount }
-        return s
-    }
 

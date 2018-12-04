@@ -13,6 +13,8 @@ import java.util.*
 
 abstract class PosComplexMultiVar(space: Space, expId: Int, internal val _args: Array<Exp>) : PosComplex(space, expId) {
 
+    var parent: PosComplexMultiVar? = null
+
     protected var _neg: Exp? = null
 
     //cache
@@ -491,6 +493,27 @@ abstract class PosComplexMultiVar(space: Space, expId: Int, internal val _args: 
     override fun isVarDisjoint(vs: VarSet): Boolean {
         return vars.isVarDisjoint(vs)
     }
+
+    override fun addParent(parent: PosComplexMultiVar) {
+        if (this.parent == null) {
+            this.parent == parent
+        } else if (this.parent == parent) {
+            //dup skip
+            println("Skipping parent:")
+        } else {
+            //must be second parent
+            throw java.lang.IllegalStateException("2nd parent")
+        }
+    }
+
+    val depth: Int
+        get() {
+            return if (parent == null) {
+                1
+            } else {
+                parent!!.depth + 1
+            }
+        }
 
     companion object {
 

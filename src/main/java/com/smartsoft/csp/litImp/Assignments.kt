@@ -59,8 +59,13 @@ class Assignments(val decisionLit: Lit) {
         return anyChange
     }
 
-    fun assignToDynCube(cc: DynCube = DynCube(space)): Boolean {
-        return litSeq.any { cc.assign(it) }
+    fun assignToDynCube(cc: DynCube): Boolean {
+        var anyChange = false
+        litSeq.forEach {
+            val ch = cc.assign(it)
+            if (ch) anyChange = true
+        }
+        return anyChange
     }
 
     operator fun get(vr: Var): Bit {
@@ -88,14 +93,14 @@ class Assignments(val decisionLit: Lit) {
     }
 
     fun toCube(): ConditionOn {
-        return if (isEmpty) {
-            throw IllegalStateException()
-        } else if (size == 1) {
-            litSeq.first()
-        } else {
-            val d = DynCube(space)
-            assignToDynCube(d)
-            d
+        return when {
+            isEmpty -> throw IllegalStateException()
+            size == 1 -> litSeq.first()
+            else -> {
+                val d = DynCube(space)
+                assignToDynCube(d)
+                d
+            }
         }
 
     }

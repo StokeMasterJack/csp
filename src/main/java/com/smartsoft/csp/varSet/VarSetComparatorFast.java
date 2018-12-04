@@ -47,8 +47,8 @@ public class VarSetComparatorFast {
     }
 
     public static int compareVarPairs(VarPair varSet1, VarPair varSet2) {
-        int min1 = varSet1.getMinVarId();
-        int min2 = varSet2.getMinVarId();
+        int min1 = varSet1.minVrId();
+        int min2 = varSet2.minVrId();
 
         if (min1 < min2) {
             return -1;
@@ -58,8 +58,8 @@ public class VarSetComparatorFast {
         }
 
 
-        int max1 = varSet1.getMaxVarId();
-        int max2 = varSet2.getMaxVarId();
+        int max1 = varSet1.maxVrId();
+        int max2 = varSet2.maxVrId();
 
         if (max1 < max2) {
             return -1;
@@ -73,8 +73,8 @@ public class VarSetComparatorFast {
 
     public static int compareVarSetBuilders(VarSetBuilder varSet1, VarSetBuilder varSet2) {
 
-        long[] words1 = varSet1.words;
-        long[] words2 = varSet2.words;
+        long[] words1 = varSet1.getWords();
+        long[] words2 = varSet2.getWords();
 
         assert words1.length == words2.length;
 

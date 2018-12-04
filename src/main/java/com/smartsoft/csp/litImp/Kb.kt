@@ -4,15 +4,26 @@ import com.smartsoft.csp.ast.*
 import com.smartsoft.csp.dnnf.products.Cube
 import java.util.*
 
+data class XorInfo(val xor: Xor, val score: Int) : Comparable<XorInfo> {
+    override operator fun compareTo(other: XorInfo): Int = score.compareTo(other.score)
+}
 
 class Kb(
         private val space: Space,
         private val simple: DynCube = DynCube(space),
         private val litImpMap: MutableMap<Var, VarImps> = mutableMapOf(),
-        private val xors: MutableList<Xor> = mutableListOf()) {
+        private val xors: MutableList<Xor> = mutableListOf(),
+        private val complex: DComplex = DComplex()
+
+) {
 
     private var best: VarImps? = null
-    private var bestXor: Xor? = null
+
+    val bestXorInfo: XorInfo? get() = lazyBestXor.value
+    val bestXor: Xor? get() = bestXorInfo?.xor
+
+    private val lazyBestXor: Lazy<XorInfo?> = lazy { computeBestXor() }
+
 
     //initial
     constructor(space: Space, complex: Array<Exp>) : this(space) {
@@ -21,6 +32,25 @@ class Kb(
 
     val expFactory: ExpFactory get() = space.expFactory
     val parser: Parser get() = space.parser
+
+    //called after litImps are complete
+    private fun computeBestXor(): XorInfo? {
+        if (xors.isEmpty()) return null
+        assert(xors.isNotEmpty())
+        var best: XorInfo? = null
+        for (xor in xors) {
+            val x: XorInfo = scoreXor(xor)
+            if (best == null || x > best) {
+                best = x
+            }
+        }
+        return best
+    }
+
+    fun printXorInfo() {
+        println("xors: $xors")
+    }
+
 
     fun assignAll(cube: Cube): Boolean {
         return simple.assignLits(cube)
@@ -77,11 +107,12 @@ class Kb(
 
     @Throws(ImpliedLitException::class)
     fun addComplex(cc: Exp): Boolean {
+//        println("kb.addComplex($cc)")
         return if (cc is Xor) {
             addXor(cc.asXor)
         } else if (cc.isOrVv) {
             addVvOr(cc.asOr)
-        } else if (cc is Or && cc.isPair && cc !is Xor) {
+        } else if (cc is Or && cc.isPair && cc !is Xor && (cc._args[0].isLit || cc._args[1].isLit)) {
             val a1: Exp = cc._args[0]
             val a2: Exp = cc._args[1]
             if (a1 is Lit && a2 is Cube) {
@@ -93,6 +124,7 @@ class Kb(
             } else if (a1.isNotClause && a2 is Lit) {
                 addConstraintLitOrNotClause(a2, a1 as Not)
             } else {
+//                println("Other Complex Pair w Lit: ${cc.toStringDetail()}")
                 addOtherComplex(cc)
             }
         } else {
@@ -250,6 +282,7 @@ class Kb(
     //not xors and not vvs
     private fun addOtherComplex(complex: Exp): Boolean {
         var anyChange = false
+
         complex.vars.forEach {
             val vi = mkVarImps(it)
             val ch = vi.addOtherComplex(complex)
@@ -266,38 +299,18 @@ class Kb(
     }
 
     private fun addXor(xor: Xor): Boolean {
-        for (xorChild in xor.args) {
-            xorChild.vr.xorParent = xor
+        for (arg in xor.args) {
+            arg.vr.xorParent = xor
         }
         return xors.add(xor)
     }
 
     //after LitImps is fully populated
-    private fun scoreXor(xor: Xor): Int {
-        return xor.args.sumBy { vi(it.vr)?.score ?: 0 }
+    private fun scoreXor(xor: Xor): XorInfo {
+        return XorInfo(xor = xor, score = xor.args.sumBy { vi(it.vr)?.score ?: 0 })
+
     }
 
-    fun getBestXor(): Xor? {
-        if (xors.isEmpty()) return null
-        if (bestXor == null) {
-            this.bestXor = computeBestXor()
-        }
-        return bestXor
-    }
-
-    private fun computeBestXor(): Xor {
-        assert(xors.isNotEmpty())
-        var best: Xor? = null
-        var bestScore: Int = -1
-        for (xor in xors) {
-            val score = scoreXor(xor)
-            if (score > bestScore) {
-                best = xor
-                bestScore = score
-            }
-        }
-        return best!!
-    }
 
     fun vi(vr: Var): VarImps? {
         return litImpMap[vr]
@@ -362,13 +375,22 @@ class Kb(
         }
     }
 
+    fun printLitImps() {
+        litImpMap.values.sortedByDescending { it.score }.forEach {
+            it.printLitImps(0)
+        }
+    }
+
+
     companion object {
 
         @Throws(ImpliedLitException::class)
-        fun fromFormula(formula: Formula): Kb = Kb(formula.space, formula._args)
+        fun computeFromFormula(formula: Formula): Kb {
+            return Kb(formula.space, formula._args)
+        }
 
         @Throws(ImpliedLitException::class)
-        fun computeBest(formula: Formula): VarImps? = fromFormula(formula).getBestVarImps()
+        fun computeBest(formula: Formula): VarImps? = computeFromFormula(formula).getBestVarImps()
 
         @Throws(ImpliedLitException::class)
         fun computeBestVar(formula: Formula): Var? = computeBest(formula)?.vr

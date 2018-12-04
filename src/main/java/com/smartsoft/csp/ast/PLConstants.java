@@ -33,6 +33,8 @@ public interface PLConstants {
     String ICOL_PREFIX = "ICOL";
     String ACY_PREFIX = "ACY";
 
+
+
     int CR_INT = Ascii.CR;
     int LF_INT = Ascii.LF;
     int NL_INT = Ascii.NL;

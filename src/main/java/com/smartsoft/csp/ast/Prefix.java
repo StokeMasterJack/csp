@@ -22,6 +22,7 @@ public enum Prefix implements VarConstants {
     NULL;
 
 
+    public static final EnumSet<Prefix> topXor = of(YR, SER, MDL);
     public static final EnumSet<Prefix> yearModel = of(YR, MDL);
     public static final EnumSet<Prefix> color = of(XCOL, ICOL);
     public static final EnumSet<Prefix> core = of(yearModel, color);

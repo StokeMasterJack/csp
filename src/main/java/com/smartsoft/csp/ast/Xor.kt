@@ -432,5 +432,10 @@ class Xor(space: Space, expId: Int, args: Array<Exp>) : PosComplexMultiVar(space
     override val isXor: Boolean get() = true
     var score: Int = 0
 
+    val isTop: Boolean
+        get() {
+            return prefix in space.topXorPrefixes
+        }
+
 
 }

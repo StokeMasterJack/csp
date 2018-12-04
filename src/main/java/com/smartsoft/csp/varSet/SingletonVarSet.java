@@ -40,7 +40,6 @@ public class SingletonVarSet extends VarSet {
     }
 
 
-
     @Override
     public int getVarId(int index) throws IndexOutOfBoundsException {
         if (index == 0) return vr.varId;
@@ -100,7 +99,6 @@ public class SingletonVarSet extends VarSet {
 //    }
 
 
-
     @Override
     public VarSet immutable() {
         return this;
@@ -145,6 +143,20 @@ public class SingletonVarSet extends VarSet {
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (o instanceof SingletonVarSet) {
+            SingletonVarSet s = (SingletonVarSet) o;
+            return s.vr == vr;
+        } else if (o instanceof VarSetBuilder) {
+            VarSetBuilder s = (VarSetBuilder) o;
+            return s.size() == 1 && s.containsVar(vr);
+        } else {
+            return false;
+        }
+    }
 
 //    @Override
 //    public boolean anyIntersection(VarSetBuilder that) {
@@ -153,8 +165,4 @@ public class SingletonVarSet extends VarSet {
 //    }
 
 
-    @Override
-    public boolean recomputeSize() {
-        return false;
-    }
 }

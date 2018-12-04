@@ -217,9 +217,9 @@ public class DynCube extends AbstractCube {
 
     public boolean removeLit(int varId, boolean sign) {
         if (containsLit(varId, sign)) {
-            v.removeVarIdDead(varId);
+            v.removeVarId(varId);
             if (sign) {
-                t.removeVarIdDead(varId);
+                t.removeVarId(varId);
             }
             return true;
         }

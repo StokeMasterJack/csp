@@ -23,7 +23,8 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
 
     override val vars: VarSet
         get() {
-            return c.v.refreshSize()
+            c.v.fix()
+            return c.v
         }
 
     override fun computeVars(): VarSet = throw UnsupportedOperationException()
@@ -35,12 +36,12 @@ class CubeExp(space: Space, id: Int, args: Array<Exp>) : DAnd(space, id, args), 
 
     override val trueVars: VarSet
         get() {
-            return c.t.refreshSize()
+            return c.t.fix()
         }
 
     override val falseVars: VarSet
         get() {
-            return c.falseVars.refreshSize()
+            return c.falseVars.fix()
         }
 
     override val falseVarCodes: Set<String>

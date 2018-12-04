@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
 
@@ -30,7 +31,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public static VarSet empty() {
-        return EmptyVarSet.getInstance();
+        return EmptyVarSet.INSTANCE;
     }
 
     abstract public VarSpace getVarSpace();
@@ -106,10 +107,6 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
             varCount += Long.bitCount(word);
         }
         return varCount;
-    }
-
-    public int getVarSetId() {
-        throw new IllegalStateException();
     }
 
     public SingletonVarSet asSingleton() {
@@ -271,18 +268,6 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return VarSetK.eqNullSafe(this, o);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-
-        VarSet that = (VarSet) o;
-        assert this.getSpace() == that.getSpace();
-
-        return eqVarSet(that);
-    }
-
-
     public static int size(VarSet vars) {
         if (vars == null) return 0;
         return vars.size();
@@ -344,7 +329,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         for (int i = 0; i < varCount; i++) {
             int index = r.nextInt(size());
             Var var = this.get(index);
-            b.add(var);
+            b.addVar(var);
         }
         return b.build();
     }
@@ -357,6 +342,10 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     @NotNull
     public Boolean containsVarCode(@NotNull String varCode) {
         return VarSetContainsKt._containsVarCode(this, varCode);
+    }
+
+    public boolean recomputeSize() {
+        return false;
     }
 
     public class FilteredVarIterator extends UnmodifiableIterator<Var> {
@@ -571,8 +560,16 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         throw new UnsupportedOperationException();
     }
 
-    public abstract int size();
+    @Override
+    public void forEach(Consumer<? super Var> action) {
 
+    }
+
+//    public int size(boolean) {
+//
+//        System.err.println(111);
+//
+//    }
 
     public abstract boolean isEmpty();
 
@@ -677,7 +674,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return VarSetComparatorFast.compare(this, that);
     }
 
-
+    //-1 if varId not found
     public int indexOf(int varId) {
         throw new UnsupportedOperationException(getClass().getName());
     }
@@ -719,7 +716,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return false;
     }
 
-    public boolean isVarSetBuilder() {
+    public boolean isNVarSet() {
         return false;
     }
 
@@ -852,7 +849,9 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         }
     }
 
-
+    /**
+     * Maps index->Var (position in list, not bitIndex, index with in the trueBits)
+     */
     public abstract int getVarId(int index) throws IndexOutOfBoundsException;
 
     final public Var getVar(int index) throws IndexOutOfBoundsException {
@@ -953,7 +952,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
     }
 
     public void clear() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(this.getSimpleName());
     }
 
     public static class FilteringIntIterator implements IntIterator {
@@ -1074,10 +1073,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
         return filter(ACY_PREFIX);
     }
 
-    abstract public boolean recomputeSize();
-
-    public VarSet refreshSize() {
-        recomputeSize();
+    public VarSet fix() {
         return this;
     }
 
@@ -1094,5 +1090,7 @@ public abstract class VarSet extends VarSets implements Set<Var>, PLConstants {
             throw new AssertionError("Expected: " + ser + "   actual: " + ser1);
         }
     }
+
+
 
 }

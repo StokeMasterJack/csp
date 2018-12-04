@@ -21,8 +21,6 @@ class VVConditionTest : CspBaseTest2() {
         val csp = Csp.parse("vars(x y z a b c m j k)")
         val space = csp.space
 
-        System.err.println("csp[$csp]")
-
         val vvp = space.parseExp(expText)
 
         val vvpExpected: Exp
@@ -44,8 +42,6 @@ class VVConditionTest : CspBaseTest2() {
         //        vvpActual = vvp.conditionVV("or(!a !b)");
         //        assertEquals(vvpExpected, vvpActual);
 
-
-        System.err.println("pass")
 
     }
 
@@ -107,7 +103,6 @@ class VVConditionTest : CspBaseTest2() {
         val vvpExpected0 = csp.space.parseExp("or(and(a c) and(d e fCon))")
         assertEquals(vvpExpected0, aa[0])
 
-        csp.print()
 
     }
 

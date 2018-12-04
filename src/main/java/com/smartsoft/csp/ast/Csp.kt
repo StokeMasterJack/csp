@@ -15,6 +15,7 @@ import com.smartsoft.csp.util.it.ExpFn
 import com.smartsoft.csp.util.it.ExpFnJvm
 import com.smartsoft.csp.util.it.Fn
 import com.smartsoft.csp.util.it.It
+import com.smartsoft.csp.varSet.EmptyVarSet
 import com.smartsoft.csp.varSet.VarSet
 import com.smartsoft.csp.varSet.VarSetBuilder
 import java.math.BigInteger
@@ -52,7 +53,7 @@ possible actons:
 
 class Csp @JvmOverloads constructor(
         override val space: Space,
-
+        val parent: Formula? = null,
         var simple: DynCube? = null,
         var complex: DComplex = DComplex(),
         var dontCares: VarSet? = null
@@ -65,6 +66,7 @@ class Csp @JvmOverloads constructor(
     private var q: MutableList<Lit>? = null
 
     val parser: Parser get() = space.parser
+
 
     //initial:
     constructor(space: Space, constraints: Sequence<Exp>) : this(space = space) {
@@ -83,17 +85,24 @@ class Csp @JvmOverloads constructor(
     }
 
     constructor(mixed: And) : this(mixed.space, mixed.argIt) {
-        println("Csp(mixed: And)")
     }
 
     //simple or xor decision: formula - condition are disjoint
     constructor(formula: Iterable<Exp>, condition: ConditionOn) : this(space = condition.space) {
         _assignSafe(condition)
         addConstraintsExpIt(formula, condition)
+        throw IllegalStateException()
+    }
+
+    //simple or xor decision: formula - condition are disjoint
+    constructor(formula: Formula, condition: ConditionOn) : this(space = condition.space, parent = formula) {
+        _assignSafe(condition)
+        addConstraintsExpIt(formula.argIt, condition)
     }
 
     //copy
-    constructor(csp: Csp) : this(space = csp.space, simple = csp.copySimple(), complex = csp.copyComplex(), dontCares = csp.copyDontCares())
+    constructor(csp: Csp) : this(space = csp.space, simple = csp.copySimple(), complex = csp.copyComplex(), dontCares = csp.copyDontCares()) {
+    }
 
 
 //    constructor(space:Space) : this(space = space)
@@ -392,8 +401,13 @@ class Csp @JvmOverloads constructor(
         return toDnnf().smooth.satCount
     }
 
-    fun mkFormula(): Exp {
-        return complex.mkFormula()
+    @JvmOverloads
+    fun mkFormula(parent: PosComplexMultiVar? = null): Exp {
+        val ff = complex.mkFormula()
+        if (ff is PosComplexMultiVar && parent != null) {
+            ff.addParent(parent)
+        }
+        return ff
     }
 
     fun computeUnionFind(): UnionFind<Exp> {
@@ -499,12 +513,12 @@ class Csp @JvmOverloads constructor(
         } else if (!hasSimple && !hasComplex) {
             space.mkTrue()
         } else if (!hasSimple && hasComplex) {
-            complex.toDnnf()
+            complex.toDnnf(parent)
         } else if (hasSimple && !hasComplex) {
             simple!!.toDnnf()
         } else if (hasSimple && hasComplex) {
             val dSimple = simple!!.toDnnf()   //T|F|Lit|Cube
-            val dComplex = complex.toDnnf()
+            val dComplex = complex.toDnnf(parent)
 
             space.expFactory.mkDAnd(dSimple, dComplex)
         } else {
@@ -561,7 +575,7 @@ class Csp @JvmOverloads constructor(
     }
 
 
-    val depth: Int get() = 0  //todo
+    val depth: Int get() = if (parent == null) 1 else parent.depth + 1
 
 
     fun assertDisjointSimpleComplex(): Boolean {
@@ -577,6 +591,7 @@ class Csp @JvmOverloads constructor(
         return !isSimpleComplexDisjoint;
     }
 
+    val xorsDeep: List<Exp> get() = computeXorsDeep()
 
     fun computeXorsDeep(): List<Exp> {
         if (complex.isNullOrEmpty) return emptyList()
@@ -898,7 +913,7 @@ class Csp @JvmOverloads constructor(
     }
 
     fun addDontCare(vr: Var): Boolean {
-        return mkDontCares.add(vr)
+        return mkDontCares.addVar(vr)
     }
 
     fun addDontCare(dcOr: DcOr): Boolean {
@@ -1144,31 +1159,6 @@ class Csp @JvmOverloads constructor(
 //        }
 //    }
 
-    fun proposeBothWaysLite(vr: Var): Lit? {
-
-
-        val pLit = vr.mkPosLit()
-        val nLit = vr.mkNegLit()
-
-
-        val tt = Csp(formula = complex, condition = pLit)
-
-        if (tt.isFailed) {
-            //must be fCon
-            //            System.err.println("  found bb lit[" + vr.mkNegLit() + "]");
-            return vr.nLit()
-        } else {
-
-            val ff = Csp(formula = complex, condition = nLit)
-            return if (ff.isFailed) {
-                //must be tCon
-                //                System.err.println("  found bb lit[" + vr.mkPosLit() + "]");
-                vr.pLit()
-            } else {
-                null //open
-            }
-        }
-    }
 
     fun refineFormulaOnly(sLit: String): Exp {
         if (!hasComplex) {
@@ -1314,8 +1304,24 @@ class Csp @JvmOverloads constructor(
 
 
     val vars: VarSet
-        get() {
-            return VarSet.plus(space, simple?.vars, complex.vars, dontCares)
+        get() = when {
+            simple.isNullOrEmpty && dontCares.isNullOrEmpty && complex.isNullOrEmpty -> EmptyVarSet
+
+            simple.isNullOrEmpty && dontCares.isNullOrEmpty -> complex.vars
+            simple.isNullOrEmpty && complex.isNullOrEmpty -> dontCares!!
+            complex.isNullOrEmpty && dontCares.isNullOrEmpty -> simple!!.vars
+
+            dontCares.isNullOrEmpty -> complex.vars.plus(simple!!.vars)
+            complex.isNullOrEmpty -> dontCares!!.plus(simple!!.vars)
+            simple.isNullOrEmpty -> dontCares!!.plus(complex.vars)
+            !simple.isNullOrEmpty && !dontCares.isNullOrEmpty && !complex.isNullOrEmpty -> {
+                val bb = space.varSetBuilder()
+                bb.addVarSet(complex.vars)
+                bb.addVarSet(simple!!.vars)
+                bb.addVarSet(dontCares!!)
+                bb
+            }
+            else -> throw IllegalStateException()
         }
 
 
@@ -1445,7 +1451,6 @@ class Csp @JvmOverloads constructor(
 
     fun transform(t: Transformer) {
         val ff = mkFormula()
-
 
         this.complex = DComplex()
 
@@ -2080,6 +2085,14 @@ class Csp @JvmOverloads constructor(
             val xor = space.getExp(xorExpId).asXor
             xor.score = e.count
         }
+    }
+
+    fun printXorInfo() {
+        println("csp xor info")
+        println("  xors = ${computeXorConstraints()}")
+        println("  xorsDeep = ${xorsDeep.minus(space.topXors)}")
+        println("  xorsDeepMinusTop = ${xorsDeep.minus(space.topXors)}")
+        println("  xorsDeepMinusTop = ${xorsDeep.map { it as Xor }.filterNot { it.isTop }}")
     }
 
 

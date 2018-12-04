@@ -2,12 +2,12 @@ package com.smartsoft.csp.util
 
 import com.smartsoft.csp.argBuilder.IArgBuilder
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.ast.Fcc
-import com.smartsoft.csp.ast.Formula
 import com.smartsoft.csp.dnnf.DAnd
 import com.smartsoft.csp.dnnf.DOr
 
 class PosComplexSpace(val space: Space) {
+
+    val opCounter = OpCounter()
 
     private val ROW_COUNT = 30000
 
@@ -82,6 +82,7 @@ class PosComplexSpace(val space: Space) {
         if (eq(b, prev)) {
             prev.notNew();
             assert(!prev.isNew)
+            logCacheHits(prev)
             return prev
         }
 
@@ -182,32 +183,28 @@ class PosComplexSpace(val space: Space) {
         }
         return true
     }
-//
-//    internal fun logCacheHits(prev: Exp) {
-//        val prefix: String
-//        if (prev.isClause) {
-//            prefix = "Clause"
-//        } else if (prev.isCube) {
-//            prefix = "Cube"
-//        } else if (prev.isFormula) {
-//            prefix = "Formula"
-//        } else if (prev.isFcc) {
-//            prefix = "Fcc"
-//        } else if (prev.isAnd) {
-//            prefix = "Mixed"
-//        } else if (prev.isXor) {
-//            prefix = "Xor"
-//        } else if (prev.isOr) {
-//            prefix = "ComplexOr"
-//        } else {
-//            prefix = "Other"
-//        }
+
+
+    internal fun logCacheHits(prev: Exp) {
+        val prefix: String
+
+        when {
+            prev.isClause -> prefix = "Clause"
+            prev.isCube -> prefix = "Cube"
+            prev.isFormula -> prefix = "Formula"
+            prev.isAnd -> prefix = "Mixed"
+            prev.isXor -> prefix = "Xor"
+            prev.isOr -> prefix = "ComplexOr"
+            else -> prefix = "Other"
+        }
 //
 //        if (prefix.startsWith("Formula")) {
-//            System.err.println("Cache hit: $prefix: $prev")
-//        }
 //
-//    }
+//        }
+
+//        System.err.println("Cache hit: $prefix: $prev")
+
+    }
 
 
     class OpCounter {

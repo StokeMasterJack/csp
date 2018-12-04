@@ -35,7 +35,7 @@ class SatCountTest {
     fun testSimple() {
         CspSample.allSimplePL.forEach {
             val name = it.name
-            println("Processing $name")
+//            println("Processing $name")
             val clob = it.loadText()
             val csp = Csp.parse(clob)
 
@@ -58,7 +58,7 @@ class SatCountTest {
 
             assertEquals(it.expectedSatCount, satCount2)
 
-            println("   $name satCount: $satCount1")
+//            println("   $name satCount: $satCount1")
 
 
         }
@@ -68,7 +68,7 @@ class SatCountTest {
     fun testSatCountPL() {
         CspSample.allSimplePL.forEach {
             val name = it.name
-            println("Processing $name")
+//            println("Processing $name")
             val clob = it.loadText()
             val csp = Csp.parse(clob)
 
@@ -90,7 +90,7 @@ class SatCountTest {
         repeat(1) {
             CspSample.TrimColorOptionsDc.let {
                 val name = it.name
-                println("Processing $name")
+//                println("Processing $name")
                 val clob = it.loadText()
                 val csp = Csp.parse(clob)
 
@@ -98,11 +98,6 @@ class SatCountTest {
 
                 assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
-                if (it.expectedSatCount != satCountPL) {
-                    println("satCountPL failed on $name")
-                    println("   expected: ${it.expectedSatCount}")
-                    println("   actual: ${satCountPL}")
-                }
 
             }
         }
@@ -113,7 +108,7 @@ class SatCountTest {
         repeat(1) {
             CspSample.TrimColorNoDc.let {
                 val name = it.name
-                println("Processing $name")
+//                println("Processing $name")
                 val clob = it.loadText()
                 val csp = Csp.parse(clob)
 
@@ -121,11 +116,6 @@ class SatCountTest {
 
                 assertEquals(it.expectedSatCount, satCountPL, "satCountPL failed on $name")
 
-                if (it.expectedSatCount != satCountPL) {
-                    println("satCountPL failed on $name")
-                    println("   expected: ${it.expectedSatCount}")
-                    println("   actual: ${satCountPL}")
-                }
 
             }
         }
@@ -183,10 +173,8 @@ Processing Tundra:
     fun testComplex() {
         CspSample.allComplexPL.forEach {
 
-
             val name = it.name
-            println("Processing $name:")
-
+//            println("Processing $name:")
 
             val t0 = millis
 
@@ -214,21 +202,25 @@ Processing Tundra:
             val satCount2 = smooth2.getSatCount(csp.vars)
             val t8 = millis
 
-            println("  load rules:      " + (t1 - t0))
-            println("  parse rules:     " + (t2 - t1))
-            println("  compile dnnf:    " + (t3 - t2))
-            println("  dnnf smooth:     " + (t4 - t3))
-            println("  sat count:       " + (t5 - t4))
-            println("  ser tiny dnnf:   " + (t6 - t5))
-            println("  parse tiny dnnf: " + (t7 - t6))
-            println("  sat count:       " + (t8 - t7))
+            if (false) {
 
+                println("  load rules:      " + (t1 - t0))
+                println("  parse rules:     " + (t2 - t1))
+                println("  compile dnnf:    " + (t3 - t2))
+                println("  dnnf smooth:     " + (t4 - t3))
+                println("  sat count:       " + (t5 - t4))
+                println("  ser tiny dnnf:   " + (t6 - t5))
+                println("  parse tiny dnnf: " + (t7 - t6))
+                println("  sat count:       " + (t8 - t7))
+
+            }
 
             assertEquals(it.expectedSatCount, satCount1, name)
             assertEquals(it.expectedSatCount, satCount2, name)
 
 
         }
+
     }
 
     //9s
@@ -243,7 +235,7 @@ Processing Tundra:
     fun testAllCompileAndSatCount() {
         CspSample.allPL.forEach {
             val name = it.name
-            println("Processing $name")
+//            println("Processing $name")
             val clob = tt("  load rules") { it.loadText() }
             val csp = tt("  parse rules") { Csp.parse(clob) }
             val rough = tt("  compile dnnf") { csp.toDnnf() }
@@ -266,7 +258,7 @@ Processing Tundra:
     fun testCompileAndSatCountTrimColorOptionsDc() {
         CspSample.TrimColorOptionsDc.let {
             val name = it.name
-            prindent(0, "Processing $name")
+//            prindent(0, "Processing $name")
             val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
             val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
@@ -284,10 +276,32 @@ Processing Tundra:
     }
 
     @Test
+    fun testCompileAndSatCountTinyNoDc() {
+        CspSample.TinyNoDc.let {
+            val name = it.name
+//            prindent(0, "Processing $name")
+            val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
+            val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+
+            val satCountPL = csp.satCountPL()
+
+            val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
+            val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }
+            val satCount = tt(Strings.indent(1) + "  sat count") { smooth.satCount }
+
+            smooth.printNodeInfo(1)
+
+            assertEquals(it.expectedSatCount, satCountPL.toBigInteger())
+            assertEquals(it.expectedSatCount, satCount)
+
+        }
+    }
+
+    @Test
     fun testCompileAndSatCountCamry2011NoDc() {
         CspSample.Camry2011NoDc.let {
             val name = it.name
-            prindent(0, "Processing $name")
+//            prindent(0, "Processing $name")
             val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
             val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
 
@@ -298,6 +312,7 @@ Processing Tundra:
             smooth.printNodeInfo(1)
             assertEquals(it.expectedSatCount, satCount)
         }
+
     }
 
 
@@ -305,9 +320,10 @@ Processing Tundra:
     fun testCompileAndSatCountEfcOriginal() {
         CspSample.EfcOriginal.let {
             val name = it.name
-            prindent(0, "Processing $name")
+//            prindent(0, "Processing $name")
             val clob = tt(Strings.indent(1) + "  load rules") { it.loadText() }
             val csp = tt(Strings.indent(1) + "  parse rules") { Csp.parse(clob) }
+
 
             val rough = tt(Strings.indent(1) + "  compile dnnf") { csp.toDnnf() }
             val smooth = tt(Strings.indent(1) + "  smooth dnnf") { rough.smooth }

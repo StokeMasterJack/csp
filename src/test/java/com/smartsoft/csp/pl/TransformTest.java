@@ -50,27 +50,19 @@ public class TransformTest extends Transforms {
         Exp e1, e2;
 
         e1 = f.parseExp("and(a b c)");
-        System.err.println("e1[" + e1 + "]");
 
         e2 = Companion.andToBinary(e1);
-        System.err.println("e2[" + e2 + "]");
 
 
         e1 = Companion.flattenAnd(e2);
-        System.err.println("e1[" + e1 + "]");
 
-        System.err.println();
 
         e1 = f.parseExp("and(a b c d e fCon g)");
-        System.err.println("e1[" + e1 + "]");
 
         e2 = Companion.andToBinary(e1);
-        System.err.println("e2[" + e2 + "]");
 
 
         e1 = Companion.flattenAnd(e2);
-        System.err.println("e1[" + e1 + "]");
-
 
 //        testTransform(t1, e1, "and(and(a b) c)");
     }
@@ -282,7 +274,6 @@ public class TransformTest extends Transforms {
         Transformer t;
 
         e = f.parseExp("nand(LA or(and(Ash 4T8) and(Ash 776) and(Bisque 1F7)))");
-        System.err.println(e);
 
 
         t = Transforms.Companion.nnf();

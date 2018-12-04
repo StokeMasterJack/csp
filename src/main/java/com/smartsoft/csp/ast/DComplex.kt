@@ -38,7 +38,7 @@ class DComplex(
 
     private fun computeVars(): VarSet {
         return if (isEmpty) {
-            EmptyVarSet.getInstance()
+            EmptyVarSet
         } else {
             val vs = space.varSetBuilder()
             a.forEach {
@@ -51,18 +51,20 @@ class DComplex(
 
     val firstArg: Exp get() = a.first()
 
-    fun toDnnf(): Exp {
-        return mkFormula().toDnnf()
+    fun toDnnf(parent: PosComplexMultiVar? = null): Exp {
+        return mkFormula(parent).toDnnf()
     }
 
-    fun mkFormula(): Exp {
+    fun mkFormula(parent: PosComplexMultiVar? = null): Exp {
         if (formula == null) {
             formula = createFormula()
+        }
+        if (formula is PosComplexMultiVar && parent != null) {
+            formula!!.addParent(parent)
         }
         return formula!!
     }
 
-    //val fcc: FccState
 
     private fun createFormula(): Exp {
         if (!deduped) dedup()

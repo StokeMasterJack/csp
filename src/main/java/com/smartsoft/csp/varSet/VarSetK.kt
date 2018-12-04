@@ -2,7 +2,6 @@ package com.smartsoft.csp.varSet
 
 import com.google.common.collect.ImmutableSet
 import com.smartsoft.csp.ast.*
-import com.smartsoft.csp.bitSet.BitSet64
 
 object VarSetK {
 
@@ -190,6 +189,8 @@ object VarSetK {
     }
 }
 
+val VarSet.sr: String get() = ser()
+
 fun SingletonVarSet.eqVr(o: SingletonVarSet): Boolean = vr.vrId == o.vrId
 
 fun VarPair.eqVr1(o: VarPair): Boolean = vr1Id == o.vr1Id
@@ -211,7 +212,6 @@ fun VarSetBuilder.sizeIs(sz: Int): Boolean {
     }
     return size == sz
 }
-
 
 
 val VarSet.rank: Int
